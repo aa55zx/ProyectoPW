@@ -84,6 +84,31 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', function () {
             return view('juez.dashboard');
         })->name('dashboard');
+        
+        Route::get('/eventos', function () {
+            return view('juez.eventos');
+        })->name('eventos');
+        
+        Route::get('/evaluaciones', function () {
+            return view('juez.evaluaciones');
+        })->name('evaluaciones');
+        
+        Route::get('/evaluaciones/{id}', function ($id) {
+            return view('juez.evaluar-proyecto', ['id' => $id]);
+        })->name('evaluar-proyecto');
+        
+        Route::post('/evaluaciones/{id}', function ($id) {
+            // Guardar evaluación
+            return redirect()->route('juez.evaluaciones')->with('success', 'Evaluación guardada exitosamente');
+        })->name('guardar-evaluacion');
+        
+        Route::get('/rankings', function () {
+            return view('juez.rankings');
+        })->name('rankings');
+        
+        Route::get('/perfil', function () {
+            return view('juez.perfil');
+        })->name('perfil');
     });
     
     // ==========================================
