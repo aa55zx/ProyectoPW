@@ -5,23 +5,17 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
-    /**
-     * Mostrar el formulario de login
-     */
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    /**
-     * Manejar el intento de login
-     */
     public function login(Request $request)
     {
-        // Validar los datos
         $credentials = $request->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required'],
@@ -31,13 +25,32 @@ class LoginController extends Controller
             'password.required' => 'La contraseña es obligatoria',
         ]);
 
-        // Intentar autenticar
-        if (Auth::attempt($credentials)) {
+        try {
+            $user = \App\Models\User::where('email', $credentials['email'])->first();
+
+            if (!$user) {
+                return back()->withErrors([
+                    'email' => 'No existe una cuenta con este correo electrónico.',
+                ])->withInput($request->only('email'));
+            }
+
+            if (!$user->is_active) {
+                return back()->withErrors([
+                    'email' => 'Tu cuenta ha sido desactivada. Contacta al administrador.',
+                ])->withInput($request->only('email'));
+            }
+
+            if (!Hash::check($credentials['password'], $user->password)) {
+                return back()->withErrors([
+                    'email' => 'Las credenciales proporcionadas son incorrectas.',
+                ])->withInput($request->only('email'));
+            }
+
+            Auth::login($user, $request->filled('remember'));
             $request->session()->regenerate();
 
-            $user = Auth::user();
-            
-            // Redirigir según el rol
+            $user->updateLastLogin();
+
             return match($user->user_type) {
                 'admin' => redirect()->intended('/admin/dashboard'),
                 'maestro' => redirect()->intended('/maestro/dashboard'),
@@ -45,24 +58,19 @@ class LoginController extends Controller
                 'estudiante' => redirect()->intended('/estudiante/dashboard'),
                 default => redirect()->intended('/estudiante/dashboard'),
             };
-        }
 
-        // Si falla la autenticación
-        return back()->withErrors([
-            'email' => 'Las credenciales no coinciden con nuestros registros.',
-        ])->withInput($request->only('email'));
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'email' => 'Ocurrió un error al intentar iniciar sesión. Por favor, intenta de nuevo.',
+            ])->withInput($request->only('email'));
+        }
     }
 
-    /**
-     * Cerrar sesión
-     */
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect('/login')->with('success', 'Sesión cerrada correctamente');
     }
 }

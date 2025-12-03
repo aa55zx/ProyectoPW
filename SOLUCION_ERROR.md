@@ -1,108 +1,69 @@
-# PASOS PARA SOLUCIONAR EL ERROR
+# 🔧 SOLUCIÓN AL ERROR DE MIGRACIONES
 
-## Error Actual:
-"file is not a database" - El archivo database.sqlite está corrupto o vacío
-
-## ✅ SOLUCIÓN RÁPIDA (Ejecuta estos comandos UNO POR UNO)
-
-Abre tu terminal en: `D:\Cheluis\Documentos\7Semestre\Programacion web\ProyectoPW`
-
-### Paso 1: Borrar base de datos corrupta
-```bash
-del database\database.sqlite
+## ❌ Error que obtuviste:
+```
+table "sessions" already exists
 ```
 
-### Paso 2: Crear base de datos nueva (vacía)
-```bash
-type nul > database\database.sqlite
+## ✅ SOLUCIÓN (2 PASOS RÁPIDOS):
+
+### **PASO 1: Ejecuta esto primero**
+```
+limpiar_migraciones.bat
 ```
 
-### Paso 3: Limpiar caché de Laravel
-```bash
-php artisan config:clear
-php artisan cache:clear
+Este script eliminará las migraciones duplicadas.
+
+### **PASO 2: Ahora ejecuta**
 ```
-
-### Paso 4: Ejecutar migraciones (crear tablas)
-```bash
-php artisan migrate
+INICIAR.bat
 ```
-
-### Paso 5: Crear usuarios de prueba
-```bash
-php artisan tinker
-```
-
-Dentro de tinker, copia y pega esto (todo de una vez):
-```php
-$admin = new App\Models\User();
-$admin->name = 'Administrador';
-$admin->email = 'admin@tecnm.mx';
-$admin->numero_control = 'ADMIN001';
-$admin->password = bcrypt('admin123');
-$admin->user_type = 'admin';
-$admin->email_verified_at = now();
-$admin->save();
-
-$docente = new App\Models\User();
-$docente->name = 'Profesor Juan Pérez';
-$docente->email = 'docente@tecnm.mx';
-$docente->numero_control = 'DOC001';
-$docente->password = bcrypt('docente123');
-$docente->user_type = 'docente';
-$docente->email_verified_at = now();
-$docente->save();
-
-$estudiante = new App\Models\User();
-$estudiante->name = 'María García';
-$estudiante->email = 'estudiante@tecnm.mx';
-$estudiante->numero_control = '20240001';
-$estudiante->password = bcrypt('estudiante123');
-$estudiante->user_type = 'estudiante';
-$estudiante->email_verified_at = now();
-$estudiante->save();
-
-echo "¡3 usuarios creados exitosamente!\n";
-exit
-```
-
-### Paso 6: Iniciar servidor
-```bash
-php artisan serve
-```
-
-### Paso 7: Probar en navegador
-Abre: http://localhost:8000
-
-Login con:
-- Usuario: `ADMIN001`
-- Password: `admin123`
 
 ---
 
-## 🚀 ALTERNATIVA: Script Automático
+## 🎯 ¿QUÉ PASÓ?
 
-Si quieres que todo se haga automáticamente, ejecuta:
+Laravel viene con sus propias migraciones para:
+- users
+- sessions  
+- cache
+- jobs
+
+Nosotros creamos migraciones adicionales que duplicaban algunas de esas tablas, causando el conflicto.
+
+---
+
+## ✅ LO QUE SE CORRIGIÓ:
+
+1. ✅ Actualizada la migración de Laravel users para incluir campos personalizados
+2. ✅ Eliminadas migraciones duplicadas de sessions, cache, jobs
+3. ✅ La migración de EventTec ahora solo crea las tablas propias del sistema
+
+---
+
+## 📁 MIGRACIONES FINALES:
+
+Después de ejecutar `limpiar_migraciones.bat`, tendrás:
+
+✅ `0001_01_01_000000_create_users_table.php` - Users con campos personalizados  
+✅ `0001_01_01_000001_create_cache_table.php` - Cache de Laravel  
+✅ `0001_01_01_000002_create_jobs_table.php` - Jobs de Laravel  
+✅ `2024_12_01_000001_create_eventtec_tables.php` - Todas las tablas de EventTec  
+
+---
+
+## 🚀 RESUMEN:
+
 ```bash
-configurar.bat
+# 1. Limpia migraciones duplicadas
+limpiar_migraciones.bat
+
+# 2. Inicia el proyecto
+INICIAR.bat
+
+# 3. Listo!
 ```
 
-Esto hará todos los pasos anteriores automáticamente.
-
 ---
 
-## ✅ Después de esto:
-
-- ✅ Base de datos funcionando
-- ✅ 3 usuarios creados
-- ✅ Aplicación lista para usar
-- ✅ Puedes hacer login
-
----
-
-## 🆘 Si sigue sin funcionar:
-
-1. Verifica que el archivo `database/database.sqlite` existe
-2. Verifica que el `.env` tenga: `DB_CONNECTION=sqlite`
-3. Ejecuta: `php artisan migrate:status` para ver el estado
-4. Revisa los logs: `storage/logs/laravel.log`
+**¡Ejecuta `limpiar_migraciones.bat` y luego `INICIAR.bat`!** 🎉

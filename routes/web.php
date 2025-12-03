@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Estudiante\DashboardController;
+use App\Http\Controllers\Estudiante\EventoController;
+use App\Http\Controllers\Estudiante\EquipoController;
 use App\Http\Controllers\AsesorController;
 
 // Redirigir raíz al login
@@ -32,38 +35,34 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     
     // ==========================================
-    // RUTAS DE ESTUDIANTE
+    // RUTAS DE ESTUDIANTE - CONECTADAS A SUPABASE
     // ==========================================
     Route::prefix('estudiante')->name('estudiante.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('estudiante.dashboard');
-        })->name('dashboard');
+        // Dashboard
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         
-        Route::get('/eventos', function () {
-            return view('estudiante.eventos');
-        })->name('eventos');
+        // Eventos
+        Route::get('/eventos', [EventoController::class, 'index'])->name('eventos');
+        Route::get('/eventos/{id}', [EventoController::class, 'show'])->name('evento-detalle');
+        Route::post('/registrar-equipo', [EventoController::class, 'registrarEquipo'])->name('registrar-equipo');
         
-        Route::get('/eventos/{id}', function ($id) {
-            return view('estudiante.evento-detalle', ['id' => $id]);
-        })->name('evento-detalle');
+        // Equipos
+        Route::get('/equipos', [EquipoController::class, 'index'])->name('equipos');
+        Route::post('/equipos', [EquipoController::class, 'store'])->name('equipos.store');
+        Route::get('/equipos/{id}', [EquipoController::class, 'show'])->name('equipos.show');
+        Route::delete('/equipos/{id}/leave', [EquipoController::class, 'leave'])->name('equipos.leave');
         
-        Route::post('/registrar-equipo', function () {
-            // Por ahora solo redirige de vuelta
-            return redirect()->back()->with('success', 'Equipo registrado exitosamente');
-        })->name('registrar-equipo');
-        
-        Route::get('/equipos', function () {
-            return view('estudiante.mi-equipo');
-        })->name('equipos');
-        
+        // Proyectos
         Route::get('/proyectos', function () {
             return view('estudiante.mi-progreso');
         })->name('proyectos');
         
+        // Rankings
         Route::get('/rankings', function () {
             return view('estudiante.dashboard');
         })->name('rankings');
         
+        // Perfil
         Route::get('/perfil', function () {
             return view('estudiante.dashboard');
         })->name('perfil');
