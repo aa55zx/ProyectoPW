@@ -1,94 +1,231 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Juez - EventTecNM</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen">
-    <!-- Navbar -->
-    <nav class="bg-purple-600 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold">EventTecNM</h1>
-                <p class="text-sm opacity-90">Portal del Juez</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right">
-                    <p class="font-semibold">{{ auth()->user()->name }}</p>
-                    <p class="text-xs opacity-75">{{ auth()->user()->numero_control }}</p>
-                </div>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition">
-                        Cerrar Sesión
-                    </button>
-                </form>
-            </div>
-        </div>
-    </nav>
+@extends('layouts.juez')
 
-    <!-- Contenido -->
-    <div class="container mx-auto px-4 py-8">
-        <!-- Bienvenida -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">
-                ¡Bienvenido, {{ auth()->user()->name }}!
-            </h2>
-            <p class="text-gray-600">
-                Rol: <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-purple-100 text-purple-800">
-                    👨‍⚖️ Juez
-                </span>
-            </p>
-        </div>
+@section('title', 'Dashboard - EvenTec')
+@section('breadcrumb', 'Dashboard')
 
-        <!-- Grid de tarjetas -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Tarjeta 1 -->
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-800">Evaluar Proyectos</h3>
-                    <span class="text-3xl">📝</span>
-                </div>
-                <p class="text-gray-600 mb-4">Califica los proyectos asignados</p>
-                <button class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 rounded-lg transition">
-                    Ver Proyectos
-                </button>
-            </div>
+@section('content')
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Encabezado de Bienvenida -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-900">¡Hola, Dr.{{ explode(' ', auth()->user()->name)[count(explode(' ', auth()->user()->name))-1] }}!</h1>
+        <p class="text-gray-600 mt-2 text-lg">Evalúa los proyectos asignados con criterios objetivos.</p>
+    </div>
 
-            <!-- Tarjeta 2 -->
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-800">Mis Evaluaciones</h3>
-                    <span class="text-3xl">⭐</span>
+    <!-- Tarjetas de Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <!-- Pendientes de Evaluar -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 border border-gray-100">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-500 mb-2">Pendientes de Evaluar</p>
+                    <p class="text-4xl font-bold text-gray-900 mb-1">1</p>
                 </div>
-                <p class="text-gray-600 mb-4">Revisa evaluaciones realizadas</p>
-                <button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition">
-                    Ver Evaluaciones
-                </button>
-            </div>
-
-            <!-- Tarjeta 3 -->
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-800">Eventos Asignados</h3>
-                    <span class="text-3xl">🏆</span>
+                <div class="bg-indigo-50 p-3 rounded-xl">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
                 </div>
-                <p class="text-gray-600 mb-4">Eventos donde participas como juez</p>
-                <button class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition">
-                    Ver Eventos
-                </button>
             </div>
         </div>
 
-        <!-- Información adicional -->
-        <div class="mt-8 bg-purple-50 border border-purple-200 rounded-lg p-6">
-            <h3 class="text-lg font-bold text-purple-800 mb-2">👨‍⚖️ Panel de Evaluación</h3>
-            <p class="text-purple-700">
-                Como juez, tu rol es evaluar de manera objetiva e imparcial los proyectos participantes en los eventos.
-            </p>
+        <!-- Evaluaciones Completadas -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 border border-gray-100">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-500 mb-2">Evaluaciones Completadas</p>
+                    <p class="text-4xl font-bold text-gray-900 mb-1">1</p>
+                </div>
+                <div class="bg-green-50 p-3 rounded-xl">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Eventos Asignados -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 border border-gray-100">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-500 mb-2">Eventos Asignados</p>
+                    <p class="text-4xl font-bold text-gray-900 mb-1">4</p>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-xl">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promedio Otorgado -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 border border-gray-100">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-500 mb-2">Promedio Otorgado</p>
+                    <p class="text-4xl font-bold text-gray-900 mb-1">85.2%</p>
+                </div>
+                <div class="bg-purple-50 p-3 rounded-xl">
+                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                </div>
+            </div>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Contenido Principal: Proyectos y Gráfico -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Proyectos por Evaluar (2/3 del ancho) -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900">Proyectos por Evaluar</h2>
+                </div>
+
+                <!-- Proyecto -->
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">EcoTrack - Monitoreo Ambiental Inteligente</h3>
+                            <p class="text-sm text-gray-600 mb-3">Tech Innovators</p>
+                        </div>
+                        <button class="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg">
+                            Evaluar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promedios por Criterio (1/3 del ancho) -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">Promedios por Criterio</h2>
+                
+                <div class="space-y-4">
+                    <!-- Innovación -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700">Innovación</span>
+                            <span class="text-sm font-bold text-indigo-600">85%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-indigo-600 h-3 rounded-full transition-all duration-500" style="width: 85%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Viabilidad -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700">Viabilidad</span>
+                            <span class="text-sm font-bold text-indigo-600">90%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-indigo-600 h-3 rounded-full transition-all duration-500" style="width: 90%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Presentación -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700">Presentación</span>
+                            <span class="text-sm font-bold text-indigo-600">80%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-indigo-600 h-3 rounded-full transition-all duration-500" style="width: 80%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Impacto -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700">Impacto</span>
+                            <span class="text-sm font-bold text-indigo-600">95%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-indigo-600 h-3 rounded-full transition-all duration-500" style="width: 95%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Barras (simulado con las barras de progreso) -->
+                <div class="mt-8 pt-6 border-t border-gray-100">
+                    <canvas id="criteriosChart" class="w-full" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('criteriosChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Innovación', 'Viabilidad', 'Presentación', 'Impacto'],
+                datasets: [{
+                    label: 'Promedio',
+                    data: [85, 90, 80, 95],
+                    backgroundColor: [
+                        'rgba(99, 102, 241, 0.8)',
+                        'rgba(99, 102, 241, 0.8)',
+                        'rgba(99, 102, 241, 0.8)',
+                        'rgba(99, 102, 241, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(99, 102, 241, 1)',
+                        'rgba(99, 102, 241, 1)',
+                        'rgba(99, 102, 241, 1)',
+                        'rgba(99, 102, 241, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    barThickness: 30
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value;
+                            },
+                            font: {
+                                size: 11
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            drawBorder: false,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+@endsection

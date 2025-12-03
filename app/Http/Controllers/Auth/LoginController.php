@@ -49,17 +49,25 @@ class LoginController extends Controller
             Auth::login($user, $request->filled('remember'));
             $request->session()->regenerate();
 
-            $user->updateLastLogin();
+            // Actualizar último login si el método existe
+            if (method_exists($user, 'updateLastLogin')) {
+                $user->updateLastLogin();
+            }
 
-            return match($user->user_type) {
-                'admin' => redirect()->intended('/admin/dashboard'),
-                'maestro' => redirect()->intended('/maestro/dashboard'),
+            // Obtener el rol del usuario
+            $rol = $user->rol ?? $user->user_type ?? 'estudiante';
+            
+            // Redirigir según el rol
+            return match($rol) {
+                'admin', 'administrador' => redirect()->intended('/admin/dashboard'),
+                'maestro', 'asesor' => redirect()->intended('/asesor/dashboard'),
                 'juez' => redirect()->intended('/juez/dashboard'),
                 'estudiante' => redirect()->intended('/estudiante/dashboard'),
                 default => redirect()->intended('/estudiante/dashboard'),
             };
 
         } catch (\Exception $e) {
+            \Log::error('Error en login: ' . $e->getMessage());
             return back()->withErrors([
                 'email' => 'Ocurrió un error al intentar iniciar sesión. Por favor, intenta de nuevo.',
             ])->withInput($request->only('email'));

@@ -7,6 +7,7 @@ use App\Http\Controllers\Estudiante\DashboardController;
 use App\Http\Controllers\Estudiante\EventoController;
 use App\Http\Controllers\Estudiante\EquipoController;
 use App\Http\Controllers\AsesorController;
+use App\Http\Controllers\AdminController;
 
 // Redirigir raíz al login
 Route::get('/', function () {
@@ -35,7 +36,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     
     // ==========================================
-    // RUTAS DE ESTUDIANTE - CONECTADAS A SUPABASE
+    // RUTAS DE ESTUDIANTE
     // ==========================================
     Route::prefix('estudiante')->name('estudiante.')->group(function () {
         // Dashboard
@@ -69,16 +70,7 @@ Route::middleware('auth')->group(function () {
     });
     
     // ==========================================
-    // RUTAS DE MAESTRO (ASESOR)
-    // ==========================================
-    Route::prefix('maestro')->name('maestro.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('maestro.dashboard');
-        })->name('dashboard');
-    });
-    
-    // ==========================================
-    // RUTAS DE ASESOR
+    // RUTAS DE ASESOR (MAESTRO)
     // ==========================================
     Route::prefix('asesor')->name('asesor.')->group(function () {
         Route::get('/dashboard', [AsesorController::class, 'dashboard'])->name('dashboard');
@@ -97,15 +89,42 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', function () {
             return view('juez.dashboard');
         })->name('dashboard');
+        
+        Route::get('/eventos', function () {
+            return view('juez.eventos');
+        })->name('eventos');
+        
+        Route::get('/evaluaciones', function () {
+            return view('juez.evaluaciones');
+        })->name('evaluaciones');
+        
+        Route::get('/evaluaciones/{id}', function ($id) {
+            return view('juez.evaluar-proyecto', ['id' => $id]);
+        })->name('evaluar-proyecto');
+        
+        Route::post('/evaluaciones/{id}', function ($id) {
+            return redirect()->route('juez.evaluaciones')->with('success', 'Evaluación guardada exitosamente');
+        })->name('guardar-evaluacion');
+        
+        Route::get('/rankings', function () {
+            return view('juez.rankings');
+        })->name('rankings');
+        
+        Route::get('/perfil', function () {
+            return view('juez.perfil');
+        })->name('perfil');
     });
     
     // ==========================================
     // RUTAS DE ADMIN
     // ==========================================
     Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/eventos', [AdminController::class, 'eventos'])->name('eventos');
+        Route::get('/equipos', [AdminController::class, 'equipos'])->name('equipos');
+        Route::get('/rankings', [AdminController::class, 'rankings'])->name('rankings');
+        Route::get('/administracion', [AdminController::class, 'administracion'])->name('administracion');
+        Route::get('/perfil', [AdminController::class, 'perfil'])->name('perfil');
     });
     
 });
