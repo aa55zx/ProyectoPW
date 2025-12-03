@@ -1,6 +1,6 @@
 @echo off
 echo ====================================
-echo   INICIAR COMO JUEZ
+echo   INICIAR COMO ADMINISTRADOR
 echo ====================================
 echo.
 echo Iniciando servidor Laravel...

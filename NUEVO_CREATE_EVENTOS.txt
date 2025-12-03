@@ -1,0 +1,126 @@
+private function createEventos()
+    {
+        $hoy = now();
+        
+        $eventos = [
+            // Evento FINALIZADO (fechas pasadas)
+            [
+                'title' => 'Hackathon de Innovación 2024',
+                'slug' => 'hackathon-innovacion-2024',
+                'description' => 'Desarrolla soluciones tecnológicas innovadoras en 48 horas. Trabaja en equipo para crear prototipos funcionales que resuelvan problemas reales.',
+                'short_description' => 'Hackathon de 48 horas',
+                'category' => 'Tecnología',
+                'event_type' => 'hackathon',
+                'status' => 'finished',
+                'cover_image_url' => 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80',
+                'registration_start_date' => $hoy->copy()->subMonths(2)->format('Y-m-d'),
+                'registration_end_date' => $hoy->copy()->subMonths(1)->subDays(5)->format('Y-m-d'),
+                'event_start_date' => $hoy->copy()->subMonth()->format('Y-m-d'),
+                'event_end_date' => $hoy->copy()->subMonth()->addDays(2)->format('Y-m-d'),
+                'min_team_size' => 2,
+                'max_team_size' => 4,
+                'max_teams' => 30,
+                'registered_teams_count' => 0,
+                'location' => 'Auditorio Principal - Instituto Tecnológico',
+                'organizer_name' => 'Departamento de Sistemas Computacionales',
+                'contact_email' => 'hackathon@tecnm.mx',
+                'is_published' => true
+            ],
+            
+            // Eventos ACTIVOS (registro hoy, evento pronto)
+            [
+                'title' => 'Feria de Ciencias 2025',
+                'slug' => 'feria-ciencias-2025',
+                'description' => 'Presenta tu proyecto científico y compite con las mejores mentes del instituto. Categorías: Física, Química, Biología e Ingeniería.',
+                'short_description' => 'Feria científica anual',
+                'category' => 'Ciencias',
+                'event_type' => 'fair',
+                'status' => 'open',
+                'cover_image_url' => 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1200&q=80',
+                'registration_start_date' => $hoy->copy()->subDays(10)->format('Y-m-d'),
+                'registration_end_date' => $hoy->copy()->addDays(30)->format('Y-m-d'),
+                'event_start_date' => $hoy->copy()->addDays(45)->format('Y-m-d'),
+                'event_end_date' => $hoy->copy()->addDays(46)->format('Y-m-d'),
+                'min_team_size' => 2,
+                'max_team_size' => 4,
+                'max_teams' => 25,
+                'registered_teams_count' => 0,
+                'location' => 'Plaza Central y Laboratorios',
+                'organizer_name' => 'División de Ciencias Básicas',
+                'contact_email' => 'feria@tecnm.mx',
+                'is_published' => true
+            ],
+            
+            [
+                'title' => 'Concurso de Robótica 2025',
+                'slug' => 'robotica-2025',
+                'description' => 'Competencia de robots autónomos. Demuestra tus habilidades en programación, electrónica y diseño mecánico.',
+                'short_description' => 'Competencia robótica',
+                'category' => 'Robótica',
+                'event_type' => 'competition',
+                'status' => 'open',
+                'cover_image_url' => 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&q=80',
+                'registration_start_date' => $hoy->copy()->subDays(5)->format('Y-m-d'),
+                'registration_end_date' => $hoy->copy()->addDays(25)->format('Y-m-d'),
+                'event_start_date' => $hoy->copy()->addDays(35)->format('Y-m-d'),
+                'event_end_date' => $hoy->copy()->addDays(37)->format('Y-m-d'),
+                'min_team_size' => 2,
+                'max_team_size' => 4,
+                'max_teams' => 20,
+                'registered_teams_count' => 0,
+                'location' => 'Laboratorio de Robótica e Inteligencia Artificial',
+                'organizer_name' => 'Club de Robótica - Mecatrónica',
+                'contact_email' => 'robotica@tecnm.mx',
+                'is_published' => true
+            ],
+            
+            [
+                'title' => 'IoT Challenge 2025',
+                'slug' => 'iot-challenge-2025',
+                'description' => 'Desarrolla soluciones IoT para ciudades inteligentes. Conecta dispositivos y crea sistemas innovadores para mejorar la calidad de vida urbana.',
+                'short_description' => 'Desafío IoT',
+                'category' => 'Tecnología',
+                'event_type' => 'hackathon',
+                'status' => 'open',
+                'cover_image_url' => 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=1200&q=80',
+                'registration_start_date' => $hoy->copy()->subDays(3)->format('Y-m-d'),
+                'registration_end_date' => $hoy->copy()->addDays(20)->format('Y-m-d'),
+                'event_start_date' => $hoy->copy()->addDays(28)->format('Y-m-d'),
+                'event_end_date' => $hoy->copy()->addDays(30)->format('Y-m-d'),
+                'min_team_size' => 2,
+                'max_team_size' => 4,
+                'max_teams' => 20,
+                'registered_teams_count' => 1,
+                'location' => 'Laboratorio de Redes y Comunicaciones',
+                'organizer_name' => 'Departamento de Ingeniería Electrónica',
+                'contact_email' => 'iot@tecnm.mx',
+                'is_published' => true
+            ],
+            
+            // Evento PRÓXIMAMENTE (registro futuro, evento más lejano)
+            [
+                'title' => 'Startup Weekend 2025',
+                'slug' => 'startup-weekend-2025',
+                'description' => 'Crea tu startup en 54 horas. Aprende sobre modelo de negocios, pitch, prototipado rápido y desarrollo de productos mínimos viables.',
+                'short_description' => 'Emprendimiento intensivo',
+                'category' => 'Negocios',
+                'event_type' => 'workshop',
+                'status' => 'upcoming',
+                'cover_image_url' => 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&q=80',
+                'registration_start_date' => $hoy->copy()->addDays(15)->format('Y-m-d'),
+                'registration_end_date' => $hoy->copy()->addDays(60)->format('Y-m-d'),
+                'event_start_date' => $hoy->copy()->addDays(75)->format('Y-m-d'),
+                'event_end_date' => $hoy->copy()->addDays(77)->format('Y-m-d'),
+                'min_team_size' => 2,
+                'max_team_size' => 4,
+                'max_teams' => 15,
+                'registered_teams_count' => 0,
+                'location' => 'Incubadora de Negocios y Centro de Innovación',
+                'organizer_name' => 'Centro de Emprendimiento e Innovación',
+                'contact_email' => 'startup@tecnm.mx',
+                'is_published' => true
+            ],
+        ];
+
+        return array_map(fn($e) => Event::create(array_merge(['id' => Str::uuid()], $e)), $eventos);
+    }

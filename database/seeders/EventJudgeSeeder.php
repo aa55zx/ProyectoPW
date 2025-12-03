@@ -10,9 +10,6 @@ use Illuminate\Support\Str;
 
 class EventJudgeSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         // Obtener todos los jueces
@@ -36,7 +33,8 @@ class EventJudgeSeeder extends Seeder
         // Asignar cada juez a eventos aleatorios
         foreach ($judges as $judge) {
             // Cada juez será asignado a 2-4 eventos aleatorios
-            $eventsToAssign = $events->random(min($events->count(), rand(2, 4)));
+            $numEvents = min($events->count(), rand(2, 4));
+            $eventsToAssign = $events->random($numEvents);
             
             foreach ($eventsToAssign as $event) {
                 // Verificar si ya existe la asignación
@@ -56,21 +54,23 @@ class EventJudgeSeeder extends Seeder
                     ]);
                     
                     $this->command->info("✓ Juez {$judge->name} asignado al evento {$event->title}");
+                } else {
+                    $this->command->warn("⚠ Juez {$judge->name} ya asignado a {$event->title}");
                 }
             }
         }
 
-        // También asignar múltiples jueces a cada evento para tener suficiente cobertura
+        // Asegurar que cada evento tenga al menos 2 jueces
         foreach ($events as $event) {
-            $currentJudges = EventJudge::where('event_id', $event->id)->count();
+            $currentJudges = EventJudge::where('event_id', $event->id)->pluck('judge_id');
+            $judgesCount = $currentJudges->count();
             
-            // Asegurar que cada evento tenga al menos 2 jueces
-            if ($currentJudges < 2) {
-                $judgesNeeded = 2 - $currentJudges;
-                $availableJudges = $judges->whereNotIn('id', function($query) use ($event) {
-                    $query->select('judge_id')
-                        ->from('event_judges')
-                        ->where('event_id', $event->id);
+            if ($judgesCount < 2) {
+                $judgesNeeded = 2 - $judgesCount;
+                
+                // Filtrar jueces que NO están asignados a este evento
+                $availableJudges = $judges->filter(function($judge) use ($currentJudges) {
+                    return !$currentJudges->contains($judge->id);
                 })->take($judgesNeeded);
                 
                 foreach ($availableJudges as $judge) {

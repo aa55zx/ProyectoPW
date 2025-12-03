@@ -8,74 +8,54 @@ use App\Http\Controllers\Estudiante\EventoController;
 use App\Http\Controllers\Estudiante\EquipoController;
 use App\Http\Controllers\Estudiante\ProyectoController;
 use App\Http\Controllers\Estudiante\RankingController;
+use App\Http\Controllers\Estudiante\PerfilController;
 use App\Http\Controllers\AsesorController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Juez\JuezDashboardController;
 
-// Redirigir raíz al login
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// ==========================================
-// RUTAS DE AUTENTICACIÓN (públicas)
-// ==========================================
-
-// Login
+// AUTENTICACIÓN
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
-
-// Registro
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
-
-// Logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// ==========================================
-// RUTAS PROTEGIDAS (requieren autenticación)
-// ==========================================
-
+// RUTAS PROTEGIDAS
 Route::middleware('auth')->group(function () {
     
-    // ==========================================
-    // RUTAS DE ESTUDIANTE
-    // ==========================================
+    // ESTUDIANTE
     Route::prefix('estudiante')->name('estudiante.')->group(function () {
-        // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         
-        // Eventos
         Route::get('/eventos', [EventoController::class, 'index'])->name('eventos');
         Route::get('/eventos/{id}', [EventoController::class, 'show'])->name('evento-detalle');
         Route::post('/registrar-equipo', [EventoController::class, 'registrarEquipo'])->name('registrar-equipo');
         
-        // Equipos
         Route::get('/equipos', [EquipoController::class, 'index'])->name('equipos');
         Route::post('/equipos', [EquipoController::class, 'store'])->name('equipos.store');
         Route::post('/equipos/join', [EquipoController::class, 'join'])->name('equipos.join');
         Route::get('/equipos/{id}', [EquipoController::class, 'show'])->name('equipos.show');
         Route::delete('/equipos/{id}/leave', [EquipoController::class, 'leave'])->name('equipos.leave');
         
-        // Proyectos
         Route::get('/proyectos', [ProyectoController::class, 'index'])->name('proyectos');
         Route::post('/proyectos', [ProyectoController::class, 'store'])->name('proyectos.store');
         Route::get('/proyectos/{id}', [ProyectoController::class, 'show'])->name('proyectos.show');
         Route::put('/proyectos/{id}', [ProyectoController::class, 'update'])->name('proyectos.update');
         Route::delete('/proyectos/{id}', [ProyectoController::class, 'destroy'])->name('proyectos.destroy');
         
-        // Rankings
         Route::get('/rankings', [RankingController::class, 'index'])->name('rankings');
         
         // Perfil
-        Route::get('/perfil', function () {
-            return view('estudiante.dashboard');
-        })->name('perfil');
+        Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil');
+        Route::post('/perfil', [PerfilController::class, 'update'])->name('perfil.update');
+        Route::post('/perfil/password', [PerfilController::class, 'updatePassword'])->name('perfil.update-password');
     });
     
-    // ==========================================
-    // RUTAS DE ASESOR (MAESTRO)
-    // ==========================================
+    // ASESOR
     Route::prefix('asesor')->name('asesor.')->group(function () {
         Route::get('/dashboard', [AsesorController::class, 'dashboard'])->name('dashboard');
         Route::get('/eventos', [AsesorController::class, 'eventos'])->name('eventos');
@@ -86,32 +66,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/mi-perfil', [AsesorController::class, 'miPerfil'])->name('mi-perfil');
     });
     
-    // ==========================================
-    // RUTAS DE JUEZ
-    // ==========================================
+    // JUEZ
     Route::prefix('juez')->name('juez.')->group(function () {
         Route::get('/dashboard', [JuezDashboardController::class, 'dashboard'])->name('dashboard');
-        
         Route::get('/eventos', [JuezDashboardController::class, 'eventos'])->name('eventos');
-        
         Route::get('/evaluaciones', [JuezDashboardController::class, 'evaluaciones'])->name('evaluaciones');
-        
         Route::get('/evaluaciones/{id}', [JuezDashboardController::class, 'evaluarProyecto'])->name('evaluar-proyecto');
-        
         Route::post('/evaluaciones/{id}', [JuezDashboardController::class, 'guardarEvaluacion'])->name('guardar-evaluacion');
-        
         Route::get('/rankings', [JuezDashboardController::class, 'rankings'])->name('rankings');
-        
         Route::get('/perfil', [JuezDashboardController::class, 'perfil'])->name('perfil');
-        
         Route::put('/perfil', [JuezDashboardController::class, 'updatePerfil'])->name('update-perfil');
-        
         Route::put('/perfil/password', [JuezDashboardController::class, 'updatePassword'])->name('update-password');
     });
     
-    // ==========================================
-    // RUTAS DE ADMIN
-    // ==========================================
+    // ADMIN
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::get('/eventos', [AdminController::class, 'eventos'])->name('eventos');
@@ -120,5 +88,4 @@ Route::middleware('auth')->group(function () {
         Route::get('/administracion', [AdminController::class, 'administracion'])->name('administracion');
         Route::get('/perfil', [AdminController::class, 'perfil'])->name('perfil');
     });
-    
 });
