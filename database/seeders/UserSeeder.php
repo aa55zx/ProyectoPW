@@ -13,7 +13,41 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Crear usuario estudiante
+        // ==========================================
+        // USUARIOS ASESORES (MAESTROS)
+        // ==========================================
+        
+        // Asesor 1 - Ana García
+        User::create([
+            'name' => 'Ana García',
+            'email' => 'ana.garcia@asesor.com',
+            'password' => Hash::make('password123'),
+            'user_type' => 'maestro',
+            'numero_control' => 'ASESOR001',
+        ]);
+
+        // Asesor 2 - Carlos Mendoza
+        User::create([
+            'name' => 'Carlos Mendoza',
+            'email' => 'carlos.mendoza@asesor.com',
+            'password' => Hash::make('password123'),
+            'user_type' => 'maestro',
+            'numero_control' => 'ASESOR002',
+        ]);
+
+        // Asesor 3 - María López
+        User::create([
+            'name' => 'María López',
+            'email' => 'maria.lopez@maestro.com',
+            'password' => Hash::make('password123'),
+            'user_type' => 'maestro',
+            'numero_control' => 'MAESTRO001',
+        ]);
+
+        // ==========================================
+        // USUARIOS ESTUDIANTES
+        // ==========================================
+        
         User::create([
             'name' => 'Carlos Méndez',
             'email' => 'carlos@estudiante.com',
@@ -22,16 +56,18 @@ class UserSeeder extends Seeder
             'user_type' => 'estudiante',
         ]);
 
-        // Crear usuario maestro
         User::create([
-            'name' => 'Dr. Juan Pérez',
-            'email' => 'juan@maestro.com',
-            'numero_control' => '10001234',
-            'password' => Hash::make('password123'),
-            'user_type' => 'maestro',
+            'name' => 'Luis Cheluis',
+            'email' => 'cheluisruiz8@gmail.com',
+            'numero_control' => '20211235',
+            'password' => Hash::make('password'),
+            'user_type' => 'estudiante',
         ]);
 
-        // Crear usuario juez
+        // ==========================================
+        // USUARIO JUEZ
+        // ==========================================
+        
         User::create([
             'name' => 'Ing. María García',
             'email' => 'maria@juez.com',
@@ -40,7 +76,10 @@ class UserSeeder extends Seeder
             'user_type' => 'juez',
         ]);
 
-        // Crear usuario admin
+        // ==========================================
+        // USUARIO ADMIN
+        // ==========================================
+        
         User::create([
             'name' => 'Administrador',
             'email' => 'admin@eventec.com',
@@ -49,13 +88,23 @@ class UserSeeder extends Seeder
             'user_type' => 'admin',
         ]);
 
-        // Usuario de prueba con el email que mencionaste
-        User::create([
-            'name' => 'Luis Cheluis',
-            'email' => 'cheluisruiz8@gmail.com',
-            'numero_control' => '20211235',
-            'password' => Hash::make('password'),
-            'user_type' => 'estudiante',
-        ]);
+        echo "\n";
+        echo "✅ Base de datos poblada exitosamente\n";
+        echo "\n";
+        echo "📚 USUARIOS ASESORES (MAESTROS):\n";
+        echo "   📧 ana.garcia@asesor.com | 🔑 password123\n";
+        echo "   📧 carlos.mendoza@asesor.com | 🔑 password123\n";
+        echo "   📧 maria.lopez@maestro.com | 🔑 password123\n";
+        echo "\n";
+        echo "📚 USUARIOS ESTUDIANTES:\n";
+        echo "   📧 carlos@estudiante.com | 🔑 password123\n";
+        echo "   📧 cheluisruiz8@gmail.com | 🔑 password\n";
+        echo "\n";
+        echo "📚 USUARIO JUEZ:\n";
+        echo "   📧 maria@juez.com | 🔑 password123\n";
+        echo "\n";
+        echo "📚 USUARIO ADMIN:\n";
+        echo "   📧 admin@eventec.com | 🔑 admin123\n";
+        echo "\n";
     }
 }

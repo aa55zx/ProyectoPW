@@ -37,10 +37,10 @@ class LoginController extends Controller
 
             $user = Auth::user();
             
-            // Redirigir según el rol
+            // Redirigir según el rol (maestro redirige a asesor)
             return match($user->user_type) {
                 'admin' => redirect()->intended('/admin/dashboard'),
-                'maestro' => redirect()->intended('/maestro/dashboard'),
+                'maestro' => redirect()->intended('/asesor/dashboard'),
                 'juez' => redirect()->intended('/juez/dashboard'),
                 'estudiante' => redirect()->intended('/estudiante/dashboard'),
                 default => redirect()->intended('/estudiante/dashboard'),

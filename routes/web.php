@@ -70,16 +70,7 @@ Route::middleware('auth')->group(function () {
     });
     
     // ==========================================
-    // RUTAS DE MAESTRO (ASESOR)
-    // ==========================================
-    Route::prefix('maestro')->name('maestro.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('maestro.dashboard');
-        })->name('dashboard');
-    });
-    
-    // ==========================================
-    // RUTAS DE ASESOR
+    // RUTAS DE ASESOR (MAESTRO)
     // ==========================================
     Route::prefix('asesor')->name('asesor.')->group(function () {
         Route::get('/dashboard', [AsesorController::class, 'dashboard'])->name('dashboard');
