@@ -38,6 +38,35 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', function () {
             return view('estudiante.dashboard');
         })->name('dashboard');
+        
+        Route::get('/eventos', function () {
+            return view('estudiante.eventos');
+        })->name('eventos');
+        
+        Route::get('/eventos/{id}', function ($id) {
+            return view('estudiante.evento-detalle', ['id' => $id]);
+        })->name('evento-detalle');
+        
+        Route::post('/registrar-equipo', function () {
+            // Por ahora solo redirige de vuelta
+            return redirect()->back()->with('success', 'Equipo registrado exitosamente');
+        })->name('registrar-equipo');
+        
+        Route::get('/equipos', function () {
+            return view('estudiante.mi-equipo');
+        })->name('equipos');
+        
+        Route::get('/proyectos', function () {
+            return view('estudiante.mi-progreso');
+        })->name('proyectos');
+        
+        Route::get('/rankings', function () {
+            return view('estudiante.dashboard');
+        })->name('rankings');
+        
+        Route::get('/perfil', function () {
+            return view('estudiante.dashboard');
+        })->name('perfil');
     });
     
     // ==========================================

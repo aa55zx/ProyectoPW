@@ -1,283 +1,363 @@
-@extends('layouts.dashboard')
+@extends('layouts.estudiante')
 
-@section('title', 'Detalle del Evento - EventTecNM')
+@section('title', 'Detalle del Evento - EventTec')
 
 @section('content')
-<div class="p-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Botón de regresar -->
-    <a href="{{ route('estudiante.eventos') }}" class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-6">
+    <button onclick="window.history.back()" class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 font-medium transition-colors">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
-        <span>Volver a Eventos</span>
-    </a>
+        <span>Volver a eventos</span>
+    </button>
 
-    @php
-        // Datos estáticos de eventos (más adelante vendrán de la BD)
-        $eventos = [
-            1 => [
-                'titulo' => 'HackCatec 2025',
-                'tipo' => 'Hackatón',
-                'categoria' => 'Software',
-                'status' => 'En Curso',
-                'status_color' => 'red',
-                'descripcion' => 'Gran competencia de hackatón regional, enfocado en soluciones tecnológicas innovadoras para problemas sociales y empresariales. Los participantes tendrán 48 horas para desarrollar prototipos funcionales que demuestren creatividad, viabilidad técnica y potencial de impacto.',
-                'fecha_registro_inicio' => '20 de Noviembre, 2024',
-                'fecha_registro_fin' => '15 de Diciembre, 2024',
-                'fecha_evento' => '10-12 de Enero, 2025',
-                'ubicacion' => 'Auditorio Principal - Edificio A',
-                'requisitos' => [
-                    'Ser estudiante activo del TecNM',
-                    'Formar equipos de 3-5 integrantes',
-                    'Tener conocimientos básicos de programación',
-                    'Laptop personal con herramientas de desarrollo'
-                ],
-                'premios' => [
-                    '1er Lugar: $20,000 MXN + Mentorías',
-                    '2do Lugar: $12,000 MXN + Reconocimiento',
-                    '3er Lugar: $8,000 MXN + Reconocimiento',
-                    'Mejor innovación tecnológica: $5,000 MXN'
-                ],
-                'organizador' => 'Departamento de Sistemas y Computación',
-                'contacto' => 'hackcatec@tecnm.mx'
-            ],
-            2 => [
-                'titulo' => 'InovaTec',
-                'tipo' => 'Competencia',
-                'categoria' => 'Innovación',
-                'status' => 'Próximamente',
-                'status_color' => 'blue',
-                'descripcion' => 'Feria de innovación tecnológica donde los equipos presentarán prototipos de proyectos innovadores enfocados en resolver problemáticas actuales mediante la tecnología. Se evaluará creatividad, viabilidad técnica, presentación y potencial de impacto.',
-                'fecha_registro_inicio' => '01 de Enero, 2025',
-                'fecha_registro_fin' => '28 de Febrero, 2025',
-                'fecha_evento' => '15-17 de Marzo, 2025',
-                'ubicacion' => 'Campus TecNM - Plaza Central',
-                'requisitos' => [
-                    'Estudiantes de todas las carreras',
-                    'Equipos de 2-4 personas',
-                    'Proyecto innovador funcional',
-                    'Presentación de pitch (5 minutos)'
-                ],
-                'premios' => [
-                    '1er Lugar: $15,000 MXN + Incubación',
-                    '2do Lugar: $10,000 MXN + Asesoría',
-                    '3er Lugar: $6,000 MXN',
-                    'Premio del Público: $3,000 MXN'
-                ],
-                'organizador' => 'Centro de Innovación y Emprendimiento',
-                'contacto' => 'inovatec@tecnm.mx'
-            ],
-            3 => [
-                'titulo' => 'CodeChallenge 2026',
-                'tipo' => 'Competencia',
-                'categoria' => 'Programación',
-                'status' => 'Próximamente',
-                'status_color' => 'green',
-                'descripcion' => 'Maratón de programación con problemas algorítmicos y de desarrollo de software. Los participantes resolverán desafíos de creciente dificultad, demostrando sus habilidades en algoritmos, estructuras de datos y optimización de código.',
-                'fecha_registro_inicio' => '01 de Marzo, 2026',
-                'fecha_registro_fin' => '30 de Abril, 2026',
-                'fecha_evento' => '15-16 de Mayo, 2026',
-                'ubicacion' => 'Laboratorio de Cómputo - Edificio C',
-                'requisitos' => [
-                    'Conocimientos en al menos un lenguaje de programación',
-                    'Participación individual o en parejas',
-                    'Computadora personal',
-                    'Conocimientos de algoritmos y estructuras de datos'
-                ],
-                'premios' => [
-                    '1er Lugar: Laptop + Certificación internacional',
-                    '2do Lugar: Tablet + Cursos en línea',
-                    '3er Lugar: Auriculares gaming + Libros',
-                    'Mejor código limpio: $2,000 MXN'
-                ],
-                'organizador' => 'Club de Programación Competitiva',
-                'contacto' => 'codechallenge@tecnm.mx'
-            ],
-            4 => [
-                'titulo' => 'AI Workshop Series',
-                'tipo' => 'Taller',
-                'categoria' => 'Inteligencia Artificial',
-                'status' => 'Finalizado',
-                'status_color' => 'gray',
-                'descripcion' => 'Serie de talleres sobre inteligencia artificial, machine learning y desarrollo de aplicaciones con IA. Los participantes aprendieron desde conceptos básicos hasta implementaciones prácticas de modelos de aprendizaje automático.',
-                'fecha_registro_inicio' => '15 de Agosto, 2024',
-                'fecha_registro_fin' => '31 de Agosto, 2024',
-                'fecha_evento' => '01 de Septiembre - 30 de Octubre, 2024',
-                'ubicacion' => 'Centro de Innovación - Sala de Talleres',
-                'requisitos' => [
-                    'Conocimientos básicos de Python',
-                    'Laptop con 8GB RAM mínimo',
-                    'Interés en Inteligencia Artificial',
-                    'Asistencia al 80% de las sesiones'
-                ],
-                'premios' => [
-                    'Certificado de participación',
-                    'Diploma de aprovechamiento (calificación >80)',
-                    'Material didáctico digital',
-                    'Acceso a comunidad de IA'
-                ],
-                'organizador' => 'Laboratorio de Inteligencia Artificial',
-                'contacto' => 'aiworkshop@tecnm.mx'
-            ]
-        ];
+    <!-- Hero Image con Título -->
+    <div class="relative h-96 rounded-3xl overflow-hidden mb-8 shadow-xl">
+        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80" 
+             alt="Hackathon de Innovación 2024" 
+             class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+        
+        <!-- Badges y Título sobre la imagen -->
+        <div class="absolute bottom-0 left-0 right-0 p-8">
+            <div class="flex gap-3 mb-4">
+                <span class="px-4 py-1.5 bg-green-500 text-white text-sm font-bold rounded-full shadow-lg">En curso</span>
+                <span class="px-4 py-1.5 bg-blue-600 text-white text-sm font-bold rounded-full shadow-lg">Tecnología</span>
+            </div>
+            <h1 class="text-5xl font-bold text-white mb-3">Hackathon de Innovación 2024</h1>
+            <p class="text-xl text-white/90 max-w-3xl">Desarrolla soluciones tecnológicas innovadoras para problemas reales en 48 horas. Este año el tema central es la sostenibilidad y el medio ambiente.</p>
+        </div>
+    </div>
 
-        $evento = $eventos[$id] ?? $eventos[1];
-    @endphp
+    <!-- Tabs de navegación -->
+    <div class="mb-8 border-b border-gray-200">
+        <div class="flex gap-6">
+            <button class="px-4 py-3 font-semibold text-gray-900 border-b-2 border-gray-900 transition-colors tab-link active" data-tab="informacion">
+                Información
+            </button>
+            <button class="px-4 py-3 font-medium text-gray-500 hover:text-gray-900 transition-colors tab-link" data-tab="rubrica">
+                Rúbrica
+            </button>
+            <button class="px-4 py-3 font-medium text-gray-500 hover:text-gray-900 transition-colors tab-link" data-tab="equipos">
+                Equipos (2)
+            </button>
+            <button class="px-4 py-3 font-medium text-gray-500 hover:text-gray-900 transition-colors tab-link" data-tab="premios">
+                Premios
+            </button>
+        </div>
+    </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Columna Principal -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Header del Evento -->
-            <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <span class="px-3 py-1 bg-{{ $evento['status_color'] }}-100 text-{{ $evento['status_color'] }}-700 text-xs font-semibold rounded-full">
-                            {{ $evento['status'] }}
-                        </span>
-                    </div>
-                    <span class="text-sm text-gray-500">{{ $evento['tipo'] }}</span>
-                </div>
-
-                <h1 class="text-4xl font-bold text-gray-800 mb-2">{{ $evento['titulo'] }}</h1>
-                <p class="text-lg text-gray-600 mb-6">{{ $evento['categoria'] }}</p>
-
-                <!-- Descripción -->
-                <div class="mb-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-3">Descripción del Evento</h2>
-                    <p class="text-gray-600 leading-relaxed">{{ $evento['descripcion'] }}</p>
-                </div>
-
-                <!-- Fechas Importantes -->
-                <div class="mb-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-3">📅 Fechas Importantes</h2>
-                    <div class="space-y-3">
-                        <div class="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
-                            <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <div>
-                                <p class="font-semibold text-gray-800">Registro</p>
-                                <p class="text-sm text-gray-600">{{ $evento['fecha_registro_inicio'] }} - {{ $evento['fecha_registro_fin'] }}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
-                            <svg class="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <div>
-                                <p class="font-semibold text-gray-800">Fecha del Evento</p>
-                                <p class="text-sm text-gray-600">{{ $evento['fecha_evento'] }}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
-                            <svg class="w-5 h-5 text-purple-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            <div>
-                                <p class="font-semibold text-gray-800">Ubicación</p>
-                                <p class="text-sm text-gray-600">{{ $evento['ubicacion'] }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+    <!-- Contenido Principal con Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Contenido Principal (2/3) -->
+        <div class="lg:col-span-2">
+            <!-- Tab: Información -->
+            <div class="tab-content active" id="tab-informacion">
                 <!-- Requisitos -->
-                <div class="mb-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-3">📋 Requisitos</h2>
-                    <ul class="space-y-2">
-                        @foreach($evento['requisitos'] as $requisito)
-                        <li class="flex items-start gap-2">
-                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 mb-6">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-blue-50 rounded-xl">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
-                            <span class="text-gray-600">{{ $requisito }}</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">Requisitos</h2>
+                    </div>
+                    
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <div class="mt-1">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 leading-relaxed">Equipo de 3-5 integrantes</span>
                         </li>
-                        @endforeach
+                        <li class="flex items-start gap-3">
+                            <div class="mt-1">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 leading-relaxed">Estudiantes activos</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="mt-1">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 leading-relaxed">Laptop personal</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="mt-1">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 leading-relaxed">Conocimientos de programación</span>
+                        </li>
                     </ul>
                 </div>
 
-                <!-- Premios -->
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800 mb-3">🏆 Premios</h2>
-                    <div class="space-y-3">
-                        @foreach($evento['premios'] as $premio)
-                        <div class="flex items-start gap-3 p-4 bg-yellow-50 rounded-lg">
-                            <span class="text-2xl">🏅</span>
-                            <p class="text-gray-700 font-medium">{{ $premio }}</p>
+                <!-- Cronograma -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-purple-50 rounded-xl">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
                         </div>
-                        @endforeach
+                        <h2 class="text-2xl font-bold text-gray-900">Cronograma</h2>
                     </div>
+
+                    <div class="space-y-4">
+                        <div class="flex gap-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="flex-shrink-0 w-24 text-center">
+                                <div class="text-2xl font-bold text-gray-900">Día 1</div>
+                                <div class="text-sm text-gray-500">14 abr</div>
+                            </div>
+                            <div class="flex-1 border-l-2 border-blue-500 pl-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">Inicio y Formación de Equipos</h4>
+                                <p class="text-sm text-gray-600">9:00 AM - Registro y bienvenida</p>
+                                <p class="text-sm text-gray-600">10:00 AM - Presentación del reto</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="flex-shrink-0 w-24 text-center">
+                                <div class="text-2xl font-bold text-gray-900">Día 2</div>
+                                <div class="text-sm text-gray-500">15 abr</div>
+                            </div>
+                            <div class="flex-1 border-l-2 border-green-500 pl-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">Desarrollo</h4>
+                                <p class="text-sm text-gray-600">Todo el día - Trabajo en proyectos</p>
+                                <p class="text-sm text-gray-600">Mentorías disponibles</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="flex-shrink-0 w-24 text-center">
+                                <div class="text-2xl font-bold text-gray-900">Día 3</div>
+                                <div class="text-sm text-gray-500">16 abr</div>
+                            </div>
+                            <div class="flex-1 border-l-2 border-purple-500 pl-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">Presentaciones y Premiación</h4>
+                                <p class="text-sm text-gray-600">2:00 PM - Pitch final</p>
+                                <p class="text-sm text-gray-600">5:00 PM - Ceremonia de premiación</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Rúbrica (oculto inicialmente) -->
+            <div class="tab-content hidden" id="tab-rubrica">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Criterios de Evaluación</h2>
+                    <p class="text-gray-600">Contenido de rúbrica...</p>
+                </div>
+            </div>
+
+            <!-- Tab: Equipos (oculto inicialmente) -->
+            <div class="tab-content hidden" id="tab-equipos">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Equipos Registrados</h2>
+                    <p class="text-gray-600">Lista de equipos...</p>
+                </div>
+            </div>
+
+            <!-- Tab: Premios (oculto inicialmente) -->
+            <div class="tab-content hidden" id="tab-premios">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Premios</h2>
+                    <p class="text-gray-600">Información de premios...</p>
                 </div>
             </div>
         </div>
 
-        <!-- Columna Lateral -->
-        <div class="space-y-6">
-            <!-- Card de Registro -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 sticky top-8">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Registro al Evento</h3>
-                
-                @if($evento['status'] == 'Finalizado')
-                    <div class="bg-gray-100 text-center py-8 rounded-xl mb-4">
-                        <svg class="w-16 h-16 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <!-- Sidebar Derecha (1/3) -->
+        <div class="lg:col-span-1">
+            <!-- Card de Información Rápida -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6 sticky top-8">
+                <!-- Equipos inscritos -->
+                <div class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
-                        <p class="text-gray-600 font-medium">Este evento ya finalizó</p>
+                        <span class="text-sm text-gray-500 font-medium">Equipos inscritos</span>
                     </div>
-                @else
-                    <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 mb-4">
-                        <p class="text-sm text-blue-800 font-medium mb-2">✨ ¡Inscripciones abiertas!</p>
-                        <p class="text-xs text-blue-600">No pierdas la oportunidad de participar</p>
-                    </div>
-
-                    <button class="w-full bg-blue-900 text-white py-4 rounded-xl font-bold hover:bg-blue-800 transition-colors shadow-md mb-3">
-                        Registrarme al Evento
-                    </button>
-                @endif
-
-                <!-- Información de Contacto -->
-                <div class="border-t border-gray-200 pt-4 mt-4">
-                    <h4 class="font-semibold text-gray-800 mb-3">Información de Contacto</h4>
-                    <div class="space-y-2">
-                        <div class="flex items-start gap-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-medium text-gray-700">Organiza:</p>
-                                <p class="text-sm text-gray-600">{{ $evento['organizador'] }}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-2">
-                            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-medium text-gray-700">Email:</p>
-                                <p class="text-sm text-blue-600">{{ $evento['contacto'] }}</p>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="text-3xl font-bold text-gray-900">24</p>
                 </div>
-            </div>
 
-            <!-- Card de Compartir -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-                <h3 class="font-bold text-gray-800 mb-4">Compartir Evento</h3>
-                <div class="flex gap-2">
-                    <button class="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm">
-                        Facebook
+                <!-- Tamaño de equipo -->
+                <div class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span class="text-sm text-gray-500 font-medium">Tamaño de equipo</span>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900">3-5 integrantes</p>
+                </div>
+
+                <!-- Premio principal -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-3 mb-2">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-sm text-gray-500 font-medium">Premio principal</span>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900">$50,000 MXN</p>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="space-y-3">
+                    <button onclick="openRegisterModal()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl">
+                        Registrar Equipo
                     </button>
-                    <button class="flex-1 bg-sky-400 text-white py-2 rounded-lg hover:bg-sky-500 transition-colors text-sm">
-                        Twitter
-                    </button>
-                    <button class="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors text-sm">
-                        WhatsApp
-                    </button>
+                    
+                    <div class="flex gap-2">
+                        <button class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                            </svg>
+                            <span>Compartir</span>
+                        </button>
+                        <button class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                            </svg>
+                            <span>Guardar</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal de Registro de Equipo -->
+<div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+            <!-- Header del Modal -->
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Registrar nuevo equipo</h2>
+                    <p class="text-sm text-gray-500 mt-1">Crea un equipo para participar en Hackathon de Innovación 2024</p>
+                </div>
+                <button onclick="closeRegisterModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Formulario -->
+            <form id="teamRegisterForm" action="{{ route('estudiante.registrar-equipo') }}" method="POST" class="space-y-5">
+                @csrf
+                <input type="hidden" name="evento_id" value="1">
+
+                <!-- Nombre del equipo -->
+                <div>
+                    <label for="team_name" class="block text-sm font-semibold text-gray-700 mb-2">Nombre del equipo</label>
+                    <input type="text" 
+                           id="team_name" 
+                           name="team_name" 
+                           placeholder="ej: Tech Innovators" 
+                           required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+
+                <!-- Descripción -->
+                <div>
+                    <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">Descripción (opcional)</label>
+                    <textarea id="description" 
+                              name="description" 
+                              rows="4" 
+                              placeholder="Breve descripción de tu equipo..."
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"></textarea>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex gap-3 pt-4">
+                    <button type="button" 
+                            onclick="closeRegisterModal()" 
+                            class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all">
+                        Cancelar
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg">
+                        Crear equipo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Manejo de tabs
+    document.querySelectorAll('.tab-link').forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remover active de todos los tabs
+            document.querySelectorAll('.tab-link').forEach(t => {
+                t.classList.remove('border-b-2', 'border-gray-900', 'text-gray-900');
+                t.classList.add('text-gray-500');
+            });
+            
+            // Agregar active al tab clickeado
+            this.classList.remove('text-gray-500');
+            this.classList.add('border-b-2', 'border-gray-900', 'text-gray-900');
+            
+            // Ocultar todos los contenidos
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('active');
+            });
+            
+            // Mostrar el contenido correspondiente
+            const tabId = 'tab-' + this.dataset.tab;
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // Modal functions
+    function openRegisterModal() {
+        document.getElementById('registerModal').classList.remove('hidden');
+        document.getElementById('registerModal').classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeRegisterModal() {
+        document.getElementById('registerModal').classList.add('hidden');
+        document.getElementById('registerModal').classList.remove('flex');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('registerModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeRegisterModal();
+        }
+    });
+
+    // Manejo del formulario
+    document.getElementById('teamRegisterForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Aquí iría la lógica de envío AJAX
+        const formData = new FormData(this);
+        
+        // Simulación de éxito
+        alert('¡Equipo registrado exitosamente!');
+        closeRegisterModal();
+        this.reset();
+    });
+</script>
 @endsection

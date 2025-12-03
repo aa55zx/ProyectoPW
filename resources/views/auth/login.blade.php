@@ -22,28 +22,29 @@
 
         <!-- Mensajes de error -->
         @if ($errors->any())
-            <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
-                <ul class="text-sm">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg flex items-start gap-3">
+                <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-red-700">Las credenciales proporcionadas son incorrectas.</p>
+                </div>
             </div>
         @endif
 
         @if (session('success'))
-            <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded">
+            <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg">
                 <p class="text-sm">{{ session('success') }}</p>
             </div>
         @endif
 
         <!-- Formulario -->
-        <form method="POST" action="{{ route('login') }}" class="space-y-6">
+        <form method="POST" action="{{ route('login') }}" class="space-y-5">
             @csrf
 
             <!-- Correo Electrónico -->
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
                     Correo electrónico
                 </label>
                 <div class="relative">
@@ -57,8 +58,8 @@
                         id="email" 
                         name="email" 
                         value="{{ old('email') }}"
-                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition"
-                        placeholder="tu@correo.edu.mx"
+                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition"
+                        placeholder="cheluisruiz8@gmail.com"
                         required
                         autofocus
                     >
@@ -67,7 +68,7 @@
 
             <!-- Contraseña -->
             <div>
-                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
                     Contraseña
                 </label>
                 <div class="relative">
@@ -80,7 +81,7 @@
                         type="password" 
                         id="password" 
                         name="password" 
-                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition"
+                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition"
                         placeholder="••••••••"
                         required
                     >
@@ -90,7 +91,7 @@
             <!-- Botón de Login -->
             <button 
                 type="submit" 
-                class="w-full bg-black text-white font-semibold py-3 rounded-lg hover:bg-gray-800 transition duration-300 shadow-lg"
+                class="w-full bg-black text-white font-semibold py-3 rounded-xl hover:bg-gray-800 transition duration-300 shadow-lg"
             >
                 Iniciar sesión
             </button>
