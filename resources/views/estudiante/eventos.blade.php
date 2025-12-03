@@ -41,6 +41,9 @@
         <button data-status="open" class="tab-button px-4 py-2 font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent">
             Activos ({{ $eventos->where('status', 'open')->count() }})
         </button>
+        <button data-status="upcoming" class="tab-button px-4 py-2 font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent">
+            Próximamente ({{ $eventos->where('status', 'upcoming')->count() }})
+        </button>
         <button data-status="finished" class="tab-button px-4 py-2 font-medium text-gray-600 hover:text-gray-900 border-b-2 border-transparent">
             Finalizados ({{ $eventos->where('status', 'finished')->count() }})
         </button>
