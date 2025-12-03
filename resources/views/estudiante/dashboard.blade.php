@@ -1,262 +1,360 @@
-@extends('layouts.dashboard')
+@extends('layouts.estudiante')
 
-@section('title', 'Dashboard - Estudiante')
+@section('title', 'Dashboard - EventTec')
 
 @section('content')
-<div class="p-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Encabezado de Bienvenida -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Bienvenido, {{ Auth::user()->name }}</h1>
-        
-        <!-- Tarjetas de Estadísticas -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <h1 class="text-4xl font-bold text-gray-900">¡Hola, {{ explode(' ', auth()->user()->name)[0] }}!</h1>
+        <p class="text-gray-600 mt-2 text-lg">Explora eventos, únete a equipos y compite por los primeros lugares.</p>
+    </div>
+
+    <!-- Tarjetas de Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <!-- Eventos Participados -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 border border-gray-100">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-500 mb-2">Eventos Participados</p>
+                    <p class="text-4xl font-bold text-gray-900 mb-1">8</p>
+                    <p class="text-sm text-green-600 font-medium">+12% vs mes anterior</p>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-xl">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proyectos Enviados -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 border border-gray-100">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-500 mb-2">Proyectos Enviados</p>
+                    <p class="text-4xl font-bold text-gray-900 mb-1">6</p>
+                </div>
+                <div class="bg-purple-50 p-3 rounded-xl">
+                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promedio General -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 border border-gray-100">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-500 mb-2">Promedio General</p>
+                    <p class="text-4xl font-bold text-gray-900 mb-1">87.5%</p>
+                </div>
+                <div class="bg-green-50 p-3 rounded-xl">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Equipos -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 border border-gray-100">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-500 mb-2">Equipos</p>
+                    <p class="text-4xl font-bold text-gray-900 mb-1">4</p>
+                </div>
+                <div class="bg-orange-50 p-3 rounded-xl">
+                    <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal: Eventos Activos y Panel Lateral -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Eventos Activos (2/3 del ancho) -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Eventos Activos -->
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Eventos Activos</h2>
+                
+                <!-- Card del Evento Principal -->
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100">
+                    <div class="relative h-72">
+                        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80" 
+                             alt="Hackathon de Innovación 2024" 
+                             class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                        <div class="absolute top-5 left-5 flex gap-2">
+                            <span class="px-4 py-1.5 bg-green-500 text-white text-xs font-semibold rounded-full shadow-lg">En curso</span>
+                            <span class="px-4 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-full shadow-lg">Tecnología</span>
+                        </div>
+                    </div>
+                    <div class="p-7">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Hackathon de Innovación 2024</h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">Desarrolla soluciones tecnológicas innovadoras para problemas reales en 48 horas. Este año el tema central es la sostenibilidad y el medio...</p>
+                        
+                        <div class="flex items-center gap-6 mb-6 text-sm text-gray-600">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span class="font-medium">14 abr</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                                <span class="font-medium">24 equipos</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                                <span class="font-medium">3-5 integrantes</span>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+                            Ver detalles
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Próximos Eventos -->
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Próximos Eventos</h2>
+                    <a href="#" class="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-1 transition-colors">
+                        Ver todos
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Evento 1: Feria de Ciencias -->
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100">
+                        <div class="relative h-52">
+                            <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" 
+                                 alt="Feria de Ciencias 2024" 
+                                 class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full shadow-md">Próximamente</span>
+                                <span class="px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full shadow-md">Ciencias</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-3">Feria de Ciencias 2024</h3>
+                            <p class="text-sm text-gray-600 mb-5 leading-relaxed">Presenta tu proyecto de investigación científica ante expertos del área. Categorías: Biología, Química, Física y Matemáticas.</p>
+                            
+                            <div class="flex items-center gap-4 mb-5 text-xs text-gray-500">
+                                <div class="flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <span class="font-medium">19 may</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    <span class="font-medium">18 equipos</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    </svg>
+                                    <span class="font-medium">2-4 integrantes</span>
+                                </div>
+                            </div>
+                            
+                            <button class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-5 rounded-xl transition-all duration-300 text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+                                Ver detalles
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Evento 2: Expo Emprendedores -->
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100">
+                        <div class="relative h-52">
+                            <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&q=80" 
+                                 alt="Expo Emprendedores" 
+                                 class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full shadow-md">Próximamente</span>
+                                <span class="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-full shadow-md">Negocios</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-3">Expo Emprendedores</h3>
+                            <p class="text-sm text-gray-600 mb-5 leading-relaxed">Presenta tu idea de negocio ante inversionistas y mentores. Pitch de 5 minutos + Q&A.</p>
+                            
+                            <div class="flex items-center gap-4 mb-5 text-xs text-gray-500">
+                                <div class="flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <span class="font-medium">9 jun</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    <span class="font-medium">45 equipos</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    </svg>
+                                    <span class="font-medium">2-5 integrantes</span>
+                                </div>
+                            </div>
+                            
+                            <button class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-5 rounded-xl transition-all duration-300 text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+                                Ver detalles
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral Derecho: Notificaciones y Logros -->
+        <div class="lg:col-span-1 space-y-6">
             <!-- Notificaciones -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 bg-blue-50 rounded-xl">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                        </svg>
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-900">Notificaciones</h2>
+                    <span class="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">2</span>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- Notificación 1 - Nueva -->
+                    <div class="flex gap-3 p-4 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer border-l-4 border-blue-500 bg-blue-50/50">
+                        <div class="flex-shrink-0 mt-0.5">
+                            <div class="w-2 h-2 bg-blue-600 rounded-full"></div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-gray-900 mb-1">Nuevo evento disponible</p>
+                            <p class="text-xs text-gray-600 mb-1.5 leading-relaxed">Se ha publicado el Hackathon de Innovación 2024</p>
+                            <p class="text-xs text-gray-400">Hace 2 horas</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-2xl font-bold text-gray-800">3</p>
-                        <p class="text-sm text-gray-500">Notificaciones</p>
-                        <p class="text-xs text-gray-400">Nuevas actualizaciones</p>
+
+                    <!-- Notificación 2 -->
+                    <div class="flex gap-3 p-4 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
+                        <div class="flex-shrink-0 mt-1">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-gray-900 mb-1">Invitación a equipo</p>
+                            <p class="text-xs text-gray-600 mb-1.5 leading-relaxed">Has sido invitado a unirte al equipo Tech Innovators</p>
+                            <p class="text-xs text-gray-400">Hace 5 horas</p>
+                        </div>
+                    </div>
+
+                    <!-- Notificación 3 - Nueva -->
+                    <div class="flex gap-3 p-4 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer border-l-4 border-green-500 bg-green-50/50">
+                        <div class="flex-shrink-0 mt-0.5">
+                            <div class="w-2 h-2 bg-green-600 rounded-full"></div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-gray-900 mb-1">Evaluación completada</p>
+                            <p class="text-xs text-gray-600 mb-1.5 leading-relaxed">Tu proyecto ha sido evaluado. Score: 87.5/100</p>
+                            <p class="text-xs text-gray-400">Hace 1 día</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Tareas -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 bg-green-50 rounded-xl">
-                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-2xl font-bold text-gray-800">2</p>
-                        <p class="text-sm text-gray-500">Tareas</p>
-                        <p class="text-xs text-gray-400">Completadas hoy</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Próxima Entrega -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 bg-orange-50 rounded-xl">
-                        <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-2xl font-bold text-gray-800">5</p>
-                        <p class="text-sm text-gray-500">Días</p>
-                        <p class="text-xs text-gray-400">Próxima entrega</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Calificación Promedio -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 bg-yellow-50 rounded-xl">
-                        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-2xl font-bold text-gray-800">8.5</p>
-                        <p class="text-sm text-gray-500">Calificación promedio</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Grid de Contenido Principal -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Mi Equipo -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <div class="flex items-center gap-3 mb-4">
-                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-                <h2 class="text-xl font-bold text-gray-800">Mi Equipo</h2>
-            </div>
-            <p class="text-sm text-gray-600 mb-4">Gestiona tu equipo y colabora con tus compañeros</p>
-            
-            <div class="bg-gray-50 rounded-xl p-4 mb-4">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="px-3 py-1 bg-blue-900 text-white text-sm rounded-full">🖥️ Programador</span>
-                    <span class="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full">Activo</span>
-                </div>
+
+            <!-- Mis Logros -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">Mis Logros</h2>
                 
-                <p class="text-sm font-medium text-gray-700 mb-3">Miembros del equipo:</p>
-                <div class="flex -space-x-2 mb-4">
-                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-semibold border-2 border-white">JD</div>
-                    <div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-semibold border-2 border-white">AM</div>
-                    <div class="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white text-xs font-semibold border-2 border-white">LR</div>
-                    <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-semibold border-2 border-white">+2</div>
-                </div>
-                
-                <button class="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 mb-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                    </svg>
-                    Ver equipo completo
-                </button>
-                
-                <button class="w-full bg-white text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2 mb-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                    </svg>
-                    Chat del equipo
-                </button>
-                
-                <button class="w-full bg-white text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Unirse con código
-                </button>
-            </div>
-        </div>
-        
-        <!-- Eventos -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <div class="flex items-center gap-3 mb-4">
-                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-                <h2 class="text-xl font-bold text-gray-800">Eventos</h2>
-            </div>
-            <p class="text-sm text-gray-600 mb-4">Próximos eventos y fechas importantes</p>
-            
-            <!-- Evento 1 -->
-            <div class="border-2 border-red-200 rounded-xl p-4 mb-3">
-                <div class="flex items-start justify-between mb-2">
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-                        <h3 class="font-semibold text-gray-800">HackCatec 2025</h3>
+                <!-- Logros Principales -->
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl border-2 border-yellow-300 hover:shadow-md transition-all">
+                        <div class="w-12 h-12 mx-auto mb-2 bg-yellow-400 rounded-full flex items-center justify-center">
+                            <svg class="w-7 h-7 text-yellow-900" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-xs font-bold text-yellow-900">Primer Lugar</p>
                     </div>
-                    <span class="px-2 py-1 bg-red-500 text-white text-xs rounded font-medium">Urgente</span>
-                </div>
-                <p class="text-sm text-gray-600 mb-1">Entrega final - 5 días</p>
-            </div>
-            
-            <!-- Evento 2 -->
-            <div class="border-2 border-blue-200 rounded-xl p-4 mb-4">
-                <div class="flex items-start justify-between mb-2">
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <h3 class="font-semibold text-gray-800">InovaTec</h3>
+                    <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border-2 border-blue-300 hover:shadow-md transition-all">
+                        <div class="w-12 h-12 mx-auto mb-2 bg-blue-400 rounded-full flex items-center justify-center">
+                            <svg class="w-7 h-7 text-blue-900" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-xs font-bold text-blue-900">Participante Activo</p>
                     </div>
-                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded font-medium">Próximo</span>
                 </div>
-                <p class="text-sm text-gray-600 mb-1">Registro abierto - 15 días</p>
-            </div>
-            
-            <button class="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-                Ver calendario completo
-            </button>
-        </div>
-        
-        <!-- Mi Progreso -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <div class="flex items-center gap-3 mb-4">
-                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                </svg>
-                <h2 class="text-xl font-bold text-gray-800">Mi progreso</h2>
-            </div>
-            <p class="text-sm text-gray-600 mb-4">Mi rendimiento</p>
-            
-            <!-- Progreso General -->
-            <div class="mb-4">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-medium text-gray-700">Progreso General</span>
-                    <span class="text-sm font-bold text-blue-600">75%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-3">
-                    <div class="bg-blue-600 h-3 rounded-full" style="width: 75%"></div>
-                </div>
-            </div>
-            
-            <!-- Tareas Completadas -->
-            <div class="mb-6">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-medium text-gray-700">Tareas Completadas</span>
-                    <span class="text-sm font-bold text-green-600">12/16</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-3">
-                    <div class="bg-green-600 h-3 rounded-full" style="width: 75%"></div>
-                </div>
-            </div>
-            
-            <!-- Estadísticas -->
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div class="bg-blue-50 rounded-xl p-4 text-center">
-                    <p class="text-3xl font-bold text-blue-600">8.5</p>
-                    <p class="text-xs text-gray-600 mt-1">Promedio</p>
-                </div>
-                <div class="bg-green-50 rounded-xl p-4 text-center">
-                    <p class="text-3xl font-bold text-green-600">3</p>
-                    <p class="text-xs text-gray-600 mt-1">Proyectos</p>
-                </div>
-            </div>
-            
-            <button class="w-full bg-white text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                </svg>
-                Análisis Detallado
-            </button>
-        </div>
-    </div>
-    
-    <!-- Actividad Reciente -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mt-6">
-        <div class="flex items-center gap-3 mb-6">
-            <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-            </svg>
-            <h2 class="text-xl font-bold text-gray-800">Actividad reciente</h2>
-        </div>
-        
-        <div class="space-y-4">
-            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                <svg class="w-5 h-5 text-green-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <div class="flex-1">
-                    <p class="font-medium text-gray-800">Tarea completada: Diseño de interfaz</p>
-                    <p class="text-sm text-gray-500 mt-1">Hace 2 horas</p>
-                </div>
-            </div>
-            
-            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                <svg class="w-5 h-5 text-blue-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                </svg>
-                <div class="flex-1">
-                    <p class="font-medium text-gray-800">Nuevo mensaje del profesor</p>
-                    <p class="text-sm text-gray-500 mt-1">Hace 4 horas</p>
-                </div>
-            </div>
-            
-            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                <svg class="w-5 h-5 text-yellow-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                </svg>
-                <div class="flex-1">
-                    <p class="font-medium text-gray-800">Calificación recibida: 90</p>
-                    <p class="text-sm text-gray-500 mt-1">Hace 1 día</p>
+
+                <!-- Lista de Progreso -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900">Eventos completados</p>
+                                <p class="text-xs text-gray-500">6/10 para siguiente nivel</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-orange-100 rounded-lg">
+                                <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900">Racha activa</p>
+                                <p class="text-xs text-gray-500">15 días consecutivos</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900">Trabajo en equipo</p>
+                                <p class="text-xs text-gray-500">4 equipos formados</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -3,33 +3,37 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\AsesorController;
 
+// Redirigir raíz al login
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Rutas de autenticación
+// ==========================================
+// RUTAS DE AUTENTICACIÓN (públicas)
+// ==========================================
+
+// Login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 
+// Registro
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
+// Logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Ruta temporal para reset password
-Route::get('/password/reset', function () {
-    return view('auth.passwords.reset');
-})->name('password.request');
+// ==========================================
+// RUTAS PROTEGIDAS (requieren autenticación)
+// ==========================================
 
-// Rutas protegidas (requieren autenticación)
 Route::middleware('auth')->group(function () {
-    // Dashboard general
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
     
-    // Rutas de Estudiante
+    // ==========================================
+    // RUTAS DE ESTUDIANTE
+    // ==========================================
     Route::prefix('estudiante')->name('estudiante.')->group(function () {
         Route::get('/dashboard', function () {
             return view('estudiante.dashboard');
@@ -39,34 +43,95 @@ Route::middleware('auth')->group(function () {
             return view('estudiante.eventos');
         })->name('eventos');
         
-        Route::get('/evento/{id}', function ($id) {
-            return view('estudiante.evento-detalle', compact('id'));
-        })->name('evento.detalle');
+        Route::get('/eventos/{id}', function ($id) {
+            return view('estudiante.evento-detalle', ['id' => $id]);
+        })->name('evento-detalle');
         
-        Route::get('/mi-equipo', function () {
+        Route::post('/registrar-equipo', function () {
+            // Por ahora solo redirige de vuelta
+            return redirect()->back()->with('success', 'Equipo registrado exitosamente');
+        })->name('registrar-equipo');
+        
+        Route::get('/equipos', function () {
             return view('estudiante.mi-equipo');
-        })->name('mi-equipo');
+        })->name('equipos');
         
-        Route::get('/mi-progreso', function () {
+        Route::get('/proyectos', function () {
             return view('estudiante.mi-progreso');
-        })->name('mi-progreso');
+        })->name('proyectos');
         
-        Route::get('/constancias', function () {
-            return view('estudiante.constancias');
-        })->name('constancias');
+        Route::get('/rankings', function () {
+            return view('estudiante.dashboard');
+        })->name('rankings');
+        
+        Route::get('/perfil', function () {
+            return view('estudiante.dashboard');
+        })->name('perfil');
     });
     
-    // Rutas de Docente
-    Route::prefix('docente')->name('docente.')->group(function () {
+    // ==========================================
+    // RUTAS DE MAESTRO (ASESOR)
+    // ==========================================
+    Route::prefix('maestro')->name('maestro.')->group(function () {
         Route::get('/dashboard', function () {
-            return view('docente.dashboard');
+            return view('maestro.dashboard');
         })->name('dashboard');
     });
     
-    // Rutas de Admin
+    // ==========================================
+    // RUTAS DE ASESOR
+    // ==========================================
+    Route::prefix('asesor')->name('asesor.')->group(function () {
+        Route::get('/dashboard', [AsesorController::class, 'dashboard'])->name('dashboard');
+        Route::get('/eventos', [AsesorController::class, 'eventos'])->name('eventos');
+        Route::get('/evento/{id}', [AsesorController::class, 'eventoDetalle'])->name('evento-detalle');
+        Route::get('/equipos', [AsesorController::class, 'equipos'])->name('equipos');
+        Route::get('/proyectos', [AsesorController::class, 'proyectos'])->name('proyectos');
+        Route::get('/rankings', [AsesorController::class, 'rankings'])->name('rankings');
+        Route::get('/mi-perfil', [AsesorController::class, 'miPerfil'])->name('mi-perfil');
+    });
+    
+    // ==========================================
+    // RUTAS DE JUEZ
+    // ==========================================
+    Route::prefix('juez')->name('juez.')->group(function () {
+        Route::get('/dashboard', function () {
+            return view('juez.dashboard');
+        })->name('dashboard');
+        
+        Route::get('/eventos', function () {
+            return view('juez.eventos');
+        })->name('eventos');
+        
+        Route::get('/evaluaciones', function () {
+            return view('juez.evaluaciones');
+        })->name('evaluaciones');
+        
+        Route::get('/evaluaciones/{id}', function ($id) {
+            return view('juez.evaluar-proyecto', ['id' => $id]);
+        })->name('evaluar-proyecto');
+        
+        Route::post('/evaluaciones/{id}', function ($id) {
+            // Guardar evaluación
+            return redirect()->route('juez.evaluaciones')->with('success', 'Evaluación guardada exitosamente');
+        })->name('guardar-evaluacion');
+        
+        Route::get('/rankings', function () {
+            return view('juez.rankings');
+        })->name('rankings');
+        
+        Route::get('/perfil', function () {
+            return view('juez.perfil');
+        })->name('perfil');
+    });
+    
+    // ==========================================
+    // RUTAS DE ADMIN
+    // ==========================================
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
     });
+    
 });

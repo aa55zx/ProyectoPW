@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('numero_control', 20)->unique()->after('email');
-            $table->enum('user_type', ['estudiante', 'docente', 'admin'])->default('estudiante')->after('password');
+            $table->enum('user_type', ['estudiante', 'maestro', 'juez', 'admin'])->default('estudiante')->after('password');
         });
     }
 

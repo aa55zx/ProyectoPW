@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rules;
 
 class RegisterController extends Controller
 {
@@ -20,62 +20,41 @@ class RegisterController extends Controller
     }
 
     /**
-     * Procesar el registro
+     * Manejar el registro de un nuevo usuario (solo estudiantes)
      */
     public function register(Request $request)
     {
-        // Validar los datos del formulario
+        // Validar los datos
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'numero_control' => ['required', 'string', 'max:20', 'unique:users'],
-            'password' => ['required', 'confirmed', Password::min(8)],
-            'user_type' => ['required', 'in:estudiante,docente,admin'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
-            'name.required' => 'El nombre es obligatorio.',
-            'name.max' => 'El nombre no debe exceder 255 caracteres.',
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'Debe proporcionar un correo electrónico válido.',
-            'email.unique' => 'Este correo electrónico ya está registrado.',
-            'numero_control.required' => 'El número de control es obligatorio.',
-            'numero_control.unique' => 'Este número de control ya está registrado.',
-            'password.required' => 'La contraseña es obligatoria.',
-            'password.confirmed' => 'Las contraseñas no coinciden.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'user_type.required' => 'Debe seleccionar un tipo de usuario.',
-            'user_type.in' => 'El tipo de usuario seleccionado no es válido.',
+            'name.required' => 'El nombre es obligatorio',
+            'email.required' => 'El correo electrónico es obligatorio',
+            'email.email' => 'Debe ser un correo electrónico válido',
+            'email.unique' => 'Este correo ya está registrado',
+            'numero_control.required' => 'El número de control es obligatorio',
+            'numero_control.unique' => 'Este número de control ya está registrado',
+            'password.required' => 'La contraseña es obligatoria',
+            'password.confirmed' => 'Las contraseñas no coinciden',
         ]);
 
-        // Crear el usuario
+        // Crear el usuario (siempre como estudiante)
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'numero_control' => $validated['numero_control'],
+            'user_type' => 'estudiante', // Siempre estudiante
             'password' => Hash::make($validated['password']),
-            'user_type' => $validated['user_type'],
+            'email_verified_at' => now(),
         ]);
 
         // Iniciar sesión automáticamente
         Auth::login($user);
 
-        // Redirigir según el tipo de usuario
-        return $this->redirectBasedOnRole($user);
-    }
-
-    /**
-     * Redirigir según el rol del usuario
-     */
-    protected function redirectBasedOnRole($user)
-    {
-        switch ($user->user_type) {
-            case 'admin':
-                return redirect('/admin/dashboard')->with('success', '¡Registro exitoso! Bienvenido.');
-            case 'docente':
-                return redirect('/docente/dashboard')->with('success', '¡Registro exitoso! Bienvenido.');
-            case 'estudiante':
-                return redirect('/estudiante/dashboard')->with('success', '¡Registro exitoso! Bienvenido.');
-            default:
-                return redirect('/dashboard')->with('success', '¡Registro exitoso! Bienvenido.');
-        }
+        // Redirigir al dashboard de estudiante
+        return redirect('/estudiante/dashboard')->with('success', '¡Cuenta creada exitosamente!');
     }
 }

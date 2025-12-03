@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -18,53 +17,40 @@ class LoginController extends Controller
     }
 
     /**
-     * Procesar el login
+     * Manejar el intento de login
      */
     public function login(Request $request)
     {
-        // Validar los datos del formulario
-        $request->validate([
-            'numero_control' => ['required', 'string'],
-            'password' => ['required', 'string'],
+        // Validar los datos
+        $credentials = $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required'],
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio',
+            'email.email' => 'Debe ser un correo electrónico válido',
+            'password.required' => 'La contraseña es obligatoria',
         ]);
 
-        // Preparar las credenciales para autenticación
-        $credentials = [
-            'numero_control' => $request->numero_control,
-            'password' => $request->password,
-        ];
-
-        // Intentar autenticar al usuario
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
+        // Intentar autenticar
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Redirigir según el tipo de usuario
             $user = Auth::user();
             
-            return $this->redirectBasedOnRole($user);
+            // Redirigir según el rol
+            return match($user->user_type) {
+                'admin' => redirect()->intended('/admin/dashboard'),
+                'maestro' => redirect()->intended('/maestro/dashboard'),
+                'juez' => redirect()->intended('/juez/dashboard'),
+                'estudiante' => redirect()->intended('/estudiante/dashboard'),
+                default => redirect()->intended('/estudiante/dashboard'),
+            };
         }
 
         // Si falla la autenticación
         return back()->withErrors([
-            'numero_control' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
-        ])->withInput($request->only('numero_control'));
-    }
-
-    /**
-     * Redirigir según el rol del usuario
-     */
-    protected function redirectBasedOnRole($user)
-    {
-        switch ($user->user_type) {
-            case 'admin':
-                return redirect()->intended('/admin/dashboard');
-            case 'docente':
-                return redirect()->intended('/docente/dashboard');
-            case 'estudiante':
-                return redirect()->intended('/estudiante/dashboard');
-            default:
-                return redirect()->intended('/dashboard');
-        }
+            'email' => 'Las credenciales no coinciden con nuestros registros.',
+        ])->withInput($request->only('email'));
     }
 
     /**
@@ -77,6 +63,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('/login')->with('success', 'Sesión cerrada correctamente');
     }
 }

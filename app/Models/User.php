@@ -47,14 +47,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Obtener el nombre del campo usado para autenticación
-     */
-    public function getAuthIdentifierName()
-    {
-        return 'numero_control';
-    }
-
-    /**
      * Verificar si el usuario es administrador
      */
     public function isAdmin()
@@ -63,11 +55,19 @@ class User extends Authenticatable
     }
 
     /**
-     * Verificar si el usuario es docente
+     * Verificar si el usuario es maestro (asesor)
      */
-    public function isDocente()
+    public function isMaestro()
     {
-        return $this->user_type === 'docente';
+        return $this->user_type === 'maestro';
+    }
+
+    /**
+     * Verificar si el usuario es juez
+     */
+    public function isJuez()
+    {
+        return $this->user_type === 'juez';
     }
 
     /**
@@ -76,5 +76,49 @@ class User extends Authenticatable
     public function isEstudiante()
     {
         return $this->user_type === 'estudiante';
+    }
+
+    /**
+     * Verificar si el usuario es asesor (maestro)
+     */
+    public function isAsesor()
+    {
+        return $this->user_type === 'maestro';
+    }
+
+    /**
+     * Verificar si el usuario es docente (alias de isMaestro)
+     */
+    public function isDocente()
+    {
+        return $this->isMaestro();
+    }
+
+    /**
+     * Obtener el nombre del rol formateado
+     */
+    public function getRoleName()
+    {
+        return match($this->user_type) {
+            'admin' => 'Administrador',
+            'maestro' => 'Maestro (Asesor)',
+            'juez' => 'Juez',
+            'estudiante' => 'Estudiante',
+            default => 'Usuario',
+        };
+    }
+
+    /**
+     * Obtener el color del badge según el rol
+     */
+    public function getRoleBadgeClass()
+    {
+        return match($this->user_type) {
+            'admin' => 'bg-red-100 text-red-800',
+            'maestro' => 'bg-green-100 text-green-800',
+            'juez' => 'bg-purple-100 text-purple-800',
+            'estudiante' => 'bg-blue-100 text-blue-800',
+            default => 'bg-gray-100 text-gray-800',
+        };
     }
 }
