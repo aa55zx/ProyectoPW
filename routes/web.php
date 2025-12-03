@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\AsesorController;
 
 // Redirigir raíz al login
 Route::get('/', function () {
@@ -75,6 +76,19 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', function () {
             return view('maestro.dashboard');
         })->name('dashboard');
+    });
+    
+    // ==========================================
+    // RUTAS DE ASESOR
+    // ==========================================
+    Route::prefix('asesor')->name('asesor.')->group(function () {
+        Route::get('/dashboard', [AsesorController::class, 'dashboard'])->name('dashboard');
+        Route::get('/eventos', [AsesorController::class, 'eventos'])->name('eventos');
+        Route::get('/evento/{id}', [AsesorController::class, 'eventoDetalle'])->name('evento-detalle');
+        Route::get('/equipos', [AsesorController::class, 'equipos'])->name('equipos');
+        Route::get('/proyectos', [AsesorController::class, 'proyectos'])->name('proyectos');
+        Route::get('/rankings', [AsesorController::class, 'rankings'])->name('rankings');
+        Route::get('/mi-perfil', [AsesorController::class, 'miPerfil'])->name('mi-perfil');
     });
     
     // ==========================================

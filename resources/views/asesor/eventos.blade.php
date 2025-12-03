@@ -1,17 +1,38 @@
-@extends('layouts.dashboard')
+@extends('layouts.asesor-dashboard')
 
 @section('title', 'Eventos - Asesor')
 
 @section('content')
 <div class="p-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-2" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1">
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                    </svg>
+                </div>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-sm font-medium text-gray-800">Eventos</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800">Eventos</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Eventos</h1>
         <p class="text-gray-600 mt-1">Explora y participa en concursos académicos</p>
     </div>
 
     <!-- Barra de búsqueda y filtros -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 mb-6">
         <div class="flex flex-col md:flex-row gap-4">
             <!-- Buscador -->
             <div class="flex-1">
@@ -20,41 +41,34 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                     <input type="text" id="buscarEventos" placeholder="Buscar eventos..." 
-                           class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                           class="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent">
                 </div>
             </div>
 
             <!-- Filtros -->
             <div class="flex gap-3">
-                <button class="flex items-center gap-2 px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-                    </svg>
-                    <select class="outline-none bg-transparent">
-                        <option>Todos</option>
-                        <option>Activos</option>
-                        <option>Próximos</option>
-                        <option>Finalizados</option>
-                    </select>
-                </button>
+                <select class="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black bg-white">
+                    <option>Todos</option>
+                    <option>Activos</option>
+                    <option>Próximos</option>
+                    <option>Finalizados</option>
+                </select>
 
-                <button class="flex items-center gap-2 px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-                    <select class="outline-none bg-transparent">
-                        <option>Todas las categorías</option>
-                        <option>Tecnología</option>
-                        <option>Ciencias</option>
-                        <option>Robótica</option>
-                    </select>
-                </button>
+                <select class="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black bg-white">
+                    <option>Todas</option>
+                    <option>Tecnología</option>
+                    <option>Ciencias</option>
+                    <option>Robótica</option>
+                </select>
 
                 <!-- Vista Grid/Lista -->
-                <div class="flex gap-2 border border-gray-200 rounded-xl p-1">
-                    <button class="p-2 rounded-lg bg-gray-900 text-white">
+                <div class="flex gap-2 border border-gray-300 rounded-lg p-1">
+                    <button class="p-2 rounded bg-black text-white">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M10 3H3v7h7V3zM21 3h-7v7h7V3zM21 14h-7v7h7v-7zM10 14H3v7h7v-7z"/>
                         </svg>
                     </button>
-                    <button class="p-2 rounded-lg hover:bg-gray-100">
+                    <button class="p-2 rounded hover:bg-gray-100">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
                         </svg>
@@ -83,20 +97,20 @@
     <!-- Grid de Eventos -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Evento 1 - En curso -->
-        <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all overflow-hidden group">
-            <div class="relative h-48 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all overflow-hidden group">
+            <div class="relative h-48 overflow-hidden bg-gray-100">
                 <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500" 
                      alt="Hackathon" 
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <div class="absolute top-4 left-4">
-                    <span class="px-3 py-1 bg-yellow-500 text-white text-xs font-semibold rounded-full">En curso</span>
+                    <span class="px-3 py-1 bg-gray-900 text-white text-xs font-semibold rounded">En curso</span>
                 </div>
                 <div class="absolute top-4 right-4">
-                    <span class="px-3 py-1 bg-blue-900 text-white text-xs font-semibold rounded-full">Tecnología</span>
+                    <span class="px-3 py-1 bg-white text-gray-900 text-xs font-semibold rounded">Tecnología</span>
                 </div>
             </div>
             <div class="p-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Hackathon de Innovación 2024</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Hackathon de Innovación 2024</h3>
                 <p class="text-gray-600 text-sm mb-4 line-clamp-2">
                     Desarrolla soluciones tecnológicas innovadoras para problemas reales en 48 horas. Este año el tema...
                 </p>
@@ -121,9 +135,9 @@
                     </div>
                 </div>
                 <a href="{{ route('asesor.evento-detalle', 1) }}" 
-                   class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium">
+                   class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm">
                     Ver detalles
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
                 </a>
@@ -131,20 +145,20 @@
         </div>
 
         <!-- Evento 2 - Próximamente -->
-        <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all overflow-hidden group">
-            <div class="relative h-48 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all overflow-hidden group">
+            <div class="relative h-48 overflow-hidden bg-gray-100">
                 <img src="https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=500" 
                      alt="Feria de Ciencias" 
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <div class="absolute top-4 left-4">
-                    <span class="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">Próximamente</span>
+                    <span class="px-3 py-1 bg-gray-700 text-white text-xs font-semibold rounded">Próximamente</span>
                 </div>
                 <div class="absolute top-4 right-4">
-                    <span class="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-full">Ciencias</span>
+                    <span class="px-3 py-1 bg-white text-gray-900 text-xs font-semibold rounded">Ciencias</span>
                 </div>
             </div>
             <div class="p-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Feria de Ciencias 2024</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Feria de Ciencias 2024</h3>
                 <p class="text-gray-600 text-sm mb-4 line-clamp-2">
                     Presenta tu proyecto de investigación científica ante expertos del área. Categorías: Biología, Química...
                 </p>
@@ -169,9 +183,9 @@
                     </div>
                 </div>
                 <a href="{{ route('asesor.evento-detalle', 2) }}" 
-                   class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium">
+                   class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm">
                     Ver detalles
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
                 </a>
@@ -179,20 +193,20 @@
         </div>
 
         <!-- Evento 3 - Finalizado -->
-        <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all overflow-hidden group">
-            <div class="relative h-48 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all overflow-hidden group opacity-90">
+            <div class="relative h-48 overflow-hidden bg-gray-100">
                 <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500" 
                      alt="Robótica" 
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <div class="absolute top-4 left-4">
-                    <span class="px-3 py-1 bg-gray-500 text-white text-xs font-semibold rounded-full">Finalizado</span>
+                    <span class="px-3 py-1 bg-gray-500 text-white text-xs font-semibold rounded">Finalizado</span>
                 </div>
                 <div class="absolute top-4 right-4">
-                    <span class="px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">Robótica</span>
+                    <span class="px-3 py-1 bg-white text-gray-900 text-xs font-semibold rounded">Robótica</span>
                 </div>
             </div>
             <div class="p-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Concurso de Robótica</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Concurso de Robótica</h3>
                 <p class="text-gray-600 text-sm mb-4 line-clamp-2">
                     Diseña y programa robots autónomos para superar diversos retos. Modalidades: Seguidor de línea...
                 </p>
@@ -217,9 +231,9 @@
                     </div>
                 </div>
                 <a href="{{ route('asesor.evento-detalle', 3) }}" 
-                   class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium">
+                   class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm">
                     Ver detalles
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
                 </a>
@@ -227,20 +241,20 @@
         </div>
 
         <!-- Evento 4 - Próximamente -->
-        <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all overflow-hidden group">
-            <div class="relative h-48 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all overflow-hidden group">
+            <div class="relative h-48 overflow-hidden bg-gray-100">
                 <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=500" 
                      alt="Startup Challenge" 
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <div class="absolute top-4 left-4">
-                    <span class="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">Próximamente</span>
+                    <span class="px-3 py-1 bg-gray-700 text-white text-xs font-semibold rounded">Próximamente</span>
                 </div>
                 <div class="absolute top-4 right-4">
-                    <span class="px-3 py-1 bg-orange-600 text-white text-xs font-semibold rounded-full">Negocios</span>
+                    <span class="px-3 py-1 bg-white text-gray-900 text-xs font-semibold rounded">Negocios</span>
                 </div>
             </div>
             <div class="p-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Startup Challenge</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Startup Challenge</h3>
                 <p class="text-gray-600 text-sm mb-4 line-clamp-2">
                     Presenta tu idea de negocio ante inversionistas y expertos. Categorías: Tecnología, Sustentabilidad...
                 </p>
@@ -265,9 +279,9 @@
                     </div>
                 </div>
                 <a href="{{ route('asesor.evento-detalle', 4) }}" 
-                   class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium">
+                   class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm">
                     Ver detalles
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
                 </a>
@@ -275,13 +289,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Funcionalidad de búsqueda
-    document.getElementById('buscarEventos').addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        // Aquí implementar la lógica de búsqueda
-        console.log('Buscando:', searchTerm);
-    });
-</script>
 @endsection

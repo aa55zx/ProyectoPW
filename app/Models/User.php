@@ -79,6 +79,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Verificar si el usuario es asesor (maestro)
+     */
+    public function isAsesor()
+    {
+        return $this->user_type === 'maestro';
+    }
+
+    /**
+     * Verificar si el usuario es docente (alias de isMaestro)
+     */
+    public function isDocente()
+    {
+        return $this->isMaestro();
+    }
+
+    /**
      * Obtener el nombre del rol formateado
      */
     public function getRoleName()
