@@ -245,11 +245,18 @@ class JuezDashboardController extends Controller
             return redirect()->back()->with('error', 'No se encontró la rúbrica de evaluación.');
         }
 
-        $request->validate([
+        // Validar scores dinámicamente según los max_points de cada criterio
+        $rules = [
             'scores' => 'required|array',
-            'scores.*' => 'required|numeric|min:0|max:100',
             'comments' => 'nullable|string|max:1000',
-        ]);
+        ];
+
+        // Agregar reglas específicas para cada criterio
+        foreach ($rubric->criteria as $criterion) {
+            $rules["scores.{$criterion->id}"] = "required|numeric|min:0|max:{$criterion->max_points}";
+        }
+
+        $request->validate($rules);
 
         // Crear la evaluación
         $evaluation = Evaluation::create([
@@ -264,9 +271,8 @@ class JuezDashboardController extends Controller
             'completed_at' => now(),
         ]);
 
-        // Guardar las calificaciones por criterio
+        // Guardar las calificaciones por criterio y calcular total
         $totalScore = 0;
-        $criteriaCount = 0;
 
         foreach ($request->scores as $criterionId => $score) {
             EvaluationScore::create([
@@ -277,12 +283,10 @@ class JuezDashboardController extends Controller
             ]);
 
             $totalScore += $score;
-            $criteriaCount++;
         }
 
-        // Calcular y actualizar el promedio total
-        $averageScore = $criteriaCount > 0 ? $totalScore / $criteriaCount : 0;
-        $evaluation->update(['total_score' => $averageScore]);
+        // El total_score es la suma de todos los criterios (no el promedio)
+        $evaluation->update(['total_score' => $totalScore]);
 
         // Actualizar el proyecto
         $project->update([

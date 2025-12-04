@@ -56,16 +56,16 @@
                 <p class="text-gray-500 italic">No hay descripción disponible</p>
             @endif
             
-            @if($project->documentation_url || $project->demo_url || $project->repository_url)
+            @if($project->demo_url || $project->repository_url || $project->presentation_url)
                 <div class="flex flex-wrap items-center gap-4 mt-4">
-                    @if($project->documentation_url)
-                        <a href="{{ $project->documentation_url }}" 
+                    @if($project->presentation_url)
+                        <a href="{{ $project->presentation_url }}" 
                            target="_blank"
                            class="text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
-                            Ver documentación
+                            Ver presentación
                         </a>
                     @endif
                     
@@ -118,9 +118,9 @@
                                 <div class="text-right ml-4">
                                     <span class="text-3xl font-bold text-indigo-600" 
                                           x-text="scores.criterion_{{ $criterion->id }}">
-                                        {{ $criterion->max_points ?? 50 }}
+                                        {{ $criterion->max_points / 2 }}
                                     </span>
-                                    <span class="text-lg text-gray-500">/{{ $criterion->max_points ?? 100 }}</span>
+                                    <span class="text-lg text-gray-500">/{{ $criterion->max_points }}</span>
                                 </div>
                             </div>
                             
@@ -129,16 +129,17 @@
                                        name="scores[{{ $criterion->id }}]"
                                        x-model="scores.criterion_{{ $criterion->id }}"
                                        min="0" 
-                                       max="{{ $criterion->max_points ?? 100 }}" 
-                                       value="{{ $criterion->max_points ?? 50 }}"
+                                       max="{{ $criterion->max_points }}" 
+                                       value="{{ $criterion->max_points / 2 }}"
+                                       step="0.5"
                                        class="w-full h-3 bg-gray-200 rounded-full appearance-none cursor-pointer slider"
                                        required>
                                 <div class="flex justify-between text-xs text-gray-500 mt-2">
                                     <span>0</span>
-                                    <span>{{ ($criterion->max_points ?? 100) / 4 }}</span>
-                                    <span>{{ ($criterion->max_points ?? 100) / 2 }}</span>
-                                    <span>{{ (($criterion->max_points ?? 100) * 3) / 4 }}</span>
-                                    <span>{{ $criterion->max_points ?? 100 }}</span>
+                                    <span>{{ number_format($criterion->max_points / 4, 1) }}</span>
+                                    <span>{{ number_format($criterion->max_points / 2, 1) }}</span>
+                                    <span>{{ number_format(($criterion->max_points * 3) / 4, 1) }}</span>
+                                    <span>{{ $criterion->max_points }}</span>
                                 </div>
                             </div>
                         </div>
@@ -163,13 +164,14 @@
                     <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-100">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-gray-600 mb-1">Calificación Total Promedio</p>
+                                <p class="text-sm font-medium text-gray-600 mb-1">Calificación Total</p>
                                 <p class="text-4xl font-bold text-indigo-600" x-text="totalScore().toFixed(1)">
-                                    {{ number_format(($rubric->criteria->sum('max_points') ?: 100) / $rubric->criteria->count(), 1) }}
+                                    {{ number_format($rubric->criteria->sum('max_points') / 2, 1) }}
                                 </p>
+                                <p class="text-sm text-gray-500 mt-1">de {{ $rubric->criteria->sum('max_points') }} puntos posibles</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-sm text-gray-600">Calificación basada en</p>
+                                <p class="text-sm text-gray-600">Evaluación basada en</p>
                                 <p class="text-2xl font-bold text-gray-900">{{ $rubric->criteria->count() }} criterios</p>
                             </div>
                         </div>
@@ -231,13 +233,13 @@ function evaluationForm() {
     return {
         scores: {
             @foreach($rubric->criteria as $criterion)
-                criterion_{{ $criterion->id }}: {{ ($criterion->max_points ?? 100) / 2 }},
+                criterion_{{ $criterion->id }}: {{ $criterion->max_points / 2 }},
             @endforeach
         },
         totalScore() {
             const values = Object.values(this.scores);
             const sum = values.reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
-            return sum / values.length;
+            return sum;
         }
     }
 }
