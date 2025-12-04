@@ -12,15 +12,13 @@
         <span>Volver</span>
     </button>
 
-    <!-- Header del Equipo con degradado -->
+    <!-- Header del Equipo -->
     <div class="relative rounded-3xl overflow-hidden mb-8 shadow-xl">
-        <!-- Imagen de fondo con degradado -->
         <div class="absolute inset-0 bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900"></div>
         <div class="absolute inset-0 opacity-10">
             <div class="absolute inset-0" style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80'); background-size: cover; background-position: center;"></div>
         </div>
         
-        <!-- Contenido del header -->
         <div class="relative p-8">
             <div class="flex items-start justify-between">
                 <div class="flex-1">
@@ -38,12 +36,6 @@
                             </svg>
                             <span>{{ $equipo->event->title }}</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
-                            </svg>
-                            <span class="font-mono text-lg">{{ $equipo->invitation_code }}</span>
-                        </div>
                     </div>
                 </div>
                 <div class="flex-shrink-0">
@@ -60,28 +52,92 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Información del Equipo -->
         <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Solicitudes Pendientes (Solo para Líder) -->
+            @if($equipo->leader_id === auth()->id() && count($solicitudesPendientes) > 0)
+            <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 shadow-sm border-2 border-blue-200">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-3 bg-blue-500 rounded-xl">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">📬 Solicitudes Pendientes</h2>
+                        <p class="text-sm text-gray-600">{{ count($solicitudesPendientes) }} {{ count($solicitudesPendientes) == 1 ? 'persona quiere' : 'personas quieren' }} unirse a tu equipo</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    @foreach($solicitudesPendientes as $solicitud)
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200" id="solicitud-{{ $solicitud->id }}">
+                            <div class="flex items-start gap-4">
+                                <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                                    {{ strtoupper(substr($solicitud->name, 0, 2)) }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-bold text-lg text-gray-900 mb-1">{{ $solicitud->name }}</h3>
+                                    <div class="flex flex-wrap gap-3 text-sm text-gray-600 mb-3">
+                                        <div class="flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <span>{{ $solicitud->email }}</span>
+                                        </div>
+                                        @if($solicitud->career)
+                                            <div class="flex items-center gap-1">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                                                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                                                </svg>
+                                                <span>{{ $solicitud->career }}</span>
+                                                @if($solicitud->semester)
+                                                    <span class="text-gray-400">• Sem. {{ $solicitud->semester }}</span>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        Solicitó unirse hace {{ \Carbon\Carbon::parse($solicitud->created_at)->diffForHumans() }}
+                                    </div>
+                                    @if($solicitud->message)
+                                        <div class="mt-3 p-3 bg-gray-50 rounded-lg">
+                                            <p class="text-sm text-gray-700 italic">"{{ $solicitud->message }}"</p>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="flex flex-col gap-2 flex-shrink-0">
+                                    <button onclick="aceptarSolicitud('{{ $solicitud->id }}', '{{ $solicitud->name }}')"
+                                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold whitespace-nowrap">
+                                        ✓ Aceptar
+                                    </button>
+                                    <button onclick="rechazarSolicitud('{{ $solicitud->id }}', '{{ $solicitud->name }}')"
+                                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-semibold whitespace-nowrap">
+                                        ✗ Rechazar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <!-- Miembros del Equipo -->
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-gray-900">👥 Miembros del Equipo</h2>
-                    @if($equipo->leader_id === auth()->id())
-                        <button id="btn-invitar-miembro" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                            + Invitar miembro
-                        </button>
-                    @endif
                 </div>
 
                 <div class="space-y-4">
                     @foreach($equipo->members as $member)
                         <div class="flex items-center gap-4 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors">
-                            <!-- Avatar -->
                             <div class="flex-shrink-0">
                                 <div class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-xl">
                                     {{ strtoupper(substr($member->name, 0, 2)) }}
                                 </div>
                             </div>
 
-                            <!-- Info -->
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1">
                                     <h3 class="font-bold text-gray-900 text-lg">{{ $member->name }}</h3>
@@ -96,14 +152,6 @@
                                         </svg>
                                         <span>{{ $member->email }}</span>
                                     </div>
-                                    @if($member->numero_control)
-                                        <div class="flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
-                                            </svg>
-                                            <span>{{ $member->numero_control }}</span>
-                                        </div>
-                                    @endif
                                     @if($member->career)
                                         <div class="flex items-center gap-1">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,18 +171,6 @@
                                     </div>
                                 @endif
                             </div>
-
-                            <!-- Acciones -->
-                            @if($equipo->leader_id === auth()->id() && $member->id !== $equipo->leader_id)
-                                <div class="flex-shrink-0">
-                                    <button class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" 
-                                            onclick="confirmarEliminarMiembro('{{ $member->id }}', '{{ $member->name }}')">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            @endif
                         </div>
                     @endforeach
                 </div>
@@ -142,7 +178,7 @@
                 @if($equipo->members_count < $equipo->event->max_team_size)
                     <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                         <p class="text-sm text-blue-800">
-                            <span class="font-semibold">💡 Tip:</span> Puedes agregar hasta {{ $equipo->event->max_team_size - $equipo->members_count }} miembros más. Comparte el código: <span class="font-mono font-bold">{{ $equipo->invitation_code }}</span>
+                            <span class="font-semibold">💡 Tip:</span> Puedes agregar hasta {{ $equipo->event->max_team_size - $equipo->members_count }} miembros más.
                         </p>
                     </div>
                 @endif
@@ -172,7 +208,6 @@
 
         <!-- Sidebar -->
         <div class="lg:col-span-1 space-y-6">
-            <!-- Información del Evento -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 sticky top-8">
                 <h3 class="font-bold text-lg text-gray-900 mb-4">Información del Evento</h3>
                 <div class="space-y-3 text-sm">
@@ -217,72 +252,62 @@
     </div>
 </div>
 
-<!-- Modal de Invitar Miembro -->
-<div id="modal-invitar" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-8 relative">
-        <button id="btn-cerrar-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
-
-        <h3 class="text-2xl font-bold text-gray-900 mb-2">Invitar miembro</h3>
-        <p class="text-gray-600 mb-6">Comparte este código con tu compañero</p>
-
-        <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-6">
-            <p class="text-sm text-gray-600 mb-2">Código de invitación</p>
-            <p class="text-4xl font-bold font-mono text-gray-900 mb-4">{{ $equipo->invitation_code }}</p>
-            <button onclick="copiarCodigo('{{ $equipo->invitation_code }}')" 
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                📋 Copiar código
-            </button>
-        </div>
-
-        <div class="text-sm text-gray-600">
-            <p class="mb-2">Los miembros pueden unirse:</p>
-            <ul class="list-disc list-inside space-y-1">
-                <li>Ingresando el código en "Unirse a equipo"</li>
-                <li>Máximo {{ $equipo->event->max_team_size }} miembros por equipo</li>
-            </ul>
-        </div>
-
-        <button onclick="cerrarModalInvitar()" 
-                class="w-full mt-6 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
-            Cerrar
-        </button>
-    </div>
-</div>
-
 <script>
-// Modal de invitar
-const modalInvitar = document.getElementById('modal-invitar');
-const btnInvitar = document.getElementById('btn-invitar-miembro');
-const btnCerrarModal = document.getElementById('btn-cerrar-modal');
+async function aceptarSolicitud(requestId, userName) {
+    if (!confirm(`¿Aceptar la solicitud de ${userName}?`)) {
+        return;
+    }
 
-if (btnInvitar) {
-    btnInvitar.addEventListener('click', () => {
-        modalInvitar.classList.remove('hidden');
-    });
+    try {
+        const response = await fetch('{{ route("estudiante.equipos.aceptar-solicitud") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ request_id: requestId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('✓ ' + data.message);
+            window.location.reload();
+        } else {
+            alert('✗ ' + data.message);
+        }
+    } catch (error) {
+        alert('✗ Error al aceptar la solicitud');
+    }
 }
 
-if (btnCerrarModal) {
-    btnCerrarModal.addEventListener('click', cerrarModalInvitar);
-}
+async function rechazarSolicitud(requestId, userName) {
+    if (!confirm(`¿Rechazar la solicitud de ${userName}?`)) {
+        return;
+    }
 
-function cerrarModalInvitar() {
-    modalInvitar.classList.add('hidden');
-}
+    try {
+        const response = await fetch('{{ route("estudiante.equipos.rechazar-solicitud") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ request_id: requestId })
+        });
 
-function copiarCodigo(codigo) {
-    navigator.clipboard.writeText(codigo).then(() => {
-        alert('✓ Código copiado: ' + codigo);
-    });
-}
+        const data = await response.json();
 
-function confirmarEliminarMiembro(userId, userName) {
-    if (confirm(`¿Estás seguro de eliminar a ${userName} del equipo?`)) {
-        // TODO: Implementar eliminación
-        alert('Función en desarrollo');
+        if (data.success) {
+            alert('✓ ' + data.message);
+            window.location.reload();
+        } else {
+            alert('✗ ' + data.message);
+        }
+    } catch (error) {
+        alert('✗ Error al rechazar la solicitud');
     }
 }
 

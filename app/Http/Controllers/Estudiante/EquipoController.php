@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Estudiante;
 use App\Http\Controllers\Controller;
 use App\Models\Team;
 use App\Models\Event;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -72,7 +73,6 @@ class EquipoController extends Controller
                 'event_id' => $request->event_id,
                 'leader_id' => $user->id,
                 'status' => 'active',
-                'invitation_code' => strtoupper(substr(md5(rand()), 0, 6)),
                 'members_count' => 1,
             ]);
 
@@ -102,7 +102,19 @@ class EquipoController extends Controller
             abort(403);
         }
 
-        return view('estudiante.equipo-detalle', compact('equipo'));
+        // Obtener solicitudes pendientes si es líder
+        $solicitudesPendientes = [];
+        if ($equipo->isLeader($user->id)) {
+            $solicitudesPendientes = DB::table('join_requests')
+                ->where('team_id', $id)
+                ->where('status', 'pending')
+                ->join('users', 'join_requests.user_id', '=', 'users.id')
+                ->select('join_requests.*', 'users.name', 'users.email', 'users.career', 'users.semester')
+                ->orderBy('join_requests.created_at', 'desc')
+                ->get();
+        }
+
+        return view('estudiante.equipo-detalle', compact('equipo', 'solicitudesPendientes'));
     }
 
     public function leave($id)
@@ -133,49 +145,151 @@ class EquipoController extends Controller
         }
     }
 
-    public function join(Request $request)
+    public function aceptarSolicitud(Request $request)
     {
-        $request->validate(['invitation_code' => 'required|string|size:6']);
+        $request->validate([
+            'request_id' => 'required|exists:join_requests,id',
+        ]);
 
         $user = Auth::user();
-        $code = strtoupper($request->invitation_code);
+        
+        $solicitud = DB::table('join_requests')
+            ->where('id', $request->request_id)
+            ->first();
 
-        $equipo = Team::where('invitation_code', $code)->with(['event', 'members'])->first();
-
-        if (!$equipo) {
-            return response()->json(['success' => false, 'message' => 'Código inválido'], 404);
+        if (!$solicitud) {
+            return response()->json(['success' => false, 'message' => 'Solicitud no encontrada'], 404);
         }
 
-        if ($equipo->isMember($user->id)) {
-            return response()->json(['success' => false, 'message' => 'Ya eres miembro'], 422);
+        $equipo = Team::with('event')->findOrFail($solicitud->team_id);
+
+        // Verificar que sea el líder
+        if (!$equipo->isLeader($user->id)) {
+            return response()->json(['success' => false, 'message' => 'No eres el líder'], 403);
         }
 
-        $equipoExistente = Team::where('event_id', $equipo->event_id)
-                                ->whereHas('members', function($query) use ($user) {
-                                    $query->where('user_id', $user->id);
-                                })
-                                ->first();
-
-        if ($equipoExistente) {
-            return response()->json(['success' => false, 'message' => 'Ya tienes un equipo en este evento'], 422);
-        }
-
+        // Verificar si el equipo está lleno
         if ($equipo->members_count >= $equipo->event->max_team_size) {
-            return response()->json(['success' => false, 'message' => 'Equipo lleno'], 422);
+            return response()->json(['success' => false, 'message' => 'El equipo ya está completo'], 422);
+        }
+
+        // Verificar si el usuario ya tiene equipo en este evento
+        $tieneEquipo = Team::where('event_id', $equipo->event_id)
+            ->whereHas('members', function($query) use ($solicitud) {
+                $query->where('user_id', $solicitud->user_id);
+            })
+            ->exists();
+
+        if ($tieneEquipo) {
+            // Rechazar automáticamente
+            DB::table('join_requests')
+                ->where('id', $request->request_id)
+                ->update([
+                    'status' => 'rejected',
+                    'responded_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+            return response()->json(['success' => false, 'message' => 'El usuario ya tiene un equipo en este evento'], 422);
         }
 
         try {
+            // Agregar al usuario al equipo
             DB::table('team_members')->insert([
                 'id' => Str::uuid(),
                 'team_id' => $equipo->id,
-                'user_id' => $user->id,
+                'user_id' => $solicitud->user_id,
                 'role' => 'member',
                 'joined_at' => now(),
             ]);
 
             $equipo->increment('members_count');
 
-            return response()->json(['success' => true, 'message' => 'Te has unido a ' . $equipo->name]);
+            // Actualizar solicitud
+            DB::table('join_requests')
+                ->where('id', $request->request_id)
+                ->update([
+                    'status' => 'accepted',
+                    'responded_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+            // Notificar al usuario
+            Notification::create([
+                'id' => Str::uuid(),
+                'user_id' => $solicitud->user_id,
+                'type' => 'join_accepted',
+                'title' => 'Solicitud aceptada',
+                'message' => 'Tu solicitud para unirte al equipo "' . $equipo->name . '" ha sido aceptada',
+                'data' => json_encode([
+                    'team_id' => $equipo->id,
+                    'team_name' => $equipo->name,
+                ]),
+                'is_read' => false,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Solicitud aceptada exitosamente'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function rechazarSolicitud(Request $request)
+    {
+        $request->validate([
+            'request_id' => 'required|exists:join_requests,id',
+        ]);
+
+        $user = Auth::user();
+        
+        $solicitud = DB::table('join_requests')
+            ->where('id', $request->request_id)
+            ->first();
+
+        if (!$solicitud) {
+            return response()->json(['success' => false, 'message' => 'Solicitud no encontrada'], 404);
+        }
+
+        $equipo = Team::findOrFail($solicitud->team_id);
+
+        // Verificar que sea el líder
+        if (!$equipo->isLeader($user->id)) {
+            return response()->json(['success' => false, 'message' => 'No eres el líder'], 403);
+        }
+
+        try {
+            // Actualizar solicitud
+            DB::table('join_requests')
+                ->where('id', $request->request_id)
+                ->update([
+                    'status' => 'rejected',
+                    'responded_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+            // Notificar al usuario
+            Notification::create([
+                'id' => Str::uuid(),
+                'user_id' => $solicitud->user_id,
+                'type' => 'join_rejected',
+                'title' => 'Solicitud rechazada',
+                'message' => 'Tu solicitud para unirte al equipo "' . $equipo->name . '" ha sido rechazada',
+                'data' => json_encode([
+                    'team_id' => $equipo->id,
+                    'team_name' => $equipo->name,
+                ]),
+                'is_read' => false,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Solicitud rechazada'
+            ]);
+
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
         }

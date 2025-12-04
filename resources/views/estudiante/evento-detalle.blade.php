@@ -33,7 +33,7 @@
                 <span class="px-4 py-1.5 bg-white/90 text-gray-800 text-sm font-bold rounded-full">{{ $evento->category }}</span>
             </div>
             <h1 class="text-5xl font-bold text-white mb-3">{{ $evento->title }}</h1>
-            <p class="text-xl text-white/90 max-w-3xl">{{ $evento->description }}</p>
+            <p class="text-xl text-white/90 max-w-3xl">{{ $evento->short_description }}</p>
         </div>
     </div>
 
@@ -43,22 +43,24 @@
         <div class="lg:col-span-2 space-y-6">
             <!-- Requisitos -->
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">📋 Requisitos</h2>
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <span>📋</span> Requisitos
+                </h2>
                 <ul class="space-y-3">
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <span class="text-gray-700">Equipo de {{ $evento->min_team_size }}-{{ $evento->max_team_size }} integrantes</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <span class="text-gray-700">Estudiantes activos del TecNM</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <span class="text-gray-700">Laptop personal</span>
@@ -66,10 +68,97 @@
                 </ul>
             </div>
 
+            <!-- Equipos Inscritos -->
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <span>👥</span> Equipos Inscritos
+                    </h2>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                        {{ $equiposInscritos->count() }} equipos
+                    </span>
+                </div>
+
+                @if($equiposInscritos->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($equiposInscritos as $equipo)
+                            <div class="border border-gray-200 rounded-xl p-6 hover:border-blue-300 hover:shadow-sm transition-all">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                                {{ strtoupper(substr($equipo->name, 0, 2)) }}
+                                            </div>
+                                            <div>
+                                                <h3 class="text-lg font-bold text-gray-900">{{ $equipo->name }}</h3>
+                                                <p class="text-sm text-gray-600">Líder: {{ $equipo->leader->name }}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        @if($equipo->description)
+                                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $equipo->description }}</p>
+                                        @endif
+                                        
+                                        <div class="flex items-center gap-4 text-sm text-gray-500">
+                                            <span class="flex items-center gap-1">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                                </svg>
+                                                {{ $equipo->members_count }}/{{ $evento->max_team_size }} miembros
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ml-4">
+                                        @if($miEquipo && $miEquipo->id === $equipo->id)
+                                            <!-- Es mi equipo -->
+                                            <span class="px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-semibold">
+                                                Tu equipo
+                                            </span>
+                                        @elseif($miEquipo)
+                                            <!-- Ya tiene otro equipo -->
+                                            <span class="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm">
+                                                -
+                                            </span>
+                                        @elseif(in_array($equipo->id, $solicitudesPendientes))
+                                            <!-- Solicitud enviada -->
+                                            <span class="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm font-semibold">
+                                                Solicitud enviada
+                                            </span>
+                                        @elseif($equipo->members_count >= $evento->max_team_size)
+                                            <!-- Equipo lleno -->
+                                            <span class="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm">
+                                                Equipo lleno
+                                            </span>
+                                        @else
+                                            <!-- Puede solicitar unirse -->
+                                            <button onclick="solicitarUnirse('{{ $equipo->id }}', '{{ $equipo->name }}')"
+                                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
+                                                Solicitar unirme
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-12">
+                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <p class="text-gray-600 font-medium">No hay equipos inscritos aún</p>
+                        <p class="text-sm text-gray-500 mt-1">Sé el primero en crear un equipo</p>
+                    </div>
+                @endif
+            </div>
+
             <!-- Cronograma -->
             @if($evento->schedule && $evento->schedule->count() > 0)
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">📅 Cronograma</h2>
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <span>📅</span> Cronograma
+                </h2>
                 <div class="space-y-4">
                     @foreach($evento->schedule->groupBy('day') as $day => $activities)
                         <div>
@@ -98,22 +187,22 @@
         <div class="lg:col-span-1">
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 sticky top-8 space-y-6">
                 <!-- Estadísticas -->
-                <div>
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="p-2 bg-blue-50 rounded-lg">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-blue-50 rounded-xl">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Equipos inscritos</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $evento->registered_teams_count ?? 0 }}</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ $equiposInscritos->count() }}</p>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="p-2 bg-green-50 rounded-lg">
-                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-green-50 rounded-xl">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                             </svg>
                         </div>
@@ -124,8 +213,8 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <div class="p-2 bg-purple-50 rounded-lg">
-                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="p-3 bg-purple-50 rounded-xl">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
@@ -139,19 +228,22 @@
                 <div class="border-t border-gray-200 pt-6">
                     @if($miEquipo)
                         <!-- Ya tiene equipo -->
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                            <p class="text-sm font-medium text-green-800 mb-1">✓ Ya estás registrado</p>
+                        <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
+                            <p class="text-sm font-semibold text-green-800 mb-1">✓ Ya estás registrado</p>
                             <p class="text-xs text-green-700">Equipo: {{ $miEquipo->name }}</p>
                         </div>
                         <a href="{{ route('estudiante.equipos.show', $miEquipo->id) }}" 
-                           class="block w-full py-3 px-4 bg-gray-900 text-white text-center rounded-lg hover:bg-gray-800 transition-colors font-medium">
+                           class="block w-full py-3 px-4 bg-gray-900 text-white text-center rounded-xl hover:bg-gray-800 transition-colors font-semibold">
                             Ver mi equipo
                         </a>
                     @else
                         <!-- Botón para registrar equipo -->
                         <button id="btn-registrar-equipo" 
-                                class="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                            + Registrar Equipo
+                                class="w-full py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Crear Nuevo Equipo
                         </button>
                     @endif
                 </div>
@@ -169,39 +261,39 @@
             </svg>
         </button>
 
-        <h3 class="text-2xl font-bold text-gray-900 mb-2">Registrar nuevo equipo</h3>
-        <p class="text-gray-600 mb-6">Crea un equipo para participar en {{ $evento->title }}</p>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">Crear Nuevo Equipo</h3>
+        <p class="text-gray-600 mb-6">Forma tu equipo para {{ $evento->title }}</p>
 
         <form id="form-registrar-equipo" class="space-y-4">
             @csrf
             <input type="hidden" name="event_id" value="{{ $evento->id }}">
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del equipo</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del equipo *</label>
                 <input type="text" 
                        name="team_name" 
                        required
                        placeholder="Ej: Tech Innovators"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Descripción (opcional)</label>
                 <textarea name="team_description" 
                           rows="3"
-                          placeholder="Breve descripción de tu equipo..."
-                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                          placeholder="Describe tu equipo..."
+                          class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
             </div>
 
             <div class="flex gap-3 pt-4">
                 <button type="button" 
                         id="btn-cancelar"
-                        class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                        class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold">
                     Cancelar
                 </button>
                 <button type="submit" 
-                        class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                    Crear equipo
+                        class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold">
+                    Crear Equipo
                 </button>
             </div>
         </form>
@@ -217,9 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('form-registrar-equipo');
     
     if (btnAbrir) {
-        btnAbrir.addEventListener('click', () => {
-            modal.classList.remove('hidden');
-        });
+        btnAbrir.addEventListener('click', () => modal.classList.remove('hidden'));
     }
     
     function cerrarModal() {
@@ -271,5 +361,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+async function solicitarUnirse(teamId, teamName) {
+    if (!confirm(`¿Deseas enviar una solicitud para unirte al equipo "${teamName}"?`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('{{ route("estudiante.eventos.solicitar-unirse") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ team_id: teamId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✓ ' + data.message);
+            window.location.reload();
+        } else {
+            alert('✗ ' + data.message);
+        }
+    } catch (error) {
+        alert('✗ Error al enviar la solicitud');
+    }
+}
 </script>
 @endsection
