@@ -3,71 +3,74 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Estudiante\DashboardController;
-use App\Http\Controllers\Estudiante\EventoController;
-use App\Http\Controllers\Estudiante\EquipoController;
-use App\Http\Controllers\Estudiante\ProyectoController;
-use App\Http\Controllers\Estudiante\RankingController;
-use App\Http\Controllers\Estudiante\PerfilController;
 use App\Http\Controllers\AsesorController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Juez\JuezDashboardController;
 
+// Redirigir raíz al login
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// AUTENTICACIÓN
+// ==========================================
+// RUTAS DE AUTENTICACIÓN (públicas)
+// ==========================================
+
+// Login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
+
+// Registro
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
+
+// Logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// RUTAS PROTEGIDAS
+// ==========================================
+// RUTAS PROTEGIDAS (requieren autenticación)
+// ==========================================
+
 Route::middleware('auth')->group(function () {
     
-    // ESTUDIANTE
+    // ==========================================
+    // RUTAS DE ESTUDIANTE
+    // ==========================================
     Route::prefix('estudiante')->name('estudiante.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', function () {
+            return view('estudiante.dashboard');
+        })->name('dashboard');
         
-        // EVENTOS
-        Route::get('/eventos', [EventoController::class, 'index'])->name('eventos');
-        Route::get('/eventos/{id}', [EventoController::class, 'show'])->name('evento-detalle');
-        Route::post('/eventos/inscribir-equipo', [EventoController::class, 'inscribirEquipo'])->name('eventos.inscribir-equipo');
-        Route::post('/eventos/solicitar-unirse', [EventoController::class, 'solicitarUnirse'])->name('eventos.solicitar-unirse');
-        Route::post('/registrar-equipo', [EventoController::class, 'registrarEquipo'])->name('registrar-equipo');
+        Route::get('/eventos', function () {
+            return view('estudiante.eventos');
+        })->name('eventos');
         
-        // EQUIPOS
-        Route::get('/equipos', [EquipoController::class, 'index'])->name('equipos');
-        Route::post('/equipos', [EquipoController::class, 'store'])->name('equipos.store');
-        Route::post('/equipos/join', [EquipoController::class, 'join'])->name('equipos.join');
-        Route::get('/equipos/{id}', [EquipoController::class, 'show'])->name('equipos.show');
-        Route::delete('/equipos/{id}/leave', [EquipoController::class, 'leave'])->name('equipos.leave');
-        Route::post('/equipos/aceptar-solicitud', [EquipoController::class, 'aceptarSolicitud'])->name('equipos.aceptar-solicitud');
-        Route::post('/equipos/rechazar-solicitud', [EquipoController::class, 'rechazarSolicitud'])->name('equipos.rechazar-solicitud');
+        Route::get('/eventos/{id}', function ($id) {
+            return view('estudiante.evento-detalle', ['id' => $id]);
+        })->name('evento-detalle');
         
-        // PROYECTOS
-        Route::get('/proyectos', [ProyectoController::class, 'index'])->name('proyectos');
-        Route::post('/proyectos', [ProyectoController::class, 'store'])->name('proyectos.store');
-        Route::get('/proyectos/{id}', [ProyectoController::class, 'show'])->name('proyectos.show');
-        Route::put('/proyectos/{id}', [ProyectoController::class, 'update'])->name('proyectos.update');
-        Route::post('/proyectos/{id}/assign-advisor', [ProyectoController::class, 'assignAdvisor'])->name('proyectos.assign-advisor');
-        Route::post('/proyectos/{id}/submit-file', [ProyectoController::class, 'submitFile'])->name('proyectos.submit-file');
-        Route::get('/proyectos/{id}/download-submission', [ProyectoController::class, 'downloadSubmission'])->name('proyectos.download-submission');
-        Route::delete('/proyectos/{id}/delete-submission', [ProyectoController::class, 'deleteSubmission'])->name('proyectos.delete-submission');
-        Route::delete('/proyectos/{id}', [ProyectoController::class, 'destroy'])->name('proyectos.destroy');
+        Route::post('/registrar-equipo', function () {
+            return redirect()->back()->with('success', 'Equipo registrado exitosamente');
+        })->name('registrar-equipo');
         
-        // RANKINGS
-        Route::get('/rankings', [RankingController::class, 'index'])->name('rankings');
+        Route::get('/equipos', function () {
+            return view('estudiante.mi-equipo');
+        })->name('equipos');
         
-        // PERFIL
-        Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil');
-        Route::post('/perfil', [PerfilController::class, 'update'])->name('perfil.update');
-        Route::post('/perfil/password', [PerfilController::class, 'updatePassword'])->name('perfil.update-password');
+        Route::get('/proyectos', function () {
+            return view('estudiante.mi-progreso');
+        })->name('proyectos');
+        
+        Route::get('/rankings', function () {
+            return view('estudiante.dashboard');
+        })->name('rankings');
+        
+        Route::get('/perfil', function () {
+            return view('estudiante.dashboard');
+        })->name('perfil');
     });
     
-    // ASESOR
+    // ==========================================
+    // RUTAS DE ASESOR (MAESTRO)
+    // ==========================================
     Route::prefix('asesor')->name('asesor.')->group(function () {
         Route::get('/dashboard', [AsesorController::class, 'dashboard'])->name('dashboard');
         Route::get('/eventos', [AsesorController::class, 'eventos'])->name('eventos');
@@ -76,49 +79,32 @@ Route::middleware('auth')->group(function () {
         Route::get('/proyectos', [AsesorController::class, 'proyectos'])->name('proyectos');
         Route::get('/rankings', [AsesorController::class, 'rankings'])->name('rankings');
         Route::get('/mi-perfil', [AsesorController::class, 'miPerfil'])->name('mi-perfil');
+        
+        // Solicitudes de asesoría
+        Route::post('/solicitudes/{id}/aceptar', [AsesorController::class, 'aceptarSolicitud'])->name('solicitudes.aceptar');
+        Route::post('/solicitudes/{id}/rechazar', [AsesorController::class, 'rechazarSolicitud'])->name('solicitudes.rechazar');
+        
+        // Equipos disponibles (nuevas rutas)
+        Route::get('/equipos-disponibles', [AsesorController::class, 'equiposDisponibles'])->name('equipos-disponibles');
+        Route::post('/equipos/{project}/solicitar', [AsesorController::class, 'solicitarAsesorar'])->name('equipos.solicitar');
     });
     
-    // JUEZ
+    // ==========================================
+    // RUTAS DE JUEZ
+    // ==========================================
     Route::prefix('juez')->name('juez.')->group(function () {
-        Route::get('/dashboard', [JuezDashboardController::class, 'dashboard'])->name('dashboard');
-        Route::get('/eventos', [JuezDashboardController::class, 'eventos'])->name('eventos');
-        Route::get('/evaluaciones', [JuezDashboardController::class, 'evaluaciones'])->name('evaluaciones');
-        Route::get('/evaluaciones/{id}', [JuezDashboardController::class, 'evaluarProyecto'])->name('evaluar-proyecto');
-        Route::post('/evaluaciones/{id}', [JuezDashboardController::class, 'guardarEvaluacion'])->name('guardar-evaluacion');
-        Route::get('/rankings', [JuezDashboardController::class, 'rankings'])->name('rankings');
-        Route::get('/perfil', [JuezDashboardController::class, 'perfil'])->name('perfil');
-        Route::put('/perfil', [JuezDashboardController::class, 'updatePerfil'])->name('update-perfil');
-        Route::put('/perfil/password', [JuezDashboardController::class, 'updatePassword'])->name('update-password');
+        Route::get('/dashboard', function () {
+            return view('juez.dashboard');
+        })->name('dashboard');
     });
     
-    // ADMIN
+    // ==========================================
+    // RUTAS DE ADMIN
+    // ==========================================
     Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-        
-        // EVENTOS
-        Route::get('/eventos', [AdminController::class, 'eventos'])->name('eventos');
-        Route::post('/eventos', [AdminController::class, 'crearEvento'])->name('eventos.crear');
-        Route::get('/eventos/{id}', [AdminController::class, 'verEvento'])->name('eventos.ver');
-        Route::put('/eventos/{id}', [AdminController::class, 'actualizarEvento'])->name('eventos.actualizar');
-        Route::delete('/eventos/{id}', [AdminController::class, 'eliminarEvento'])->name('eventos.eliminar');
-        Route::post('/eventos/{id}/asignar-jueces', [AdminController::class, 'asignarJueces'])->name('eventos.asignar-jueces');
-        Route::post('/eventos/{id}/asignar-asesores', [AdminController::class, 'asignarAsesores'])->name('eventos.asignar-asesores');
-        
-        // EQUIPOS
-        Route::get('/equipos', [AdminController::class, 'equipos'])->name('equipos');
-        Route::delete('/equipos/{id}', [AdminController::class, 'eliminarEquipo'])->name('equipos.eliminar');
-        
-        // RANKINGS
-        Route::get('/rankings', [AdminController::class, 'rankings'])->name('rankings');
-        
-        // ADMINISTRACIÓN
-        Route::get('/administracion', [AdminController::class, 'administracion'])->name('administracion');
-        Route::put('/administracion/usuarios/{id}', [AdminController::class, 'actualizarUsuario'])->name('administracion.actualizar-usuario');
-        Route::delete('/administracion/usuarios/{id}', [AdminController::class, 'eliminarUsuario'])->name('administracion.eliminar-usuario');
-        
-        // PERFIL
-        Route::get('/perfil', [AdminController::class, 'perfil'])->name('perfil');
-        Route::put('/perfil', [AdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
-        Route::put('/perfil/password', [AdminController::class, 'actualizarPassword'])->name('perfil.actualizar-password');
+        Route::get('/dashboard', function () {
+            return view('admin.dashboard');
+        })->name('dashboard');
     });
+    
 });

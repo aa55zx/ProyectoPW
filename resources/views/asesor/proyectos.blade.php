@@ -33,25 +33,26 @@
 
     <!-- Tabs -->
     <div class="flex gap-4 mb-6 border-b border-gray-200">
-        <button class="px-4 py-3 font-semibold text-gray-900 border-b-2 border-gray-900">
+        <button onclick="filtrarProyectos('todos')" id="tab-todos" class="px-4 py-3 font-semibold text-gray-900 border-b-2 border-gray-900 tab-button">
             Todos ({{ $todosCount }})
         </button>
-        <button class="px-4 py-3 font-medium text-gray-600 hover:text-gray-900">
+        <button onclick="filtrarProyectos('en-progreso')" id="tab-en-progreso" class="px-4 py-3 font-medium text-gray-600 hover:text-gray-900 tab-button">
             En progreso ({{ $enProgresoCount }})
         </button>
-        <button class="px-4 py-3 font-medium text-gray-600 hover:text-gray-900">
+        <button onclick="filtrarProyectos('entregados')" id="tab-entregados" class="px-4 py-3 font-medium text-gray-600 hover:text-gray-900 tab-button">
             Entregados ({{ $entregadosCount }})
         </button>
-        <button class="px-4 py-3 font-medium text-gray-600 hover:text-gray-900">
+        <button onclick="filtrarProyectos('evaluados')" id="tab-evaluados" class="px-4 py-3 font-medium text-gray-600 hover:text-gray-900 tab-button">
             Evaluados ({{ $evaluadosCount }})
         </button>
     </div>
 
     <!-- Lista de Proyectos -->
     @if($proyectos->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="proyectos-grid">
             @foreach($proyectos as $proyecto)
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all overflow-hidden {{ $proyecto->status === 'evaluated' ? 'opacity-90' : '' }}">
+            <div class="proyecto-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all overflow-hidden" 
+                 data-status="{{ $proyecto->status }}">
                 <!-- Header con color según estado -->
                 <div class="p-6 pb-4">
                     <div class="flex items-start justify-between mb-3">
@@ -83,44 +84,97 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
-                            <span>{{ $proyecto->team->event->title ?? 'Sin evento' }}</span>
+                            <span>{{ $proyecto->event->title ?? 'Sin evento' }}</span>
                         </div>
-                    </div>
-
-                    <!-- Puntuación si está evaluado -->
-                    @if($proyecto->final_score)
-                        <div class="flex items-center gap-2 mb-4">
-                            <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        @if($proyecto->final_score)
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                             </svg>
-                            <span class="font-bold text-gray-900">{{ number_format($proyecto->final_score, 1) }}/100</span>
+                            <span>Puntuación: {{ $proyecto->final_score }}</span>
                         </div>
-                    @endif
-
-                    <!-- Botón ver detalles -->
-                    <a href="#" class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm">
-                        Ver detalles
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                        </svg>
-                    </a>
+                        @endif
+                    </div>
+                    
+                    <!-- Botones de acción -->
+                    <div class="flex gap-2">
+                        @if($proyecto->repository_url)
+                        <a href="{{ $proyecto->repository_url }}" target="_blank" class="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium text-center">
+                            Ver Repositorio
+                        </a>
+                        @endif
+                        @if($proyecto->demo_url)
+                        <a href="{{ $proyecto->demo_url }}" target="_blank" class="flex-1 px-4 py-2 border border-gray-900 text-gray-900 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-center">
+                            Ver Demo
+                        </a>
+                        @endif
+                        @if(!$proyecto->repository_url && !$proyecto->demo_url)
+                        <button disabled class="w-full px-4 py-2 bg-gray-200 text-gray-500 rounded-lg text-sm font-medium cursor-not-allowed">
+                            Sin recursos
+                        </button>
+                        @endif
+                    </div>
                 </div>
             </div>
             @endforeach
         </div>
     @else
-        <!-- Estado vacío -->
-        <div class="bg-white rounded-xl p-16 text-center shadow-sm border border-gray-200">
-            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">No hay proyectos</h2>
-            <p class="text-gray-600 mb-6 max-w-md mx-auto">
-                Aún no hay proyectos registrados en tus equipos
-            </p>
+    <!-- Estado vacío -->
+    <div class="bg-white rounded-xl p-12 shadow-sm border border-gray-200 text-center">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
         </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">No hay proyectos</h3>
+        <p class="text-gray-600">Aún no hay proyectos registrados en tus equipos</p>
+    </div>
     @endif
 </div>
+
+<script>
+function filtrarProyectos(filtro) {
+    // Remover clases activas de todos los tabs
+    const tabs = document.querySelectorAll('.tab-button');
+    tabs.forEach(tab => {
+        tab.classList.remove('text-gray-900', 'border-gray-900', 'font-semibold');
+        tab.classList.add('text-gray-600', 'font-medium');
+        tab.classList.remove('border-b-2');
+    });
+    
+    // Activar tab seleccionado
+    const tabActivo = document.getElementById(`tab-${filtro}`);
+    tabActivo.classList.add('text-gray-900', 'border-b-2', 'border-gray-900', 'font-semibold');
+    tabActivo.classList.remove('text-gray-600', 'font-medium');
+    
+    // Filtrar proyectos
+    const proyectos = document.querySelectorAll('.proyecto-card');
+    
+    proyectos.forEach(proyecto => {
+        const status = proyecto.getAttribute('data-status');
+        
+        if (filtro === 'todos') {
+            proyecto.style.display = 'block';
+        } else if (filtro === 'en-progreso') {
+            if (status === 'draft' || status === 'in_progress') {
+                proyecto.style.display = 'block';
+            } else {
+                proyecto.style.display = 'none';
+            }
+        } else if (filtro === 'entregados') {
+            if (status === 'submitted') {
+                proyecto.style.display = 'block';
+            } else {
+                proyecto.style.display = 'none';
+            }
+        } else if (filtro === 'evaluados') {
+            if (status === 'evaluated') {
+                proyecto.style.display = 'block';
+            } else {
+                proyecto.style.display = 'none';
+            }
+        }
+    });
+}
+</script>
 @endsection
