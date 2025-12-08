@@ -16,14 +16,12 @@ class EventoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Event::where('is_published', true);
+        // SOLO EVENTOS PRÓXIMAMENTE (upcoming) - No activos ni finalizados
+        $query = Event::where('is_published', true)
+                      ->where('status', 'upcoming');
 
         if ($request->filled('category') && $request->category !== 'all') {
             $query->where('category', $request->category);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
         }
 
         if ($request->filled('search')) {
@@ -33,7 +31,7 @@ class EventoController extends Controller
             });
         }
 
-        $eventos = $query->orderBy('event_start_date', 'desc')->get();
+        $eventos = $query->orderBy('event_start_date', 'asc')->get();
 
         if ($request->ajax()) {
             return response()->json($eventos);
@@ -58,7 +56,6 @@ class EventoController extends Controller
         })->with(['members', 'leader'])->get();
         
         // 2. BUSCAR SI EL USUARIO ESTÁ EN ALGÚN EQUIPO INSCRITO EN ESTE EVENTO
-        // Buscar en event_registrations
         $equiposUsuarioEnEvento = DB::table('event_registrations')
             ->where('event_id', $id)
             ->whereIn('team_id', function($query) use ($user) {
@@ -68,15 +65,10 @@ class EventoController extends Controller
             })
             ->get();
         
-        // Variable para almacenar el equipo del usuario en este evento
         $miEquipo = null;
         
-        // Si encontramos registros, el usuario YA está en un equipo de este evento
         if ($equiposUsuarioEnEvento->count() > 0) {
-            // Tomar el primer registro (debería ser solo uno por las validaciones)
             $primerRegistro = $equiposUsuarioEnEvento->first();
-            
-            // Cargar el objeto Team completo
             $miEquipo = Team::with(['members', 'leader'])->find($primerRegistro->team_id);
         }
         
@@ -95,13 +87,12 @@ class EventoController extends Controller
             }
         }
         
-        // Fallback: Si no hay en event_registrations, buscar en sistema antiguo (teams.event_id)
+        // Fallback: Si no hay en event_registrations, buscar en sistema antiguo
         if ($equiposInscritos->count() == 0) {
             $equiposInscritos = Team::where('event_id', $id)
                 ->with(['leader', 'members'])
                 ->get();
                 
-            // También verificar si el usuario tiene equipo en sistema antiguo
             if (!$miEquipo) {
                 $miEquipo = $equiposInscritos->first(function($equipo) use ($user) {
                     return $equipo->members->contains('id', $user->id);
@@ -147,13 +138,13 @@ class EventoController extends Controller
             return response()->json(['success' => false, 'message' => 'No eres miembro de este equipo'], 403);
         }
 
-        // VALIDACIÓN 2: El evento está disponible para inscripciones
+        // VALIDACIÓN 2: El evento está disponible para inscripciones (SOLO UPCOMING)
         if (!$event->is_published) {
             return response()->json(['success' => false, 'message' => 'Este evento no está disponible'], 403);
         }
         
-        if (!in_array($event->status, ['upcoming', 'open'])) {
-            return response()->json(['success' => false, 'message' => 'Las inscripciones no están disponibles para este evento'], 403);
+        if ($event->status !== 'upcoming') {
+            return response()->json(['success' => false, 'message' => 'Solo puedes inscribirte a eventos próximos. Este evento ya está en curso o ha finalizado.'], 403);
         }
 
         // VALIDACIÓN 3: El equipo NO está ya inscrito en este evento
@@ -171,10 +162,9 @@ class EventoController extends Controller
             ->where('team_id', $request->team_id)
             ->pluck('user_id');
         
-        // Buscar si algún miembro ya está en otro equipo inscrito en el mismo evento
         $conflictoMiembros = DB::table('event_registrations')
             ->where('event_id', $request->event_id)
-            ->where('team_id', '!=', $request->team_id) // Excluir el equipo actual
+            ->where('team_id', '!=', $request->team_id)
             ->whereExists(function($query) use ($miembrosIds) {
                 $query->select(DB::raw(1))
                       ->from('team_members')
@@ -184,7 +174,6 @@ class EventoController extends Controller
             ->first();
 
         if ($conflictoMiembros) {
-            // Obtener el nombre del miembro que ya está en otro equipo
             $equipoConflicto = Team::find($conflictoMiembros->team_id);
             $miembroConflicto = DB::table('team_members')
                 ->whereIn('user_id', $miembrosIds)
@@ -264,6 +253,14 @@ class EventoController extends Controller
         $user = Auth::user();
         $evento = Event::findOrFail($request->event_id);
 
+        // VALIDACIÓN: Solo eventos UPCOMING
+        if ($evento->status !== 'upcoming') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Solo puedes crear equipos para eventos próximos. Este evento ya está en curso o ha finalizado.'
+            ], 403);
+        }
+
         // VALIDACIÓN: El usuario NO debe estar ya en otro equipo de este evento
         $usuarioYaEnEvento = DB::table('event_registrations')
             ->where('event_id', $request->event_id)
@@ -306,7 +303,7 @@ class EventoController extends Controller
                 'id' => $teamId,
                 'name' => $request->team_name,
                 'description' => $request->team_description,
-                'event_id' => null, // Equipo independiente
+                'event_id' => null,
                 'leader_id' => $user->id,
                 'status' => 'active',
                 'members_count' => 1,
@@ -349,12 +346,20 @@ class EventoController extends Controller
         $team = Team::with(['leader'])->findOrFail($request->team_id);
 
         // VALIDACIÓN: El usuario NO puede enviar solicitud si ya está en un equipo del evento
-        // Primero obtener el evento del equipo
         $eventoId = DB::table('event_registrations')
             ->where('team_id', $team->id)
             ->value('event_id');
         
         if ($eventoId) {
+            // Verificar que el evento sea UPCOMING
+            $evento = Event::find($eventoId);
+            if ($evento && $evento->status !== 'upcoming') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Solo puedes unirte a equipos de eventos próximos. Este evento ya está en curso o ha finalizado.'
+                ], 403);
+            }
+
             // Verificar si el usuario ya está en otro equipo de este evento
             $usuarioYaEnEvento = DB::table('event_registrations')
                 ->where('event_id', $eventoId)

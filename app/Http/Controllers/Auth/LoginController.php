@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -54,20 +55,27 @@ class LoginController extends Controller
                 $user->updateLastLogin();
             }
 
-            // Obtener el rol del usuario
-            $rol = $user->rol ?? $user->user_type ?? 'estudiante';
+            // CORREGIDO: Obtener el rol del campo correcto (user_type es el campo real en BD)
+            $rol = $user->user_type ?? 'estudiante';
             
-            // Redirigir según el rol
+            // Log para debugging
+            Log::info('Login exitoso', [
+                'email' => $user->email,
+                'user_type' => $user->user_type,
+                'rol_detectado' => $rol
+            ]);
+            
+            // Redirigir según el user_type
             return match($rol) {
                 'admin', 'administrador' => redirect()->intended('/admin/dashboard'),
-                'maestro', 'asesor' => redirect()->intended('/asesor/dashboard'),
+                'maestro', 'asesor', 'profesor' => redirect()->intended('/asesor/dashboard'),
                 'juez' => redirect()->intended('/juez/dashboard'),
                 'estudiante' => redirect()->intended('/estudiante/dashboard'),
                 default => redirect()->intended('/estudiante/dashboard'),
             };
 
         } catch (\Exception $e) {
-            \Log::error('Error en login: ' . $e->getMessage());
+            Log::error('Error en login: ' . $e->getMessage());
             return back()->withErrors([
                 'email' => 'Ocurrió un error al intentar iniciar sesión. Por favor, intenta de nuevo.',
             ])->withInput($request->only('email'));

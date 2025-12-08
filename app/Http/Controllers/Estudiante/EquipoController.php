@@ -27,18 +27,54 @@ class EquipoController extends Controller
 
         $equipos = $query->orderBy('created_at', 'desc')->get();
         
-        // Para cada equipo, obtener sus eventos participados
+        // Para cada equipo, obtener sus eventos participados y solicitudes pendientes
         foreach ($equipos as $equipo) {
             $equipo->eventos_count = DB::table('event_registrations')
                 ->where('team_id', $equipo->id)
                 ->count();
+            
+            // Contar solicitudes pendientes si es líder
+            if ($equipo->leader_id === $user->id) {
+                $equipo->solicitudes_count = DB::table('join_requests')
+                    ->where('join_requests.team_id', $equipo->id)
+                    ->where('join_requests.status', 'pending')
+                    ->count();
+            } else {
+                $equipo->solicitudes_count = 0;
+            }
         }
+
+        // Obtener TODAS las solicitudes pendientes de los equipos donde el usuario es líder
+        $solicitudesPendientes = DB::table('join_requests')
+            ->whereIn('join_requests.team_id', function($query) use ($user) {
+                $query->select('id')
+                      ->from('teams')
+                      ->where('leader_id', $user->id);
+            })
+            ->where('join_requests.status', 'pending')
+            ->join('users', 'join_requests.user_id', '=', 'users.id')
+            ->join('teams', 'join_requests.team_id', '=', 'teams.id')
+            ->select(
+                'join_requests.id',
+                'join_requests.team_id',
+                'join_requests.user_id',
+                'join_requests.created_at',
+                'users.name as user_name', 
+                'users.email', 
+                'users.career', 
+                'users.semester',
+                'teams.name as team_name'
+            )
+            ->orderBy('join_requests.created_at', 'desc')
+            ->get();
+
+        $totalSolicitudes = $solicitudesPendientes->count();
 
         if ($request->ajax()) {
             return response()->json(['equipos' => $equipos, 'count' => $equipos->count()]);
         }
 
-        return view('estudiante.equipos', compact('equipos'));
+        return view('estudiante.equipos', compact('equipos', 'solicitudesPendientes', 'totalSolicitudes'));
     }
 
     public function store(Request $request)
@@ -58,7 +94,7 @@ class EquipoController extends Controller
                 'id' => $teamId,
                 'name' => $request->team_name,
                 'description' => $request->description,
-                'event_id' => null, // Equipos independientes
+                'event_id' => null,
                 'leader_id' => $user->id,
                 'status' => 'active',
                 'members_count' => 1,
@@ -95,7 +131,7 @@ class EquipoController extends Controller
             abort(403, 'No tienes permiso para ver este equipo');
         }
 
-        // Obtener eventos donde el equipo participa - CORREGIDO: especificar tabla en WHERE
+        // Obtener eventos donde el equipo participa
         $eventosParticipados = DB::table('event_registrations')
             ->where('event_registrations.team_id', $id)
             ->join('events', 'event_registrations.event_id', '=', 'events.id')
@@ -109,7 +145,7 @@ class EquipoController extends Controller
             ->orderBy('event_registrations.registered_at', 'desc')
             ->get();
 
-        // Obtener solicitudes pendientes si es líder - CORREGIDO: especificar tabla en WHERE
+        // Obtener solicitudes pendientes si es líder
         $solicitudesPendientes = [];
         if ($equipo->isLeader($user->id)) {
             $solicitudesPendientes = DB::table('join_requests')
@@ -147,19 +183,9 @@ class EquipoController extends Controller
             
             $equipo->decrement('members_count');
 
-            // Si el equipo queda vacío, eliminarlo
             if ($equipo->members_count == 0) {
-                // Eliminar registros de eventos
-                DB::table('event_registrations')
-                    ->where('team_id', $id)
-                    ->delete();
-                
-                // Eliminar proyectos
-                DB::table('projects')
-                    ->where('team_id', $id)
-                    ->delete();
-                
-                // Eliminar equipo
+                DB::table('event_registrations')->where('team_id', $id)->delete();
+                DB::table('projects')->where('team_id', $id)->delete();
                 $equipo->delete();
             }
 
@@ -194,7 +220,7 @@ class EquipoController extends Controller
             return response()->json(['success' => false, 'message' => 'Solo el líder puede aceptar solicitudes'], 403);
         }
 
-        // Verificar si el usuario ya es miembro de otro equipo en los mismos eventos
+        // Verificar conflictos de eventos
         $eventosEquipo = DB::table('event_registrations')
             ->where('team_id', $equipo->id)
             ->pluck('event_id');
@@ -226,7 +252,6 @@ class EquipoController extends Controller
         try {
             DB::beginTransaction();
 
-            // Agregar al equipo
             DB::table('team_members')->insert([
                 'id' => Str::uuid(),
                 'team_id' => $equipo->id,
@@ -237,7 +262,6 @@ class EquipoController extends Controller
 
             $equipo->increment('members_count');
 
-            // Actualizar solicitud
             DB::table('join_requests')
                 ->where('id', $request->request_id)
                 ->update([
@@ -246,7 +270,6 @@ class EquipoController extends Controller
                     'updated_at' => now(),
                 ]);
 
-            // Notificar al usuario
             Notification::create([
                 'id' => Str::uuid(),
                 'user_id' => $solicitud->user_id,
