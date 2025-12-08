@@ -47,12 +47,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/equipos/aceptar-solicitud', [EquipoController::class, 'aceptarSolicitud'])->name('equipos.aceptar-solicitud');
         Route::post('/equipos/rechazar-solicitud', [EquipoController::class, 'rechazarSolicitud'])->name('equipos.rechazar-solicitud');
 
-        // PROYECTOS
+        // PROYECTOS - MODIFICADO PARA SOLICITUDES
         Route::get('/proyectos', [ProyectoController::class, 'index'])->name('proyectos');
         Route::post('/proyectos', [ProyectoController::class, 'store'])->name('proyectos.store');
         Route::get('/proyectos/{id}', [ProyectoController::class, 'show'])->name('proyectos.show');
         Route::put('/proyectos/{id}', [ProyectoController::class, 'update'])->name('proyectos.update');
-        Route::post('/proyectos/{id}/assign-advisor', [ProyectoController::class, 'assignAdvisor'])->name('proyectos.assign-advisor');
+        Route::post('/proyectos/{id}/solicitar-asesor', [ProyectoController::class, 'solicitarAsesor'])->name('proyectos.solicitar-asesor');
+        Route::post('/proyectos/{id}/cancelar-solicitud-asesor', [ProyectoController::class, 'cancelarSolicitudAsesor'])->name('proyectos.cancelar-solicitud-asesor');
         Route::post('/proyectos/{id}/submit-file', [ProyectoController::class, 'submitFile'])->name('proyectos.submit-file');
         Route::get('/proyectos/{id}/download-submission', [ProyectoController::class, 'downloadSubmission'])->name('proyectos.download-submission');
         Route::delete('/proyectos/{id}/delete-submission', [ProyectoController::class, 'deleteSubmission'])->name('proyectos.delete-submission');
@@ -67,9 +68,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/perfil/password', [PerfilController::class, 'updatePassword'])->name('perfil.update-password');
     });
 
-    // ==========================================
-    // ASESOR (MODIFICADO - TU PARTE)
-    // ==========================================
+    // ASESOR
     Route::prefix('asesor')->name('asesor.')->group(function () {
         Route::get('/dashboard', [AsesorController::class, 'dashboard'])->name('dashboard');
         Route::get('/eventos', [AsesorController::class, 'eventos'])->name('eventos');
@@ -79,11 +78,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/rankings', [AsesorController::class, 'rankings'])->name('rankings');
         Route::get('/mi-perfil', [AsesorController::class, 'miPerfil'])->name('mi-perfil');
         
-        // Solicitudes de asesoría (NUEVO)
+        // Solicitudes de asesoría
         Route::post('/solicitudes/{id}/aceptar', [AsesorController::class, 'aceptarSolicitud'])->name('solicitudes.aceptar');
         Route::post('/solicitudes/{id}/rechazar', [AsesorController::class, 'rechazarSolicitud'])->name('solicitudes.rechazar');
         
-        // Equipos disponibles (NUEVO)
+        // Equipos disponibles
         Route::get('/equipos-disponibles', [AsesorController::class, 'equiposDisponibles'])->name('equipos-disponibles');
         Route::post('/equipos/{project}/solicitar', [AsesorController::class, 'solicitarAsesorar'])->name('equipos.solicitar');
     });

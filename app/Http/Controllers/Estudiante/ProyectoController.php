@@ -92,7 +92,14 @@ class ProyectoController extends Controller
         // Verificar si el usuario es líder
         $esLider = $proyecto->team->isLeader($user->id);
         
-        return view('estudiante.proyecto-detalle', compact('proyecto', 'asesoresDisponibles', 'esLider'));
+        // Verificar estado de solicitud de asesor
+        $solicitudAsesor = DB::table('advisor_requests')
+            ->where('project_id', $proyecto->id)
+            ->whereIn('status', ['pending', 'accepted', 'rejected'])
+            ->orderBy('created_at', 'desc')
+            ->first();
+        
+        return view('estudiante.proyecto-detalle', compact('proyecto', 'asesoresDisponibles', 'esLider', 'solicitudAsesor'));
     }
 
     public function store(Request $request)
@@ -246,38 +253,99 @@ class ProyectoController extends Controller
         }
     }
 
-    public function assignAdvisor(Request $request, $id)
+    /**
+     * Solicitar asesor (envía solicitud en lugar de asignar directamente)
+     */
+    public function solicitarAsesor(Request $request, $id)
     {
-        if (!Schema::hasColumn('projects', 'advisor_id')) {
-            return response()->json(['success' => false, 'message' => 'Función no disponible: ejecuta la migración advisor_id'], 422);
-        }
-
         $request->validate([
             'advisor_id' => 'required|exists:users,id',
+            'mensaje' => 'nullable|string|max:500',
         ]);
 
         $user = Auth::user();
         $proyecto = Project::with('team')->findOrFail($id);
 
-        // Verificar que el usuario es líder del equipo
         if (!$proyecto->team->isLeader($user->id)) {
-            return response()->json(['success' => false, 'message' => 'Solo el líder puede asignar asesor'], 403);
+            return response()->json(['success' => false, 'message' => 'Solo el líder puede solicitar asesor'], 403);
         }
 
-        // Verificar que el asesor no tenga ya un proyecto en este evento
-        $asesorOcupado = Project::where('event_id', $proyecto->event_id)
-            ->where('advisor_id', $request->advisor_id)
-            ->where('id', '!=', $proyecto->id)
+        $solicitudExistente = DB::table('advisor_requests')
+            ->where('project_id', $proyecto->id)
+            ->where('status', 'pending')
             ->exists();
 
-        if ($asesorOcupado) {
-            return response()->json(['success' => false, 'message' => 'Este asesor ya tiene un proyecto en este evento'], 422);
+        if ($solicitudExistente) {
+            return response()->json(['success' => false, 'message' => 'Ya tienes una solicitud pendiente para este proyecto'], 422);
+        }
+
+        if ($proyecto->advisor_id) {
+            return response()->json(['success' => false, 'message' => 'Este proyecto ya tiene un asesor asignado'], 422);
         }
 
         try {
-            $proyecto->update(['advisor_id' => $request->advisor_id]);
-            
-            return response()->json(['success' => true, 'message' => 'Asesor asignado exitosamente']);
+            $requestId = Str::uuid();
+            DB::table('advisor_requests')->insert([
+                'id' => $requestId,
+                'project_id' => $proyecto->id,
+                'team_id' => $proyecto->team_id,
+                'advisor_id' => $request->advisor_id,
+                'requested_by' => $user->id,
+                'status' => 'pending',
+                'message' => $request->mensaje,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $asesor = User::find($request->advisor_id);
+            \App\Models\Notification::create([
+                'id' => Str::uuid(),
+                'user_id' => $request->advisor_id,
+                'type' => 'advisor_request',
+                'title' => 'Nueva Solicitud de Asesoría',
+                'message' => $user->name . ' solicita que seas asesor de su proyecto "' . $proyecto->title . '"',
+                'data' => json_encode([
+                    'project_id' => $proyecto->id,
+                    'team_id' => $proyecto->team_id,
+                    'request_id' => $requestId,
+                ]),
+                'is_read' => false,
+            ]);
+
+            return response()->json([
+                'success' => true, 
+                'message' => 'Solicitud enviada a ' . $asesor->name . ' exitosamente'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Cancelar solicitud de asesor
+     */
+    public function cancelarSolicitudAsesor($id)
+    {
+        $user = Auth::user();
+        $proyecto = Project::with('team')->findOrFail($id);
+
+        if (!$proyecto->team->isLeader($user->id)) {
+            return response()->json(['success' => false, 'message' => 'Solo el líder puede cancelar la solicitud'], 403);
+        }
+
+        try {
+            $deleted = DB::table('advisor_requests')
+                ->where('project_id', $proyecto->id)
+                ->where('status', 'pending')
+                ->delete();
+
+            if ($deleted) {
+                return response()->json(['success' => true, 'message' => 'Solicitud cancelada']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'No hay solicitud pendiente'], 404);
+            }
+
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
         }
