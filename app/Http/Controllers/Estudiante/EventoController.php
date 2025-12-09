@@ -68,9 +68,13 @@ class EventoController extends Controller
 
     public function show($id)
     {
-        $evento = Event::with(['schedule' => function($query) {
-            $query->orderBy('day')->orderBy('order_index');
-        }])->findOrFail($id);
+        $evento = Event::with([
+            'schedule' => function($query) {
+                $query->orderBy('day')->orderBy('order_index');
+            },
+            'judges',
+            'advisors'
+        ])->findOrFail($id);
 
         $evento->increment('views_count');
 
@@ -136,13 +140,25 @@ class EventoController extends Controller
                 ->pluck('team_id')
                 ->toArray();
         }
+        
+        // 5. OBTENER ASESORES DISPONIBLES (asignados al evento pero sin proyecto asignado)
+        $asesoresDisponibles = $evento->advisors->filter(function($asesor) use ($id) {
+            // Verificar si el asesor ya tiene un proyecto asignado en este evento
+            $tieneProyecto = DB::table('projects')
+                ->where('event_id', $id)
+                ->where('advisor_id', $asesor->id)
+                ->exists();
+            
+            return !$tieneProyecto;
+        });
 
         return view('estudiante.evento-detalle', compact(
             'evento', 
             'miEquipo', 
             'misEquipos', 
             'equiposInscritos', 
-            'solicitudesPendientes'
+            'solicitudesPendientes',
+            'asesoresDisponibles'
         ));
     }
 

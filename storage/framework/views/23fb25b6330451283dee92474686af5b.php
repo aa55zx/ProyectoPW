@@ -1,8 +1,6 @@
-@extends('layouts.estudiante')
+<?php $__env->startSection('title', $evento->title . ' - EventTec'); ?>
 
-@section('title', $evento->title . ' - EventTec')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Botón de regresar -->
     <button onclick="window.history.back()" class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 font-medium transition-colors">
@@ -14,28 +12,28 @@
 
     <!-- Hero del evento -->
     <div class="relative h-96 rounded-3xl overflow-hidden mb-8 shadow-xl">
-        @if($evento->cover_image_url)
-            <img src="{{ $evento->cover_image_url }}" alt="{{ $evento->title }}" class="w-full h-full object-cover">
-        @else
+        <?php if($evento->cover_image_url): ?>
+            <img src="<?php echo e($evento->cover_image_url); ?>" alt="<?php echo e($evento->title); ?>" class="w-full h-full object-cover">
+        <?php else: ?>
             <div class="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600"></div>
-        @endif
+        <?php endif; ?>
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
         
         <div class="absolute bottom-0 left-0 right-0 p-8">
             <div class="flex gap-3 mb-4">
-                @if($evento->status === 'in_progress')
+                <?php if($evento->status === 'in_progress'): ?>
                     <span class="px-4 py-1.5 bg-green-500 text-white text-sm font-bold rounded-full">En curso</span>
-                @elseif($evento->status === 'finished')
+                <?php elseif($evento->status === 'finished'): ?>
                     <span class="px-4 py-1.5 bg-gray-500 text-white text-sm font-bold rounded-full">Finalizado</span>
-                @elseif($evento->status === 'upcoming')
+                <?php elseif($evento->status === 'upcoming'): ?>
                     <span class="px-4 py-1.5 bg-blue-500 text-white text-sm font-bold rounded-full">Próximamente</span>
-                @else
-                    <span class="px-4 py-1.5 bg-yellow-500 text-white text-sm font-bold rounded-full">{{ ucfirst($evento->status) }}</span>
-                @endif
-                <span class="px-4 py-1.5 bg-white/90 text-gray-800 text-sm font-bold rounded-full">{{ $evento->category }}</span>
+                <?php else: ?>
+                    <span class="px-4 py-1.5 bg-yellow-500 text-white text-sm font-bold rounded-full"><?php echo e(ucfirst($evento->status)); ?></span>
+                <?php endif; ?>
+                <span class="px-4 py-1.5 bg-white/90 text-gray-800 text-sm font-bold rounded-full"><?php echo e($evento->category); ?></span>
             </div>
-            <h1 class="text-5xl font-bold text-white mb-3">{{ $evento->title }}</h1>
-            <p class="text-xl text-white/90 max-w-3xl">{{ $evento->short_description ?? $evento->description }}</p>
+            <h1 class="text-5xl font-bold text-white mb-3"><?php echo e($evento->title); ?></h1>
+            <p class="text-xl text-white/90 max-w-3xl"><?php echo e($evento->short_description ?? $evento->description); ?></p>
         </div>
     </div>
 
@@ -47,7 +45,7 @@
             <!-- Descripción -->
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                 <h2 class="text-2xl font-bold text-gray-900 mb-4">📝 Descripción</h2>
-                <p class="text-gray-700 leading-relaxed">{{ $evento->description }}</p>
+                <p class="text-gray-700 leading-relaxed"><?php echo e($evento->description); ?></p>
             </div>
 
             <!-- Requisitos -->
@@ -60,7 +58,7 @@
                         <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span class="text-gray-700">Equipo de {{ $evento->min_team_size }}-{{ $evento->max_team_size }} integrantes</span>
+                        <span class="text-gray-700">Equipo de <?php echo e($evento->min_team_size); ?>-<?php echo e($evento->max_team_size); ?> integrantes</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,74 +82,75 @@
                         <span>👥</span> Equipos Inscritos
                     </h2>
                     <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
-                        {{ $equiposInscritos->count() }} equipos
+                        <?php echo e($equiposInscritos->count()); ?> equipos
                     </span>
                 </div>
 
-                @if($equiposInscritos->count() > 0)
+                <?php if($equiposInscritos->count() > 0): ?>
                     <div class="space-y-4">
-                        @foreach($equiposInscritos as $equipo)
+                        <?php $__currentLoopData = $equiposInscritos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $equipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="border border-gray-200 rounded-xl p-6 hover:border-blue-300 hover:shadow-sm transition-all">
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-3 mb-2">
                                             <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                                                {{ strtoupper(substr($equipo->name, 0, 2)) }}
+                                                <?php echo e(strtoupper(substr($equipo->name, 0, 2))); ?>
+
                                             </div>
                                             <div>
-                                                <h3 class="text-lg font-bold text-gray-900">{{ $equipo->name }}</h3>
-                                                <p class="text-sm text-gray-600">Líder: {{ $equipo->leader->name }}</p>
+                                                <h3 class="text-lg font-bold text-gray-900"><?php echo e($equipo->name); ?></h3>
+                                                <p class="text-sm text-gray-600">Líder: <?php echo e($equipo->leader->name); ?></p>
                                             </div>
                                         </div>
                                         
-                                        @if($equipo->description)
-                                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $equipo->description }}</p>
-                                        @endif
+                                        <?php if($equipo->description): ?>
+                                            <p class="text-gray-600 text-sm mb-3 line-clamp-2"><?php echo e($equipo->description); ?></p>
+                                        <?php endif; ?>
                                         
                                         <div class="flex items-center gap-4 text-sm text-gray-500">
                                             <span class="flex items-center gap-1">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                                 </svg>
-                                                {{ $equipo->members_count }}/{{ $evento->max_team_size }} miembros
+                                                <?php echo e($equipo->members_count); ?>/<?php echo e($evento->max_team_size); ?> miembros
                                             </span>
                                         </div>
                                     </div>
                                     
                                     <div class="ml-4">
-                                        @if($miEquipo && $miEquipo->id === $equipo->id)
+                                        <?php if($miEquipo && $miEquipo->id === $equipo->id): ?>
                                             <!-- Es mi equipo -->
                                             <span class="px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-semibold">
                                                 Tu equipo
                                             </span>
-                                        @elseif($miEquipo)
+                                        <?php elseif($miEquipo): ?>
                                             <!-- Ya tiene otro equipo -->
                                             <span class="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm">
                                                 -
                                             </span>
-                                        @elseif(in_array($equipo->id, $solicitudesPendientes))
+                                        <?php elseif(in_array($equipo->id, $solicitudesPendientes)): ?>
                                             <!-- Solicitud enviada -->
                                             <span class="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm font-semibold">
                                                 Solicitud enviada
                                             </span>
-                                        @elseif($equipo->members_count >= $evento->max_team_size)
+                                        <?php elseif($equipo->members_count >= $evento->max_team_size): ?>
                                             <!-- Equipo lleno -->
                                             <span class="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm">
                                                 Equipo lleno
                                             </span>
-                                        @else
+                                        <?php else: ?>
                                             <!-- Puede solicitar unirse -->
-                                            <button onclick="solicitarUnirse('{{ $equipo->id }}', '{{ $equipo->name }}')"
+                                            <button onclick="solicitarUnirse('<?php echo e($equipo->id); ?>', '<?php echo e($equipo->name); ?>')"
                                                     class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
                                                 Solicitar unirme
                                             </button>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                @else
+                <?php else: ?>
                     <div class="text-center py-12">
                         <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -159,37 +158,37 @@
                         <p class="text-gray-600 font-medium">No hay equipos inscritos aún</p>
                         <p class="text-sm text-gray-500 mt-1">Sé el primero en inscribir tu equipo</p>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
 
             <!-- Cronograma -->
-            @if($evento->schedule && $evento->schedule->count() > 0)
+            <?php if($evento->schedule && $evento->schedule->count() > 0): ?>
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <span>📅</span> Cronograma
                 </h2>
                 <div class="space-y-4">
-                    @foreach($evento->schedule->groupBy('day') as $day => $activities)
+                    <?php $__currentLoopData = $evento->schedule->groupBy('day'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day => $activities): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div>
-                            <h3 class="font-bold text-lg text-gray-900 mb-3">Día {{ $day }}</h3>
+                            <h3 class="font-bold text-lg text-gray-900 mb-3">Día <?php echo e($day); ?></h3>
                             <div class="space-y-3">
-                                @foreach($activities as $activity)
+                                <?php $__currentLoopData = $activities; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $activity): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="flex gap-4">
                                     <div class="flex-shrink-0">
-                                        <span class="text-sm font-medium text-blue-600">{{ $activity->start_time }}</span>
+                                        <span class="text-sm font-medium text-blue-600"><?php echo e($activity->start_time); ?></span>
                                     </div>
                                     <div class="flex-1">
-                                        <p class="font-medium text-gray-900">{{ $activity->title }}</p>
-                                        <p class="text-sm text-gray-600">{{ $activity->description }}</p>
+                                        <p class="font-medium text-gray-900"><?php echo e($activity->title); ?></p>
+                                        <p class="text-sm text-gray-600"><?php echo e($activity->description); ?></p>
                                     </div>
                                 </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
-            @endif
+            <?php endif; ?>
         </div>
 
         <!-- Sidebar -->
@@ -205,7 +204,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Equipos inscritos</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $equiposInscritos->count() }}</p>
+                            <p class="text-2xl font-bold text-gray-900"><?php echo e($equiposInscritos->count()); ?></p>
                         </div>
                     </div>
 
@@ -217,12 +216,12 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Tamaño de equipo</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $evento->min_team_size }}-{{ $evento->max_team_size }}</p>
+                            <p class="text-2xl font-bold text-gray-900"><?php echo e($evento->min_team_size); ?>-<?php echo e($evento->max_team_size); ?></p>
                         </div>
                     </div>
                     
                     <!-- Jueces -->
-                    @if($evento->judges && $evento->judges->count() > 0)
+                    <?php if($evento->judges && $evento->judges->count() > 0): ?>
                     <div class="border-t border-gray-200 pt-4">
                         <div class="flex items-center gap-2 mb-3">
                             <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,20 +230,21 @@
                             <p class="text-sm font-semibold text-gray-700">Jueces</p>
                         </div>
                         <div class="space-y-2">
-                            @foreach($evento->judges as $juez)
+                            <?php $__currentLoopData = $evento->judges; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $juez): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs">
-                                    {{ strtoupper(substr($juez->name, 0, 2)) }}
+                                    <?php echo e(strtoupper(substr($juez->name, 0, 2))); ?>
+
                                 </div>
-                                <span class="text-sm text-gray-700">{{ $juez->name }}</span>
+                                <span class="text-sm text-gray-700"><?php echo e($juez->name); ?></span>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
-                    @endif
+                    <?php endif; ?>
                     
                     <!-- Asesores Disponibles -->
-                    @if(isset($asesoresDisponibles) && $asesoresDisponibles->count() > 0)
+                    <?php if(isset($asesoresDisponibles) && $asesoresDisponibles->count() > 0): ?>
                     <div class="border-t border-gray-200 pt-4">
                         <div class="flex items-center gap-2 mb-3">
                             <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,18 +253,19 @@
                             <p class="text-sm font-semibold text-gray-700">Asesores Disponibles</p>
                         </div>
                         <div class="space-y-2">
-                            @foreach($asesoresDisponibles as $asesor)
+                            <?php $__currentLoopData = $asesoresDisponibles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asesor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs">
-                                    {{ strtoupper(substr($asesor->name, 0, 2)) }}
+                                    <?php echo e(strtoupper(substr($asesor->name, 0, 2))); ?>
+
                                 </div>
-                                <span class="text-sm text-gray-700">{{ $asesor->name }}</span>
+                                <span class="text-sm text-gray-700"><?php echo e($asesor->name); ?></span>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                         <p class="text-xs text-gray-500 mt-2">Estos asesores aún no tienen equipo asignado</p>
                     </div>
-                    @endif
+                    <?php endif; ?>
 
                     <div class="flex items-center gap-3">
                         <div class="p-3 bg-purple-50 rounded-xl">
@@ -274,25 +275,25 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Fecha del evento</p>
-                            <p class="text-lg font-bold text-gray-900">{{ \Carbon\Carbon::parse($evento->event_start_date)->format('d M Y') }}</p>
+                            <p class="text-lg font-bold text-gray-900"><?php echo e(\Carbon\Carbon::parse($evento->event_start_date)->format('d M Y')); ?></p>
                         </div>
                     </div>
                 </div>
 
                 <div class="border-t border-gray-200 pt-6">
-                    @if($miEquipo)
+                    <?php if($miEquipo): ?>
                         <!-- Ya tiene equipo inscrito -->
                         <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
                             <p class="text-sm font-semibold text-green-800 mb-1">✓ Ya estás inscrito</p>
-                            <p class="text-xs text-green-700">Equipo: {{ $miEquipo->name }}</p>
+                            <p class="text-xs text-green-700">Equipo: <?php echo e($miEquipo->name); ?></p>
                         </div>
-                        <a href="{{ route('estudiante.equipos.show', $miEquipo->id) }}" 
+                        <a href="<?php echo e(route('estudiante.equipos.show', $miEquipo->id)); ?>" 
                            class="block w-full py-3 px-4 bg-gray-900 text-white text-center rounded-xl hover:bg-gray-800 transition-colors font-semibold">
                             Ver mi equipo
                         </a>
-                    @elseif($evento->status === 'upcoming' && $evento->canRegister())
+                    <?php elseif($evento->status === 'upcoming' && $evento->canRegister()): ?>
                         <!-- Evento próximo Y en período de inscripciones -->
-                        @if($misEquipos->count() > 0)
+                        <?php if($misEquipos->count() > 0): ?>
                             <!-- Tiene equipos sin inscribir -->
                             <button onclick="mostrarModalInscripcion()" 
                                     class="w-full mb-3 py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">
@@ -305,7 +306,7 @@
                                     class="w-full py-3 px-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold">
                                 Crear nuevo equipo
                             </button>
-                        @else
+                        <?php else: ?>
                             <!-- No tiene equipos -->
                             <button onclick="mostrarModalCrearEquipo()" 
                                     class="w-full py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">
@@ -314,26 +315,26 @@
                                 </svg>
                                 Crear equipo
                             </button>
-                        @endif
-                    @elseif($evento->status === 'upcoming')
+                        <?php endif; ?>
+                    <?php elseif($evento->status === 'upcoming'): ?>
                         <!-- Evento próximo pero FUERA del período de inscripciones -->
                         <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
                             <p class="text-sm font-semibold text-yellow-800 mb-1">⚠️ Inscripciones cerradas</p>
-                            <p class="text-xs text-yellow-700">El período de inscripciones es del {{ \Carbon\Carbon::parse($evento->registration_start_date)->format('d/m/Y') }} al {{ \Carbon\Carbon::parse($evento->registration_end_date)->format('d/m/Y') }}</p>
+                            <p class="text-xs text-yellow-700">El período de inscripciones es del <?php echo e(\Carbon\Carbon::parse($evento->registration_start_date)->format('d/m/Y')); ?> al <?php echo e(\Carbon\Carbon::parse($evento->registration_end_date)->format('d/m/Y')); ?></p>
                         </div>
-                    @elseif($evento->status === 'in_progress')
+                    <?php elseif($evento->status === 'in_progress'): ?>
                         <!-- Evento en curso -->
                         <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
                             <p class="text-sm font-semibold text-blue-800 mb-1">🟢 Evento en curso</p>
                             <p class="text-xs text-blue-700">Las inscripciones están cerradas. El evento está actualmente en progreso.</p>
                         </div>
-                    @else
+                    <?php else: ?>
                         <!-- Evento finalizado -->
                         <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
                             <p class="text-sm font-semibold text-gray-800 mb-1">✓ Evento finalizado</p>
                             <p class="text-xs text-gray-700">Este evento ya ha concluido.</p>
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -350,19 +351,19 @@
         </button>
 
         <h3 class="text-2xl font-bold text-gray-900 mb-2">Inscribir equipo</h3>
-        <p class="text-gray-600 mb-6">Selecciona tu equipo para {{ $evento->title }}</p>
+        <p class="text-gray-600 mb-6">Selecciona tu equipo para <?php echo e($evento->title); ?></p>
 
         <form id="form-inscribir-equipo" class="space-y-4">
-            @csrf
-            <input type="hidden" name="event_id" value="{{ $evento->id }}">
+            <?php echo csrf_field(); ?>
+            <input type="hidden" name="event_id" value="<?php echo e($evento->id); ?>">
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Selecciona tu equipo *</label>
                 <select name="team_id" id="select-team-inscripcion" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">Selecciona un equipo</option>
-                    @foreach($misEquipos as $equipo)
-                        <option value="{{ $equipo->id }}">{{ $equipo->name }} ({{ $equipo->members_count }} miembros)</option>
-                    @endforeach
+                    <?php $__currentLoopData = $misEquipos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $equipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($equipo->id); ?>"><?php echo e($equipo->name); ?> (<?php echo e($equipo->members_count); ?> miembros)</option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
 
@@ -418,8 +419,8 @@
         <p class="text-gray-600 mb-6">Crea tu equipo y luego podrás inscribirlo</p>
 
         <form id="form-crear-equipo" class="space-y-4">
-            @csrf
-            <input type="hidden" name="event_id" value="{{ $evento->id }}">
+            <?php echo csrf_field(); ?>
+            <input type="hidden" name="event_id" value="<?php echo e($evento->id); ?>">
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del equipo *</label>
@@ -481,10 +482,10 @@ document.getElementById('form-inscribir-equipo').addEventListener('submit', asyn
     btn.innerHTML = 'Inscribiendo...';
     
     try {
-        const response = await fetch('{{ route("estudiante.eventos.inscribir-equipo") }}', {
+        const response = await fetch('<?php echo e(route("estudiante.eventos.inscribir-equipo")); ?>', {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                 'Accept': 'application/json',
             },
             body: formData
@@ -528,10 +529,10 @@ document.getElementById('form-crear-equipo').addEventListener('submit', async fu
     btn.innerHTML = 'Creando...';
     
     try {
-        const response = await fetch('{{ route("estudiante.registrar-equipo") }}', {
+        const response = await fetch('<?php echo e(route("estudiante.registrar-equipo")); ?>', {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                 'Accept': 'application/json',
             },
             body: formData
@@ -563,10 +564,10 @@ async function solicitarUnirse(teamId, teamName) {
     }
     
     try {
-        const response = await fetch('{{ route("estudiante.eventos.solicitar-unirse") }}', {
+        const response = await fetch('<?php echo e(route("estudiante.eventos.solicitar-unirse")); ?>', {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
@@ -586,4 +587,6 @@ async function solicitarUnirse(teamId, teamName) {
     }
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.estudiante', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Cheluis\Documentos\7Semestre\Programacion web\ProyectoPW\resources\views/estudiante/evento-detalle.blade.php ENDPATH**/ ?>

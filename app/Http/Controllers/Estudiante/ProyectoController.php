@@ -21,10 +21,10 @@ class ProyectoController extends Controller
     {
         $user = Auth::user();
         
-        // Obtener equipos del usuario
+        // Obtener equipos del usuario con miembros
         $equipos = Team::whereHas('members', function($q) use ($user) {
             $q->where('user_id', $user->id);
-        })->get();
+        })->with('members')->get();
         
         // Obtener proyectos de esos equipos (sin cargar advisor aún)
         $proyectos = Project::whereIn('team_id', $equipos->pluck('id'))
@@ -32,19 +32,9 @@ class ProyectoController extends Controller
                             ->orderBy('created_at', 'desc')
                             ->get();
         
-        // Obtener eventos disponibles para inscripción
-        $now = Carbon::now();
+        // Obtener eventos disponibles para inscripción (solo próximos)
         $eventos = Event::where('is_published', true)
-                       ->where(function($query) use ($now) {
-                           // Eventos con status 'upcoming' (próximamente) u 'open' (abiertos)
-                           $query->where('status', 'upcoming')
-                                 ->orWhere('status', 'open');
-                       })
-                       ->where(function($query) use ($now) {
-                           // Eventos que aún no han terminado
-                           $query->where('event_end_date', '>=', $now)
-                                 ->orWhereNull('event_end_date');
-                       })
+                       ->where('status', 'upcoming')
                        ->orderBy('event_start_date', 'asc')
                        ->get();
         
@@ -109,12 +99,10 @@ class ProyectoController extends Controller
             'event_id' => 'required|exists:events,id',
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:2000',
-            'repository_url' => 'nullable|url',
-            'demo_url' => 'nullable|url',
         ]);
 
         $user = Auth::user();
-        $team = Team::findOrFail($request->team_id);
+        $team = Team::with('members')->findOrFail($request->team_id);
         $event = Event::findOrFail($request->event_id);
 
         // VALIDACIÓN 1: Usuario es miembro del equipo
@@ -123,21 +111,12 @@ class ProyectoController extends Controller
         }
 
         // VALIDACIÓN 2: Evento está disponible para inscripción
-        $now = Carbon::now();
-        
-        // El evento debe estar publicado
         if (!$event->is_published) {
             return response()->json(['success' => false, 'message' => 'Este evento no está disponible'], 422);
         }
 
-        // El evento debe estar en status 'upcoming' u 'open'
-        if (!in_array($event->status, ['upcoming', 'open'])) {
-            return response()->json(['success' => false, 'message' => 'Las inscripciones para este evento no están disponibles'], 422);
-        }
-
-        // El evento no debe haber terminado
-        if ($event->event_end_date && Carbon::parse($event->event_end_date)->lt($now)) {
-            return response()->json(['success' => false, 'message' => 'Este evento ya ha terminado'], 422);
+        if ($event->status !== 'upcoming') {
+            return response()->json(['success' => false, 'message' => 'Solo puedes inscribir proyectos a eventos próximos'], 422);
         }
 
         // VALIDACIÓN 3: El equipo NO está ya inscrito en este evento
@@ -150,7 +129,27 @@ class ProyectoController extends Controller
             return response()->json(['success' => false, 'message' => 'Este equipo ya está inscrito en este evento'], 422);
         }
 
-        // VALIDACIÓN 4: Límite de equipos en el evento
+        // VALIDACIÓN 4: NINGÚN MIEMBRO del equipo puede estar ya en OTRO EQUIPO de este evento
+        $miembrosIds = $team->members->pluck('id')->toArray();
+        
+        // Buscar si alguno de los miembros ya está en otro equipo inscrito en este evento
+        $miembroConConflicto = DB::table('event_registrations as er')
+            ->join('team_members as tm', 'tm.team_id', '=', 'er.team_id')
+            ->join('users as u', 'u.id', '=', 'tm.user_id')
+            ->join('teams as t', 't.id', '=', 'er.team_id')
+            ->where('er.event_id', $request->event_id)
+            ->whereIn('tm.user_id', $miembrosIds)
+            ->select('u.name as user_name', 't.name as team_name')
+            ->first();
+        
+        if ($miembroConConflicto) {
+            return response()->json([
+                'success' => false, 
+                'message' => "No se puede inscribir: {$miembroConConflicto->user_name} ya está participando en este evento con el equipo '{$miembroConConflicto->team_name}'"
+            ], 422);
+        }
+
+        // VALIDACIÓN 5: Límite de equipos en el evento
         if ($event->max_teams) {
             $equiposInscritos = DB::table('event_registrations')
                 ->where('event_id', $request->event_id)
@@ -159,25 +158,6 @@ class ProyectoController extends Controller
             if ($equiposInscritos >= $event->max_teams) {
                 return response()->json(['success' => false, 'message' => 'El evento ha alcanzado el límite de equipos'], 422);
             }
-        }
-
-        // VALIDACIÓN 5: Ningún miembro del equipo está en otro equipo inscrito en el mismo evento
-        $miembrosIds = DB::table('team_members')
-            ->where('team_id', $request->team_id)
-            ->pluck('user_id');
-        
-        $conflicto = DB::table('event_registrations')
-            ->where('event_id', $request->event_id)
-            ->whereExists(function($query) use ($miembrosIds) {
-                $query->select(DB::raw(1))
-                      ->from('team_members')
-                      ->whereColumn('team_members.team_id', 'event_registrations.team_id')
-                      ->whereIn('team_members.user_id', $miembrosIds);
-            })
-            ->exists();
-        
-        if ($conflicto) {
-            return response()->json(['success' => false, 'message' => 'Uno o más miembros del equipo ya están participando en este evento con otro equipo'], 422);
         }
 
         try {
@@ -353,9 +333,16 @@ class ProyectoController extends Controller
 
     public function submitFile(Request $request, $id)
     {
-        $request->validate([
-            'submission_file' => 'required|file|mimes:pdf,zip,rar,docx,pptx|max:51200', // 50MB máximo
-        ]);
+        try {
+            $request->validate([
+                'submission_file' => 'required|file|mimes:pdf,zip,rar,docx,pptx|max:51200',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Error de validación: ' . implode(', ', $e->validator->errors()->all())
+            ], 422);
+        }
 
         $user = Auth::user();
         $proyecto = Project::with('team')->findOrFail($id);
@@ -370,11 +357,43 @@ class ProyectoController extends Controller
             return response()->json(['success' => false, 'message' => 'El proyecto ya ha sido entregado. Elimina la entrega anterior para subir una nueva.'], 422);
         }
 
+        // Verificar que el archivo existe
+        if (!$request->hasFile('submission_file')) {
+            return response()->json(['success' => false, 'message' => 'No se recibió ningún archivo'], 422);
+        }
+
+        $file = $request->file('submission_file');
+
+        // Verificar que el archivo es válido
+        if (!$file->isValid()) {
+            return response()->json(['success' => false, 'message' => 'El archivo no es válido o está corrupto'], 422);
+        }
+
         try {
             // Guardar archivo
             $file = $request->file('submission_file');
+            
+            // Log de información del archivo
+            \Log::info('Subiendo archivo', [
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize(),
+                'proyecto_id' => $proyecto->id
+            ]);
+            
             $fileName = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+            
+            // Asegurarse de que el directorio existe
+            $storageDirectory = storage_path('app/public/submissions');
+            if (!file_exists($storageDirectory)) {
+                mkdir($storageDirectory, 0755, true);
+            }
+            
             $filePath = $file->storeAs('submissions', $fileName, 'public');
+            
+            if (!$filePath) {
+                throw new \Exception('No se pudo guardar el archivo en el almacenamiento');
+            }
 
             // Actualizar proyecto
             $proyecto->update([
