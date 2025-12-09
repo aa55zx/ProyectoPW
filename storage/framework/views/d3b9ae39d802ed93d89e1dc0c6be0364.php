@@ -1,8 +1,6 @@
-@extends('layouts.asesor-dashboard')
+<?php $__env->startSection('title', 'Mi Perfil - Asesor'); ?>
 
-@section('title', 'Mi Perfil - Asesor')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="p-8">
     <!-- Header -->
     <div class="mb-8 flex items-center justify-between">
@@ -26,9 +24,10 @@
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
                 <div class="text-center mb-6">
                     <div class="w-32 h-32 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-4xl font-bold">
-                        {{ substr(Auth::user()->name, 0, 2) }}
+                        <?php echo e(substr(Auth::user()->name, 0, 2)); ?>
+
                     </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-1">{{ Auth::user()->name }}</h2>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-1"><?php echo e(Auth::user()->name); ?></h2>
                     <p class="text-gray-600 mb-4">Asesor</p>
                 </div>
 
@@ -37,13 +36,13 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
-                        <span class="text-sm">{{ Auth::user()->email }}</span>
+                        <span class="text-sm"><?php echo e(Auth::user()->email); ?></span>
                     </div>
                     <div class="flex items-center gap-3 text-gray-600">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
                         </svg>
-                        <span class="text-sm">{{ Auth::user()->numero_control ?? 'N/A' }}</span>
+                        <span class="text-sm"><?php echo e(Auth::user()->numero_control ?? 'N/A'); ?></span>
                     </div>
                     <div class="flex items-center gap-3 text-gray-600">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -237,17 +236,17 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Nombre completo</label>
-                    <input type="text" value="{{ Auth::user()->name }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
+                    <input type="text" value="<?php echo e(Auth::user()->name); ?>" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Correo electrónico</label>
-                    <input type="email" value="{{ Auth::user()->email }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
+                    <input type="email" value="<?php echo e(Auth::user()->email); ?>" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Número de control</label>
-                    <input type="text" value="{{ Auth::user()->numero_control }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
+                    <input type="text" value="<?php echo e(Auth::user()->numero_control); ?>" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
                 </div>
             </div>
             
@@ -274,4 +273,6 @@
         document.getElementById('modalEditarPerfil').classList.remove('flex');
     }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.asesor-dashboard', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Cheluis\Documentos\7Semestre\Programacion web\ProyectoPW\resources\views/asesor/mi-perfil.blade.php ENDPATH**/ ?>

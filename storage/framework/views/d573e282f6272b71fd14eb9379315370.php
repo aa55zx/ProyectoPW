@@ -1,8 +1,6 @@
-@extends('layouts.asesor-dashboard')
+<?php $__env->startSection('title', 'Mis Equipos - Asesor'); ?>
 
-@section('title', 'Mis Equipos - Asesor')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="p-8">
     <!-- Header -->
     <div class="mb-8 flex items-center justify-between">
@@ -10,7 +8,7 @@
             <h1 class="text-3xl font-bold text-gray-900">Mis Equipos</h1>
             <p class="text-gray-600 mt-1">Gestiona los equipos que asesoras</p>
         </div>
-        <a href="{{ route('asesor.equipos-disponibles') }}" class="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium flex items-center gap-2">
+        <a href="<?php echo e(route('asesor.equipos-disponibles')); ?>" class="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
@@ -18,76 +16,81 @@
         </a>
     </div>
 
-    @if(session('success'))
+    <?php if(session('success')): ?>
         <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
-            {{ session('success') }}
-        </div>
-    @endif
+            <?php echo e(session('success')); ?>
 
-    @if(session('error'))
-        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
-            {{ session('error') }}
         </div>
-    @endif
+    <?php endif; ?>
+
+    <?php if(session('error')): ?>
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+            <?php echo e(session('error')); ?>
+
+        </div>
+    <?php endif; ?>
 
     <!-- Solicitudes Pendientes -->
-    @if(isset($solicitudesPendientes) && $solicitudesPendientes->count() > 0)
+    <?php if(isset($solicitudesPendientes) && $solicitudesPendientes->count() > 0): ?>
     <div class="mb-8 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
         <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
             <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
-            Solicitudes Pendientes ({{ $solicitudesPendientes->count() }})
+            Solicitudes Pendientes (<?php echo e($solicitudesPendientes->count()); ?>)
         </h2>
 
         <div class="space-y-4">
-            @foreach($solicitudesPendientes as $solicitud)
+            <?php $__currentLoopData = $solicitudesPendientes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $solicitud): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="bg-white border border-gray-200 rounded-xl p-4">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
-                        <h3 class="font-semibold text-gray-900">{{ $solicitud->team_name }}</h3>
+                        <h3 class="font-semibold text-gray-900"><?php echo e($solicitud->team_name); ?></h3>
                         <p class="text-sm text-gray-600 mt-1">
-                            <span class="font-medium">Evento:</span> {{ $solicitud->event_title }}
+                            <span class="font-medium">Evento:</span> <?php echo e($solicitud->event_title); ?>
+
                         </p>
                         <p class="text-sm text-gray-600">
-                            <span class="font-medium">Solicitado por:</span> {{ $solicitud->requester_name }}
+                            <span class="font-medium">Solicitado por:</span> <?php echo e($solicitud->requester_name); ?>
+
                         </p>
-                        @if($solicitud->message)
-                        <p class="text-sm text-gray-700 mt-2 italic">"{{ $solicitud->message }}"</p>
-                        @endif
+                        <?php if($solicitud->message): ?>
+                        <p class="text-sm text-gray-700 mt-2 italic">"<?php echo e($solicitud->message); ?>"</p>
+                        <?php endif; ?>
                         <p class="text-xs text-gray-500 mt-2">
-                            Fecha: {{ \Carbon\Carbon::parse($solicitud->created_at)->format('d/m/Y H:i') }}
+                            Fecha: <?php echo e(\Carbon\Carbon::parse($solicitud->created_at)->format('d/m/Y H:i')); ?>
+
                         </p>
                     </div>
                     <div class="flex gap-2 ml-4">
-                        <form method="POST" action="{{ route('asesor.solicitudes.aceptar', $solicitud->id) }}">
-                            @csrf
+                        <form method="POST" action="<?php echo e(route('asesor.solicitudes.aceptar', $solicitud->id)); ?>">
+                            <?php echo csrf_field(); ?>
                             <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
                                 ✓ Aceptar
                             </button>
                         </form>
-                        <button onclick="mostrarModalRechazar('{{ $solicitud->id }}')" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                        <button onclick="mostrarModalRechazar('<?php echo e($solicitud->id); ?>')" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
                             ✗ Rechazar
                         </button>
                     </div>
                 </div>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Lista de Equipos -->
-    @if($equipos->count() > 0)
+    <?php if($equipos->count() > 0): ?>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach($equipos as $equipo)
+        <?php $__currentLoopData = $equipos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $equipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex-1">
-                    <h3 class="font-bold text-gray-900 text-lg">{{ $equipo->name }}</h3>
-                    @if($equipo->event)
-                    <p class="text-sm text-gray-600 mt-1">{{ $equipo->event->title }}</p>
-                    @endif
+                    <h3 class="font-bold text-gray-900 text-lg"><?php echo e($equipo->name); ?></h3>
+                    <?php if($equipo->event): ?>
+                    <p class="text-sm text-gray-600 mt-1"><?php echo e($equipo->event->title); ?></p>
+                    <?php endif; ?>
                 </div>
                 <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                     <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,32 +99,32 @@
                 </div>
             </div>
 
-            @if($equipo->description)
-            <p class="text-sm text-gray-600 mb-4">{{ Str::limit($equipo->description, 100) }}</p>
-            @endif
+            <?php if($equipo->description): ?>
+            <p class="text-sm text-gray-600 mb-4"><?php echo e(Str::limit($equipo->description, 100)); ?></p>
+            <?php endif; ?>
 
             <div class="flex items-center gap-4 text-sm text-gray-600 mb-4">
                 <div class="flex items-center gap-1">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
-                    <span>{{ $equipo->members_count }} miembros</span>
+                    <span><?php echo e($equipo->members_count); ?> miembros</span>
                 </div>
                 <div class="flex items-center gap-1">
                     <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                    <span>{{ ucfirst($equipo->status) }}</span>
+                    <span><?php echo e(ucfirst($equipo->status)); ?></span>
                 </div>
             </div>
 
             <div class="flex gap-2">
-                <a href="{{ route('asesor.proyectos') }}" class="flex-1 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium text-center">
+                <a href="<?php echo e(route('asesor.proyectos')); ?>" class="flex-1 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium text-center">
                     Ver Proyecto
                 </a>
             </div>
         </div>
-        @endforeach
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>
-    @else
+    <?php else: ?>
     <!-- Estado vacío -->
     <div class="bg-white rounded-xl p-12 shadow-sm border border-gray-200 text-center">
         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -132,7 +135,7 @@
         <h3 class="text-lg font-semibold text-gray-900 mb-2">No tienes equipos asignados</h3>
         <p class="text-gray-600">Los equipos aparecerán aquí cuando aceptes solicitudes de asesoría</p>
     </div>
-    @endif
+    <?php endif; ?>
 </div>
 
 <!-- Modal para Rechazar Solicitud -->
@@ -140,7 +143,7 @@
     <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Rechazar Solicitud</h3>
         <form id="formRechazar" method="POST">
-            @csrf
+            <?php echo csrf_field(); ?>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Mensaje (opcional)</label>
                 <textarea name="mensaje" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent" placeholder="Explica por qué rechazas esta solicitud..."></textarea>
@@ -172,4 +175,6 @@ function cerrarModalRechazar() {
     modal.classList.remove('flex');
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.asesor-dashboard', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Cheluis\Documentos\7Semestre\Programacion web\ProyectoPW\resources\views/asesor/equipos.blade.php ENDPATH**/ ?>

@@ -1,12 +1,10 @@
-@extends('layouts.asesor-dashboard')
+<?php $__env->startSection('title', 'Dashboard - Asesor'); ?>
 
-@section('title', 'Dashboard - Asesor')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="p-8">
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">¡Hola, {{ Auth::user()->name }}!</h1>
+        <h1 class="text-3xl font-bold text-gray-900">¡Hola, <?php echo e(Auth::user()->name); ?>!</h1>
         <p class="text-gray-600 mt-1">Gestiona tus equipos y ayúdales a alcanzar el éxito.</p>
     </div>
 
@@ -17,7 +15,7 @@
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <p class="text-sm font-medium text-gray-600">Equipos Asesorados</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ $equiposCount ?? 0 }}</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1"><?php echo e($equiposCount ?? 0); ?></p>
                 </div>
                 <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
                     <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +30,7 @@
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <p class="text-sm font-medium text-gray-600">Proyectos Activos</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ $proyectosCount ?? 0 }}</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1"><?php echo e($proyectosCount ?? 0); ?></p>
                 </div>
                 <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
                     <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +45,7 @@
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <p class="text-sm font-medium text-gray-600">Eventos Activos</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ $eventosConEquipos ?? 0 }}</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1"><?php echo e($eventosConEquipos ?? 0); ?></p>
                 </div>
                 <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
                     <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,7 +60,7 @@
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <p class="text-sm font-medium text-gray-600">Solicitudes Pendientes</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ $solicitudesPendientes ?? 0 }}</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1"><?php echo e($solicitudesPendientes ?? 0); ?></p>
                 </div>
                 <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
                     <svg class="w-6 h-6 text-yellow-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,47 +72,53 @@
     </div>
 
     <!-- Mis Equipos Recientes -->
-    @if(isset($misProyectos) && $misProyectos->count() > 0)
+    <?php if(isset($misProyectos) && $misProyectos->count() > 0): ?>
     <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
         <h2 class="text-xl font-bold text-gray-900 mb-6">Mis Equipos Recientes</h2>
         <div class="space-y-4">
-            @foreach($misProyectos->take(5) as $proyecto)
+            <?php $__currentLoopData = $misProyectos->take(5); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $proyecto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
                 <div class="flex-1">
-                    <h3 class="font-semibold text-gray-900">{{ $proyecto->team->name ?? 'Sin nombre' }}</h3>
+                    <h3 class="font-semibold text-gray-900"><?php echo e($proyecto->team->name ?? 'Sin nombre'); ?></h3>
                     <p class="text-sm text-gray-500 mt-1">
-                        <span class="font-medium">Proyecto:</span> {{ $proyecto->title }}
+                        <span class="font-medium">Proyecto:</span> <?php echo e($proyecto->title); ?>
+
                     </p>
                     <p class="text-sm text-gray-500">
-                        <span class="font-medium">Evento:</span> {{ $proyecto->event->title ?? 'Sin evento' }}
+                        <span class="font-medium">Evento:</span> <?php echo e($proyecto->event->title ?? 'Sin evento'); ?>
+
                     </p>
                     <div class="flex items-center gap-2 mt-2">
                         <span class="px-2 py-1 text-xs rounded-full
-                            {{ $proyecto->status === 'submitted' ? 'bg-green-100 text-green-800' : '' }}
-                            {{ $proyecto->status === 'in_progress' ? 'bg-blue-100 text-blue-800' : '' }}
-                            {{ $proyecto->status === 'draft' ? 'bg-gray-100 text-gray-800' : '' }}
-                            {{ $proyecto->status === 'evaluated' ? 'bg-purple-100 text-purple-800' : '' }}">
-                            {{ ucfirst($proyecto->status) }}
+                            <?php echo e($proyecto->status === 'submitted' ? 'bg-green-100 text-green-800' : ''); ?>
+
+                            <?php echo e($proyecto->status === 'in_progress' ? 'bg-blue-100 text-blue-800' : ''); ?>
+
+                            <?php echo e($proyecto->status === 'draft' ? 'bg-gray-100 text-gray-800' : ''); ?>
+
+                            <?php echo e($proyecto->status === 'evaluated' ? 'bg-purple-100 text-purple-800' : ''); ?>">
+                            <?php echo e(ucfirst($proyecto->status)); ?>
+
                         </span>
-                        <span class="text-xs text-gray-500">• {{ $proyecto->team->members_count ?? 0 }} integrantes</span>
+                        <span class="text-xs text-gray-500">• <?php echo e($proyecto->team->members_count ?? 0); ?> integrantes</span>
                     </div>
                 </div>
-                <a href="{{ route('asesor.proyectos') }}" class="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
+                <a href="<?php echo e(route('asesor.proyectos')); ?>" class="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
                     Ver Proyecto
                 </a>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
         
-        @if($misProyectos->count() > 5)
+        <?php if($misProyectos->count() > 5): ?>
         <div class="mt-4 text-center">
-            <a href="{{ route('asesor.equipos') }}" class="text-sm text-gray-600 hover:text-gray-900 font-medium">
+            <a href="<?php echo e(route('asesor.equipos')); ?>" class="text-sm text-gray-600 hover:text-gray-900 font-medium">
                 Ver todos los equipos →
             </a>
         </div>
-        @endif
+        <?php endif; ?>
     </div>
-    @else
+    <?php else: ?>
     <!-- Estado vacío -->
     <div class="bg-white rounded-xl p-12 shadow-sm border border-gray-200 text-center">
         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -124,10 +128,12 @@
         </div>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">No tienes equipos asignados aún</h3>
         <p class="text-gray-600 mb-6">Los equipos aparecerán aquí cuando aceptes solicitudes de asesoría</p>
-        <a href="{{ route('asesor.equipos') }}" class="inline-block px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium">
+        <a href="<?php echo e(route('asesor.equipos')); ?>" class="inline-block px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium">
             Ver Solicitudes
         </a>
     </div>
-    @endif
+    <?php endif; ?>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.asesor-dashboard', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Cheluis\Documentos\7Semestre\Programacion web\ProyectoPW\resources\views/asesor/dashboard.blade.php ENDPATH**/ ?>

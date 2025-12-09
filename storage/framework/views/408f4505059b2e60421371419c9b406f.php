@@ -1,8 +1,6 @@
-@extends('layouts.asesor-dashboard')
+<?php $__env->startSection('title', 'Rankings - Asesor'); ?>
 
-@section('title', 'Rankings - Asesor')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="p-8">
     <!-- Header -->
     <div class="mb-8">
@@ -289,4 +287,6 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.asesor-dashboard', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Cheluis\Documentos\7Semestre\Programacion web\ProyectoPW\resources\views/asesor/rankings.blade.php ENDPATH**/ ?>

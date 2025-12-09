@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title><?php echo $__env->yieldContent('title', 'Dashboard'); ?> - EventTec</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="<?php echo e(asset('js/validaciones-estudiante.js')); ?>" defer></script>
     <style>
         [x-cloak] { display: none !important; }
         
@@ -138,34 +140,6 @@
         </aside>
 
         <div class="flex-1 flex flex-col overflow-hidden bg-gray-50">
-            <header class="bg-white border-b border-gray-200 px-8 py-4 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2 text-sm text-gray-500">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                        </svg>
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                        <span class="font-medium text-gray-900">Dashboard</span>
-                    </div>
-                    
-                    <div class="flex items-center gap-3">
-                        <div class="relative cursor-pointer">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-md hover:shadow-lg transition-all">
-                                <?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?>
-
-                            </div>
-                            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                        </div>
-                        <div class="hidden xl:block">
-                            <p class="text-sm font-semibold text-gray-900"><?php echo e(explode(' ', auth()->user()->name)[0]); ?> <?php echo e(explode(' ', auth()->user()->name)[1] ?? ''); ?></p>
-                            <p class="text-xs text-gray-500">Alumno</p>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
             <main class="flex-1 overflow-y-auto">
                 <?php echo $__env->yieldContent('content'); ?>
             </main>
