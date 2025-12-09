@@ -21,12 +21,14 @@
         
         <div class="absolute bottom-0 left-0 right-0 p-8">
             <div class="flex gap-3 mb-4">
-                <?php if($evento->status === 'open'): ?>
+                <?php if($evento->status === 'in_progress'): ?>
                     <span class="px-4 py-1.5 bg-green-500 text-white text-sm font-bold rounded-full">En curso</span>
                 <?php elseif($evento->status === 'finished'): ?>
                     <span class="px-4 py-1.5 bg-gray-500 text-white text-sm font-bold rounded-full">Finalizado</span>
-                <?php else: ?>
+                <?php elseif($evento->status === 'upcoming'): ?>
                     <span class="px-4 py-1.5 bg-blue-500 text-white text-sm font-bold rounded-full">Próximamente</span>
+                <?php else: ?>
+                    <span class="px-4 py-1.5 bg-yellow-500 text-white text-sm font-bold rounded-full"><?php echo e(ucfirst($evento->status)); ?></span>
                 <?php endif; ?>
                 <span class="px-4 py-1.5 bg-white/90 text-gray-800 text-sm font-bold rounded-full"><?php echo e($evento->category); ?></span>
             </div>
@@ -242,28 +244,49 @@
                            class="block w-full py-3 px-4 bg-gray-900 text-white text-center rounded-xl hover:bg-gray-800 transition-colors font-semibold">
                             Ver mi equipo
                         </a>
-                    <?php elseif($misEquipos->count() > 0): ?>
-                        <!-- Tiene equipos sin inscribir - Botón inscribir equipo existente -->
-                        <button onclick="mostrarModalInscripcion()" 
-                                class="w-full mb-3 py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Inscribir mi equipo
-                        </button>
-                        <button onclick="mostrarModalCrearEquipo()" 
-                                class="w-full py-3 px-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold">
-                            Crear nuevo equipo
-                        </button>
+                    <?php elseif($evento->status === 'upcoming' && $evento->canRegister()): ?>
+                        <!-- Evento próximo Y en período de inscripciones -->
+                        <?php if($misEquipos->count() > 0): ?>
+                            <!-- Tiene equipos sin inscribir -->
+                            <button onclick="mostrarModalInscripcion()" 
+                                    class="w-full mb-3 py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                Inscribir mi equipo
+                            </button>
+                            <button onclick="mostrarModalCrearEquipo()" 
+                                    class="w-full py-3 px-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold">
+                                Crear nuevo equipo
+                            </button>
+                        <?php else: ?>
+                            <!-- No tiene equipos -->
+                            <button onclick="mostrarModalCrearEquipo()" 
+                                    class="w-full py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                Crear equipo
+                            </button>
+                        <?php endif; ?>
+                    <?php elseif($evento->status === 'upcoming'): ?>
+                        <!-- Evento próximo pero FUERA del período de inscripciones -->
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                            <p class="text-sm font-semibold text-yellow-800 mb-1">⚠️ Inscripciones cerradas</p>
+                            <p class="text-xs text-yellow-700">El período de inscripciones es del <?php echo e(\Carbon\Carbon::parse($evento->registration_start_date)->format('d/m/Y')); ?> al <?php echo e(\Carbon\Carbon::parse($evento->registration_end_date)->format('d/m/Y')); ?></p>
+                        </div>
+                    <?php elseif($evento->status === 'in_progress'): ?>
+                        <!-- Evento en curso -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                            <p class="text-sm font-semibold text-blue-800 mb-1">🟢 Evento en curso</p>
+                            <p class="text-xs text-blue-700">Las inscripciones están cerradas. El evento está actualmente en progreso.</p>
+                        </div>
                     <?php else: ?>
-                        <!-- No tiene equipos - Solo crear nuevo -->
-                        <button onclick="mostrarModalCrearEquipo()" 
-                                class="w-full py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Crear equipo
-                        </button>
+                        <!-- Evento finalizado -->
+                        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                            <p class="text-sm font-semibold text-gray-800 mb-1">✓ Evento finalizado</p>
+                            <p class="text-xs text-gray-700">Este evento ya ha concluido.</p>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>

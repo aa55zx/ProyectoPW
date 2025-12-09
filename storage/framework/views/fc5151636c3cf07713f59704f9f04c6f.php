@@ -106,4 +106,4 @@
         </a>
     </div>
 </div>
-<?php /**PATH D:\Cheluis\Documentos\7Semestre\Programacion web\ProyectoPW\resources\views/estudiante/partials/evento-card.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\merin\Downloads\ProyectoPW\resources\views/estudiante/partials/evento-card.blade.php ENDPATH**/ ?>

@@ -2,201 +2,161 @@
 
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Botón de regresar -->
-    <button onclick="window.history.back()" class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 font-medium transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-        </svg>
-        <span>Volver a proyectos</span>
-    </button>
+    <!-- Breadcrumb -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="<?php echo e(route('estudiante.dashboard')); ?>" class="text-gray-700 hover:text-blue-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <a href="<?php echo e(route('estudiante.proyectos')); ?>" class="ml-1 text-gray-700 hover:text-blue-600 md:ml-2">Proyectos</a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 text-gray-500 md:ml-2"><?php echo e($proyecto->title); ?></span>
+                </div>
+            </li>
+        </ol>
+    </nav>
 
-    <!-- Header del proyecto -->
-    <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl p-8 mb-8 shadow-xl text-white">
-        <div class="flex items-start justify-between">
-            <div class="flex-1">
-                <h1 class="text-4xl font-bold mb-3"><?php echo e($proyecto->title); ?></h1>
-                
-                <!-- Estados -->
-                <div class="flex items-center gap-3 mb-4">
-                    <?php if($proyecto->status === 'draft'): ?>
-                        <span class="px-4 py-1.5 bg-white/20 backdrop-blur-sm text-white text-sm font-bold rounded-full">
-                            📝 Borrador
-                        </span>
-                    <?php elseif($proyecto->status === 'in_progress'): ?>
-                        <span class="px-4 py-1.5 bg-white/20 backdrop-blur-sm text-white text-sm font-bold rounded-full">
-                            🔨 En progreso
-                        </span>
-                    <?php elseif($proyecto->status === 'submitted'): ?>
-                        <span class="px-4 py-1.5 bg-green-500 text-white text-sm font-bold rounded-full">
-                            ✓ Entregado
-                        </span>
-                    <?php elseif($proyecto->status === 'evaluated'): ?>
-                        <span class="px-4 py-1.5 bg-yellow-400 text-gray-900 text-sm font-bold rounded-full">
-                            ⭐ Evaluado
-                        </span>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Columna Principal -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Info del Proyecto -->
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+                <div class="flex items-start justify-between mb-6">
+                    <div class="flex-1">
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2"><?php echo e($proyecto->title); ?></h1>
+                        <p class="text-gray-600"><?php echo e($proyecto->event->title); ?></p>
+                    </div>
+                    <?php if($esLider): ?>
+                    <button onclick="mostrarModalEditar()" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
+                        Editar Proyecto
+                    </button>
                     <?php endif; ?>
                 </div>
-                
-                <p class="text-white/90 text-lg max-w-3xl"><?php echo e($proyecto->description); ?></p>
-                
-                <?php if($proyecto->final_score): ?>
-                <div class="mt-4">
-                    <p class="text-white/80 text-sm mb-1">Puntuación Final</p>
-                    <div class="flex items-center gap-2">
-                        <span class="text-5xl font-bold"><?php echo e($proyecto->final_score); ?></span>
-                        <span class="text-xl text-white/80">/ 100</span>
-                    </div>
+
+                <div class="prose max-w-none">
+                    <p class="text-gray-700 leading-relaxed"><?php echo e($proyecto->description); ?></p>
+                </div>
+
+                <?php if($proyecto->repository_url || $proyecto->demo_url): ?>
+                <div class="flex gap-4 mt-6 pt-6 border-t border-gray-200">
+                    <?php if($proyecto->repository_url): ?>
+                    <a href="<?php echo e($proyecto->repository_url); ?>" target="_blank" 
+                       class="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        Repositorio
+                    </a>
+                    <?php endif; ?>
+                    <?php if($proyecto->demo_url): ?>
+                    <a href="<?php echo e($proyecto->demo_url); ?>" target="_blank" 
+                       class="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                        Demo
+                    </a>
+                    <?php endif; ?>
                 </div>
                 <?php endif; ?>
             </div>
-        </div>
-    </div>
 
-    <!-- Contenido Principal -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Columna Principal -->
-        <div class="lg:col-span-2 space-y-6">
-            
-            <!-- Información del Proyecto -->
+            <!-- Estado del Proyecto -->
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">📋 Información del Proyecto</h2>
-                    <?php if($esLider && $proyecto->status !== 'evaluated'): ?>
-                        <button onclick="mostrarModalEditar()" 
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
-                            Editar
-                        </button>
-                    <?php endif; ?>
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">📦 Estado del Proyecto</h2>
+                
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="flex-1">
+                        <?php
+                        $statusInfo = [
+                            'draft' => ['text' => 'Borrador', 'color' => 'gray', 'icon' => '📝'],
+                            'in_progress' => ['text' => 'En Progreso', 'color' => 'blue', 'icon' => '⚙️'],
+                            'submitted' => ['text' => 'Entregado', 'color' => 'green', 'icon' => '✅'],
+                            'evaluated' => ['text' => 'Evaluado', 'color' => 'purple', 'icon' => '⭐'],
+                        ];
+                        $status = $statusInfo[$proyecto->status] ?? $statusInfo['draft'];
+                        ?>
+                        
+                        <span class="inline-flex items-center gap-2 px-4 py-2 bg-<?php echo e($status['color']); ?>-100 text-<?php echo e($status['color']); ?>-800 rounded-lg font-semibold">
+                            <span><?php echo e($status['icon']); ?></span>
+                            <span><?php echo e($status['text']); ?></span>
+                        </span>
+                    </div>
                 </div>
 
-                <div class="space-y-4">
-                    <div>
-                        <p class="text-sm font-semibold text-gray-700 mb-1">Descripción</p>
-                        <p class="text-gray-600"><?php echo e($proyecto->description); ?></p>
-                    </div>
-
-                    <?php if($proyecto->repository_url): ?>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-700 mb-1">Repositorio</p>
-                        <a href="<?php echo e($proyecto->repository_url); ?>" target="_blank" 
-                           class="text-blue-600 hover:text-blue-700 flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                            </svg>
-                            Ver repositorio
-                        </a>
-                    </div>
-                    <?php endif; ?>
-
-                    <?php if($proyecto->demo_url): ?>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-700 mb-1">Demo</p>
-                        <a href="<?php echo e($proyecto->demo_url); ?>" target="_blank" 
-                           class="text-blue-600 hover:text-blue-700 flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                            </svg>
-                            Ver demo
-                        </a>
-                    </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Entrega del Proyecto -->
-            <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">📤 Entrega del Proyecto</h2>
-
-                <?php if($proyecto->status === 'evaluated'): ?>
-                    <!-- Ya evaluado -->
-                    <div class="bg-purple-50 border border-purple-200 rounded-xl p-6">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="font-bold text-purple-900">Proyecto evaluado</p>
-                                <p class="text-sm text-purple-700">Este proyecto ya ha sido calificado</p>
-                            </div>
-                        </div>
-                        <?php if($proyecto->submission_file_path): ?>
-                        <a href="<?php echo e(route('estudiante.proyectos.download-submission', $proyecto->id)); ?>" 
-                           class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-semibold">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                            </svg>
-                            Descargar entrega
-                        </a>
-                        <?php endif; ?>
-                    </div>
-
-                <?php elseif($proyecto->submission_file_path): ?>
+                <?php if($proyecto->submission_file_path): ?>
                     <!-- Archivo entregado -->
                     <div class="bg-green-50 border border-green-200 rounded-xl p-6">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-green-900"><?php echo e($proyecto->submission_file_name); ?></p>
+                                    <p class="text-sm text-green-700">Entregado el <?php echo e($proyecto->submitted_at->format('d/m/Y H:i')); ?></p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="font-bold text-green-900">Archivo entregado</p>
-                                <p class="text-sm text-green-700"><?php echo e($proyecto->submission_file_name); ?></p>
-                                <p class="text-xs text-green-600 mt-1">Entregado el <?php echo e(\Carbon\Carbon::parse($proyecto->submitted_at)->format('d/m/Y H:i')); ?></p>
+                            <div class="flex gap-2">
+                                <a href="<?php echo e(route('estudiante.proyectos.download-submission', $proyecto->id)); ?>" 
+                                   class="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold">
+                                    Descargar
+                                </a>
+                                <?php if($esLider && $proyecto->status !== 'evaluated'): ?>
+                                <button onclick="eliminarEntrega()" 
+                                        class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-semibold">
+                                    Eliminar
+                                </button>
+                                <?php endif; ?>
                             </div>
-                        </div>
-                        <div class="flex gap-3 mt-4">
-                            <a href="<?php echo e(route('estudiante.proyectos.download-submission', $proyecto->id)); ?>" 
-                               class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                </svg>
-                                Descargar
-                            </a>
-                            <?php if($esLider): ?>
-                            <button onclick="eliminarEntrega()" 
-                                    class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-semibold">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                                Eliminar entrega
-                            </button>
-                            <?php endif; ?>
                         </div>
                     </div>
-
                 <?php else: ?>
-                    <!-- Sin entrega -->
-                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center">
-                        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- Sin archivo -->
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
-                        <h3 class="text-lg font-bold text-gray-900 mb-2">Sin archivo de entrega</h3>
-                        <p class="text-gray-600 mb-6">Sube tu archivo final para que los jueces puedan evaluarlo</p>
-                        
+                        <p class="text-gray-600 mb-4">Sin archivo de entrega</p>
                         <?php if($esLider): ?>
                             <button onclick="mostrarModalEntrega()" 
-                                    class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                </svg>
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
                                 Entregar archivo
                             </button>
                         <?php else: ?>
-                            <p class="text-sm text-gray-500">Solo el líder del equipo puede entregar el archivo</p>
+                            <p class="text-sm text-gray-500">Solo el líder puede entregar el archivo</p>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
             </div>
+        </div>
 
+        <!-- Columna Lateral -->
+        <div class="space-y-8">
             <!-- Asesor del Proyecto -->
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">👨‍🏫 Asesor del Proyecto</h2>
 
                 <?php if($proyecto->advisor): ?>
-                    <!-- Con asesor -->
+                    <!-- Asesor asignado -->
                     <div class="bg-green-50 border border-green-200 rounded-xl p-6">
                         <div class="flex items-start justify-between">
                             <div class="flex items-center gap-4">
@@ -212,14 +172,48 @@
                                     </span>
                                 </div>
                             </div>
-                            <?php if($esLider): ?>
-                            <button onclick="mostrarModalAsesor()" 
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
-                                Cambiar
-                            </button>
-                            <?php endif; ?>
                         </div>
                     </div>
+                <?php elseif(isset($solicitudAsesor)): ?>
+                    <!-- Estado de solicitud -->
+                    <?php if($solicitudAsesor->status === 'pending'): ?>
+                        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div class="flex items-center gap-3 mb-2">
+                                <svg class="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-semibold text-yellow-900">Solicitud Pendiente</span>
+                            </div>
+                            <p class="text-sm text-yellow-700 mb-3">
+                                Esperando respuesta del asesor...
+                            </p>
+                            <?php if($esLider): ?>
+                                <button onclick="cancelarSolicitud()" 
+                                        class="text-sm text-yellow-700 hover:text-yellow-900 font-medium underline">
+                                    Cancelar solicitud
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                    <?php elseif($solicitudAsesor->status === 'rejected'): ?>
+                        <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="flex items-center gap-3 mb-2">
+                                <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-semibold text-red-900">Solicitud Rechazada</span>
+                            </div>
+                            <p class="text-sm text-red-700 mb-3">
+                                <?php echo e($solicitudAsesor->response_message ?? 'El asesor rechazó tu solicitud'); ?>
+
+                            </p>
+                            <?php if($esLider): ?>
+                                <button onclick="mostrarModalAsesor()" 
+                                        class="text-sm text-red-700 hover:text-red-900 font-medium underline">
+                                    Solicitar otro asesor
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 <?php else: ?>
                     <!-- Sin asesor -->
                     <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
@@ -230,10 +224,10 @@
                         <?php if($esLider): ?>
                             <button onclick="mostrarModalAsesor()" 
                                     class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
-                                Seleccionar asesor
+                                Solicitar asesor
                             </button>
                         <?php else: ?>
-                            <p class="text-sm text-gray-500">Solo el líder puede asignar un asesor</p>
+                            <p class="text-sm text-gray-500">Solo el líder puede solicitar un asesor</p>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
@@ -254,69 +248,13 @@
                                 <p class="text-sm text-gray-600"><?php echo e($miembro->email); ?></p>
                             </div>
                             <?php if($miembro->id === $proyecto->team->leader_id): ?>
-                                <span class="px-3 py-1 bg-yellow-500 text-white text-xs font-semibold rounded-full">
+                                <span class="px-2 py-1 bg-yellow-600 text-white text-xs font-semibold rounded-full">
                                     Líder
                                 </span>
                             <?php endif; ?>
                         </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            </div>
-
-        </div>
-
-        <!-- Sidebar -->
-        <div class="lg:col-span-1">
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 sticky top-8 space-y-6">
-                <div>
-                    <p class="text-sm text-gray-600 mb-1">Evento</p>
-                    <p class="font-bold text-gray-900"><?php echo e($proyecto->event->title); ?></p>
-                    <a href="<?php echo e(route('estudiante.evento-detalle', $proyecto->event->id)); ?>" 
-                       class="text-sm text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 mt-1">
-                        Ver evento
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </a>
-                </div>
-
-                <div class="border-t border-gray-200 pt-6">
-                    <p class="text-sm text-gray-600 mb-1">Equipo</p>
-                    <p class="font-bold text-gray-900"><?php echo e($proyecto->team->name); ?></p>
-                    <a href="<?php echo e(route('estudiante.equipos.show', $proyecto->team->id)); ?>" 
-                       class="text-sm text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 mt-1">
-                        Ver equipo
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </a>
-                </div>
-
-                <div class="border-t border-gray-200 pt-6">
-                    <p class="text-sm text-gray-600 mb-1">Estado</p>
-                    <p class="font-bold text-gray-900">
-                        <?php if($proyecto->status === 'draft'): ?> Borrador
-                        <?php elseif($proyecto->status === 'in_progress'): ?> En progreso
-                        <?php elseif($proyecto->status === 'submitted'): ?> Entregado
-                        <?php else: ?> Evaluado
-                        <?php endif; ?>
-                    </p>
-                </div>
-
-                <div class="border-t border-gray-200 pt-6">
-                    <p class="text-sm text-gray-600 mb-1">Creado</p>
-                    <p class="font-bold text-gray-900"><?php echo e(\Carbon\Carbon::parse($proyecto->created_at)->format('d M Y')); ?></p>
-                </div>
-
-                <?php if($proyecto->final_score): ?>
-                <div class="border-t border-gray-200 pt-6">
-                    <p class="text-sm text-gray-600 mb-1">Calificación</p>
-                    <div class="flex items-end gap-2">
-                        <p class="text-4xl font-bold text-gray-900"><?php echo e($proyecto->final_score); ?></p>
-                        <p class="text-gray-600 mb-1">/ 100</p>
-                    </div>
-                </div>
-                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -334,34 +272,23 @@
         <h3 class="text-2xl font-bold text-gray-900 mb-2">Entregar Proyecto</h3>
         <p class="text-gray-600 mb-6">Sube el archivo final de tu proyecto</p>
 
-        <form id="form-entregar-archivo" class="space-y-4" enctype="multipart/form-data">
+        <form id="form-entregar-archivo" class="space-y-4">
             <?php echo csrf_field(); ?>
-
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Archivo del proyecto *</label>
-                <input type="file" 
-                       name="submission_file" 
-                       id="file-input"
-                       accept=".pdf,.zip,.rar,.docx,.pptx"
-                       required
-                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <p class="text-xs text-gray-500 mt-2">Formatos: PDF, ZIP, RAR, DOCX, PPTX (máx. 50MB)</p>
-            </div>
-
-            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-                <p class="text-sm text-yellow-800">
-                    <strong>⚠️ Importante:</strong> Una vez entregado, el archivo quedará disponible para los jueces. Solo podrás eliminarlo antes de la evaluación.
-                </p>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Archivo *
+                </label>
+                <input type="file" name="submission_file" required accept=".pdf,.zip,.rar,.docx,.pptx"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <p class="text-xs text-gray-500 mt-1">Formatos: PDF, ZIP, RAR, DOCX, PPTX (Max: 50MB)</p>
             </div>
 
             <div class="flex gap-3 pt-4">
-                <button type="button" 
-                        onclick="cerrarModalEntrega()"
-                        class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold">
+                <button type="button" onclick="cerrarModalEntrega()" 
+                        class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
                     Cancelar
                 </button>
-                <button type="submit" 
-                        class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold">
+                <button type="submit" class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
                     Entregar
                 </button>
             </div>
@@ -382,94 +309,108 @@
 
         <form id="form-editar-proyecto" class="space-y-4">
             <?php echo csrf_field(); ?>
-            <?php echo method_field('PUT'); ?>
-
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del proyecto *</label>
-                <input type="text" 
-                       name="title" 
-                       value="<?php echo e($proyecto->title); ?>"
-                       required
-                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Título *</label>
+                <input type="text" name="title" value="<?php echo e($proyecto->title); ?>" required
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Descripción *</label>
-                <textarea name="description" 
-                          required
-                          rows="4"
-                          class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"><?php echo e($proyecto->description); ?></textarea>
+                <textarea name="description" rows="5" required
+                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"><?php echo e($proyecto->description); ?></textarea>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">URL del repositorio</label>
-                <input type="url" 
-                       name="repository_url"
-                       value="<?php echo e($proyecto->repository_url); ?>"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label class="block text-sm font-medium text-gray-700 mb-2">URL del Repositorio</label>
+                <input type="url" name="repository_url" value="<?php echo e($proyecto->repository_url); ?>"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">URL del demo</label>
-                <input type="url" 
-                       name="demo_url"
-                       value="<?php echo e($proyecto->demo_url); ?>"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label class="block text-sm font-medium text-gray-700 mb-2">URL de la Demo</label>
+                <input type="url" name="demo_url" value="<?php echo e($proyecto->demo_url); ?>"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
             <div class="flex gap-3 pt-4">
-                <button type="button" 
-                        onclick="cerrarModalEditar()"
-                        class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold">
+                <button type="button" onclick="cerrarModalEditar()" 
+                        class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
                     Cancelar
                 </button>
-                <button type="submit" 
-                        class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold">
-                    Guardar cambios
+                <button type="submit" class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                    Guardar Cambios
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Modal Seleccionar Asesor -->
+<!-- Modal Solicitar Asesor -->
 <div id="modal-seleccionar-asesor" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full p-8 relative max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
         <button onclick="cerrarModalAsesor()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
         </button>
 
-        <h3 class="text-2xl font-bold text-gray-900 mb-2">Seleccionar Asesor</h3>
-        <p class="text-gray-600 mb-6">Elige un asesor disponible para tu proyecto</p>
+        <div class="p-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Solicitar Asesor</h3>
+            <p class="text-gray-600 mb-6">Elige un asesor y envía tu solicitud</p>
 
-        <?php if($asesoresDisponibles->count() > 0): ?>
-            <div class="space-y-3">
-                <?php $__currentLoopData = $asesoresDisponibles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asesor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <button onclick="asignarAsesor('<?php echo e($asesor->id); ?>', '<?php echo e($asesor->name); ?>')"
-                            class="w-full p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all text-left group">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+            <form id="form-solicitar-asesor" class="space-y-6">
+                <?php echo csrf_field(); ?>
+                <input type="hidden" name="project_id" value="<?php echo e($proyecto->id); ?>">
+                
+                <!-- Lista de asesores -->
+                <div class="space-y-3">
+                    <?php $__empty_1 = true; $__currentLoopData = $asesoresDisponibles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asesor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <label class="flex items-center gap-4 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all asesor-option">
+                            <input type="radio" name="advisor_id" value="<?php echo e($asesor->id); ?>" 
+                                   class="w-5 h-5 text-blue-600" required>
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold text-lg flex-shrink-0">
                                 <?php echo e(strtoupper(substr($asesor->name, 0, 2))); ?>
 
                             </div>
                             <div class="flex-1">
-                                <p class="font-semibold text-gray-900 group-hover:text-blue-600"><?php echo e($asesor->name); ?></p>
-                                <p class="text-sm text-gray-600"><?php echo e($asesor->email); ?></p>
+                                <div class="font-semibold text-gray-900"><?php echo e($asesor->name); ?></div>
+                                <div class="text-sm text-gray-600"><?php echo e($asesor->email); ?></div>
                             </div>
-                            <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            <svg class="w-5 h-5 text-blue-600 hidden check-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                             </svg>
+                        </label>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                        <div class="text-center py-8 text-gray-500">
+                            No hay asesores disponibles en este momento
                         </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Mensaje opcional -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Mensaje para el asesor (opcional)
+                    </label>
+                    <textarea name="mensaje" rows="3" 
+                              placeholder="Cuéntale al asesor sobre tu proyecto..."
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex gap-3">
+                    <button type="button" 
+                            onclick="cerrarModalAsesor()"
+                            class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                        Cancelar
                     </button>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            </div>
-        <?php else: ?>
-            <div class="text-center py-8">
-                <p class="text-gray-600">No hay asesores disponibles para este evento</p>
-            </div>
-        <?php endif; ?>
+                    <button type="submit" class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        Enviar Solicitud
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -605,20 +546,70 @@ function cerrarModalAsesor() {
     document.getElementById('modal-seleccionar-asesor').classList.add('hidden');
 }
 
-async function asignarAsesor(advisorId, advisorName) {
-    if (!confirm(`¿Deseas asignar a ${advisorName} como asesor de este proyecto?`)) {
-        return;
-    }
+// Manejar selección visual de asesor
+document.querySelectorAll('.asesor-option').forEach(option => {
+    const radio = option.querySelector('input[type="radio"]');
+    const checkIcon = option.querySelector('.check-icon');
+    
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('.asesor-option').forEach(opt => {
+            opt.classList.remove('border-blue-500', 'bg-blue-50');
+            opt.querySelector('.check-icon').classList.add('hidden');
+        });
+        if (this.checked) {
+            option.classList.add('border-blue-500', 'bg-blue-50');
+            checkIcon.classList.remove('hidden');
+        }
+    });
+});
+
+// Enviar solicitud de asesor
+document.getElementById('form-solicitar-asesor').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
     
     try {
-        const response = await fetch('<?php echo e(route("estudiante.proyectos.assign-advisor", $proyecto->id)); ?>', {
+        const response = await fetch('<?php echo e(route("estudiante.proyectos.solicitar-asesor", $proyecto->id)); ?>', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
-            body: JSON.stringify({ advisor_id: advisorId })
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✓ ' + data.message);
+            window.location.reload();
+        } else {
+            alert('✗ ' + data.message);
+            btn.disabled = false;
+            btn.textContent = 'Enviar Solicitud';
+        }
+    } catch (error) {
+        alert('✗ Error al enviar solicitud');
+        btn.disabled = false;
+        btn.textContent = 'Enviar Solicitud';
+    }
+});
+
+// Cancelar solicitud
+async function cancelarSolicitud() {
+    if (!confirm('¿Cancelar la solicitud de asesoría?')) return;
+    
+    try {
+        const response = await fetch('<?php echo e(route("estudiante.proyectos.cancelar-solicitud-asesor", $proyecto->id)); ?>', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
+                'Accept': 'application/json'
+            }
         });
         
         const data = await response.json();
@@ -630,7 +621,7 @@ async function asignarAsesor(advisorId, advisorName) {
             alert('✗ ' + data.message);
         }
     } catch (error) {
-        alert('✗ Error al asignar el asesor');
+        alert('✗ Error al cancelar solicitud');
     }
 }
 </script>
