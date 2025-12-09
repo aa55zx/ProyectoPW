@@ -96,64 +96,124 @@
     </div>
 
     <!-- Formulario de Evaluación -->
-    <form method="POST" action="{{ route('juez.guardar-evaluacion', $project->id) }}" class="space-y-8">
+    <form method="POST" action="{{ route('juez.guardar-evaluacion', $project->id) }}" id="evaluationForm" class="space-y-8">
         @csrf
         
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Criterios de Evaluación</h2>
             
             @if($rubric && $rubric->criteria->isNotEmpty())
-                <div class="space-y-8" x-data="evaluationForm()">
-                    @foreach($rubric->criteria as $criterion)
-                        <div>
-                            <div class="flex items-center justify-between mb-3">
+                <div class="space-y-6">
+                    @foreach($rubric->criteria as $index => $criterion)
+                        <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-indigo-300 transition-all">
+                            <div class="flex items-start justify-between mb-4">
                                 <div class="flex-1">
-                                    <label class="text-lg font-semibold text-gray-900 block mb-1">
-                                        {{ $criterion->name }}
-                                    </label>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="flex items-center justify-center w-8 h-8 bg-indigo-600 text-white font-bold rounded-full text-sm">
+                                            {{ $index + 1 }}
+                                        </span>
+                                        <label class="text-xl font-bold text-gray-900">
+                                            {{ $criterion->name }}
+                                        </label>
+                                    </div>
                                     @if($criterion->description)
-                                        <p class="text-sm text-gray-600">{{ $criterion->description }}</p>
+                                        <p class="text-sm text-gray-600 ml-11">{{ $criterion->description }}</p>
                                     @endif
                                 </div>
                                 <div class="text-right ml-4">
-                                    <span class="text-3xl font-bold text-indigo-600" 
-                                          x-text="scores.criterion_{{ $criterion->id }}">
-                                        {{ $criterion->max_points / 2 }}
-                                    </span>
-                                    <span class="text-lg text-gray-500">/{{ $criterion->max_points }}</span>
+                                    <p class="text-xs text-gray-500 mb-1">Puntos máximos</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ $criterion->max_points }}</p>
                                 </div>
                             </div>
-                            
-                            <div class="relative">
-                                <input type="range" 
-                                       name="scores[{{ $criterion->id }}]"
-                                       x-model="scores.criterion_{{ $criterion->id }}"
-                                       min="0" 
-                                       max="{{ $criterion->max_points }}" 
-                                       value="{{ $criterion->max_points / 2 }}"
-                                       step="0.5"
-                                       class="w-full h-3 bg-gray-200 rounded-full appearance-none cursor-pointer slider"
-                                       required>
-                                <div class="flex justify-between text-xs text-gray-500 mt-2">
-                                    <span>0</span>
-                                    <span>{{ number_format($criterion->max_points / 4, 1) }}</span>
-                                    <span>{{ number_format($criterion->max_points / 2, 1) }}</span>
-                                    <span>{{ number_format(($criterion->max_points * 3) / 4, 1) }}</span>
-                                    <span>{{ $criterion->max_points }}</span>
+
+                            <div class="ml-11 flex items-center gap-4">
+                                <!-- Input de puntuación -->
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3">
+                                        <input type="number" 
+                                               name="scores[{{ $criterion->id }}]"
+                                               id="score_{{ $criterion->id }}"
+                                               min="0" 
+                                               max="{{ $criterion->max_points }}" 
+                                               step="0.5"
+                                               value="{{ $criterion->max_points / 2 }}"
+                                               onchange="updateScores()"
+                                               oninput="updateScores()"
+                                               class="w-32 px-4 py-3 text-2xl font-bold text-center border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('scores.'.$criterion->id) border-red-500 @enderror"
+                                               required>
+                                        
+                                        <div class="flex flex-col gap-2">
+                                            <button type="button" 
+                                                    onclick="incrementScore('{{ $criterion->id }}', {{ $criterion->max_points }})"
+                                                    class="px-3 py-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg transition-colors">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                </svg>
+                                            </button>
+                                            <button type="button" 
+                                                    onclick="decrementScore('{{ $criterion->id }}')"
+                                                    class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <!-- Botones rápidos -->
+                                        <div class="flex gap-2 ml-4">
+                                            <button type="button" 
+                                                    onclick="setScore('{{ $criterion->id }}', 0)"
+                                                    class="px-3 py-2 text-xs font-semibold bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors">
+                                                0
+                                            </button>
+                                            <button type="button" 
+                                                    onclick="setScore('{{ $criterion->id }}', {{ $criterion->max_points / 4 }})"
+                                                    class="px-3 py-2 text-xs font-semibold bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-lg transition-colors">
+                                                25%
+                                            </button>
+                                            <button type="button" 
+                                                    onclick="setScore('{{ $criterion->id }}', {{ $criterion->max_points / 2 }})"
+                                                    class="px-3 py-2 text-xs font-semibold bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg transition-colors">
+                                                50%
+                                            </button>
+                                            <button type="button" 
+                                                    onclick="setScore('{{ $criterion->id }}', {{ ($criterion->max_points * 3) / 4 }})"
+                                                    class="px-3 py-2 text-xs font-semibold bg-lime-100 hover:bg-lime-200 text-lime-700 rounded-lg transition-colors">
+                                                75%
+                                            </button>
+                                            <button type="button" 
+                                                    onclick="setScore('{{ $criterion->id }}', {{ $criterion->max_points }})"
+                                                    class="px-3 py-2 text-xs font-semibold bg-green-100 hover:bg-green-200 text-green-700 rounded-lg transition-colors">
+                                                100%
+                                            </button>
+                                        </div>
+                                    </div>
+                                    @error('scores.'.$criterion->id)
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Barra de progreso visual -->
+                            <div class="ml-11 mt-4">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div id="progress_{{ $criterion->id }}" 
+                                         class="h-full rounded-full transition-all duration-300 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500" 
+                                         style="width: 50%"></div>
                                 </div>
                             </div>
                         </div>
                     @endforeach
 
                     <!-- Área de Comentarios -->
-                    <div class="pt-6 border-t border-gray-100">
+                    <div class="pt-6 border-t-2 border-gray-200">
                         <label class="text-lg font-semibold text-gray-900 block mb-3">
-                            Comentarios y Retroalimentación
+                            💬 Comentarios y Retroalimentación
                         </label>
                         <textarea name="comments" 
                                   rows="6" 
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none @error('comments') border-red-500 @enderror"
-                                  placeholder="Proporciona retroalimentación constructiva para el equipo...">{{ old('comments') }}</textarea>
+                                  class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none @error('comments') border-red-500 @enderror"
+                                  placeholder="Proporciona retroalimentación constructiva y detallada para el equipo...">{{ old('comments') }}</textarea>
                         @error('comments')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -161,24 +221,44 @@
                     </div>
 
                     <!-- Resumen de Calificación -->
-                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-100">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-gray-600 mb-1">Calificación Total</p>
-                                <p class="text-4xl font-bold text-indigo-600" x-text="totalScore().toFixed(1)">
-                                    {{ number_format($rubric->criteria->sum('max_points') / 2, 1) }}
-                                </p>
-                                <p class="text-sm text-gray-500 mt-1">de {{ $rubric->criteria->sum('max_points') }} puntos posibles</p>
+                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 border-2 border-indigo-200">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">📊 Resumen de Evaluación</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                                <p class="text-sm font-medium text-gray-600 mb-1">Puntaje Obtenido</p>
+                                <p id="totalRawScore" class="text-3xl font-bold text-gray-900">{{ number_format($rubric->criteria->sum('max_points') / 2, 1) }}</p>
+                                <p class="text-xs text-gray-500 mt-1">de {{ $rubric->criteria->sum('max_points') }} puntos</p>
                             </div>
-                            <div class="text-right">
-                                <p class="text-sm text-gray-600">Evaluación basada en</p>
-                                <p class="text-2xl font-bold text-gray-900">{{ $rubric->criteria->count() }} criterios</p>
+
+                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                                <p class="text-sm font-medium text-gray-600 mb-1">Calificación Final</p>
+                                <p id="normalizedScore" class="text-3xl font-bold text-indigo-600">50.0</p>
+                                <p class="text-xs text-gray-500 mt-1">de 100 puntos</p>
+                            </div>
+
+                            <div class="bg-white rounded-xl p-4 shadow-sm">
+                                <p class="text-sm font-medium text-gray-600 mb-1">Porcentaje</p>
+                                <p id="percentageScore" class="text-3xl font-bold text-purple-600">50%</p>
+                                <p class="text-xs text-gray-500 mt-1">del total</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <div class="flex items-center justify-between text-xs text-gray-600 mb-2">
+                                <span>Progreso de Evaluación</span>
+                                <span id="progressText">50.0%</span>
+                            </div>
+                            <div class="w-full bg-white rounded-full h-3 overflow-hidden shadow-inner">
+                                <div id="totalProgress" 
+                                     class="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-500 rounded-full" 
+                                     style="width: 50%"></div>
                             </div>
                         </div>
                     </div>
 
                     @if($errors->any())
-                        <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                        <div class="bg-red-50 border-2 border-red-200 rounded-xl p-4">
                             <div class="flex items-start gap-3">
                                 <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -196,10 +276,10 @@
                     @endif
 
                     <!-- Botones de Acción -->
-                    <div class="flex items-center justify-between pt-6 border-t border-gray-100">
+                    <div class="flex items-center justify-between pt-6 border-t-2 border-gray-200">
                         <a href="{{ route('juez.evaluaciones') }}" 
                            class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition-all duration-300">
-                            Cancelar
+                            ← Cancelar
                         </a>
                         <button type="submit" 
                                 class="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2">
@@ -229,79 +309,90 @@
 
 @if($rubric && $rubric->criteria->isNotEmpty())
 <script>
-function evaluationForm() {
-    return {
-        scores: {
-            @foreach($rubric->criteria as $criterion)
-                criterion_{{ $criterion->id }}: {{ $criterion->max_points / 2 }},
-            @endforeach
+// Configuración de criterios
+const criteriaConfig = {
+    @foreach($rubric->criteria as $criterion)
+        '{{ $criterion->id }}': {
+            maxPoints: {{ $criterion->max_points }},
+            weight: {{ $criterion->max_points }}
         },
-        totalScore() {
-            const values = Object.values(this.scores);
-            const sum = values.reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
-            return sum;
+    @endforeach
+};
+
+const maxTotalPoints = {{ $rubric->criteria->sum('max_points') }};
+
+// Función para incrementar score
+function incrementScore(criterionId, maxPoints) {
+    const input = document.getElementById('score_' + criterionId);
+    let currentValue = parseFloat(input.value) || 0;
+    let newValue = Math.min(currentValue + 0.5, maxPoints);
+    input.value = newValue.toFixed(1);
+    updateScores();
+}
+
+// Función para decrementar score
+function decrementScore(criterionId) {
+    const input = document.getElementById('score_' + criterionId);
+    let currentValue = parseFloat(input.value) || 0;
+    let newValue = Math.max(currentValue - 0.5, 0);
+    input.value = newValue.toFixed(1);
+    updateScores();
+}
+
+// Función para establecer score directamente
+function setScore(criterionId, value) {
+    const input = document.getElementById('score_' + criterionId);
+    input.value = parseFloat(value).toFixed(1);
+    updateScores();
+}
+
+// Función principal para actualizar todos los scores
+function updateScores() {
+    let totalRaw = 0;
+    
+    // Calcular puntaje total y actualizar barras de progreso
+    Object.keys(criteriaConfig).forEach(criterionId => {
+        const input = document.getElementById('score_' + criterionId);
+        const progress = document.getElementById('progress_' + criterionId);
+        
+        if (input && progress) {
+            const value = parseFloat(input.value) || 0;
+            const maxPoints = criteriaConfig[criterionId].maxPoints;
+            
+            // Validar que no exceda el máximo
+            if (value > maxPoints) {
+                input.value = maxPoints.toFixed(1);
+            }
+            
+            // Validar que no sea negativo
+            if (value < 0) {
+                input.value = '0.0';
+            }
+            
+            const validValue = parseFloat(input.value);
+            totalRaw += validValue;
+            
+            // Actualizar barra de progreso individual
+            const percentage = (validValue / maxPoints) * 100;
+            progress.style.width = percentage + '%';
         }
-    }
+    });
+    
+    // Calcular score normalizado
+    const normalizedScore = maxTotalPoints > 0 ? (totalRaw / maxTotalPoints) * 100 : 0;
+    
+    // Actualizar displays
+    document.getElementById('totalRawScore').textContent = totalRaw.toFixed(1);
+    document.getElementById('normalizedScore').textContent = normalizedScore.toFixed(1);
+    document.getElementById('percentageScore').textContent = normalizedScore.toFixed(0) + '%';
+    document.getElementById('progressText').textContent = normalizedScore.toFixed(1) + '%';
+    document.getElementById('totalProgress').style.width = normalizedScore + '%';
 }
+
+// Inicializar scores al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    updateScores();
+});
 </script>
-
-<style>
-/* Estilo personalizado para el slider */
-input[type="range"].slider::-webkit-slider-thumb {
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #6366f1;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s;
-}
-
-input[type="range"].slider::-webkit-slider-thumb:hover {
-    background: #4f46e5;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-input[type="range"].slider::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #6366f1;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s;
-}
-
-input[type="range"].slider::-moz-range-thumb:hover {
-    background: #4f46e5;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-input[type="range"].slider::-webkit-slider-runnable-track {
-    background: linear-gradient(to right, 
-        #ef4444 0%, 
-        #f59e0b 25%, 
-        #eab308 50%, 
-        #84cc16 75%, 
-        #22c55e 100%);
-    height: 12px;
-    border-radius: 6px;
-}
-
-input[type="range"].slider::-moz-range-track {
-    background: linear-gradient(to right, 
-        #ef4444 0%, 
-        #f59e0b 25%, 
-        #eab308 50%, 
-        #84cc16 75%, 
-        #22c55e 100%);
-    height: 12px;
-    border-radius: 6px;
-}
-</style>
 @endif
 @endsection

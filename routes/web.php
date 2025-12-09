@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/evento/{id}', [AsesorController::class, 'eventoDetalle'])->name('evento-detalle');
         Route::get('/equipos', [AsesorController::class, 'equipos'])->name('equipos');
         Route::get('/proyectos', [AsesorController::class, 'proyectos'])->name('proyectos');
+        Route::get('/proyecto/{id}', [AsesorController::class, 'proyectoDetalle'])->name('proyecto-detalle');
         Route::get('/rankings', [AsesorController::class, 'rankings'])->name('rankings');
         Route::get('/mi-perfil', [AsesorController::class, 'miPerfil'])->name('mi-perfil');
         

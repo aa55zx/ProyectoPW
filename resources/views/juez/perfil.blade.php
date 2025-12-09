@@ -206,46 +206,6 @@
                     </div>
                 </form>
             </div>
-
-            <!-- Preferencias (opcional para futuras funcionalidades) -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h3 class="text-xl font-bold text-gray-900 mb-6">Preferencias de Notificaciones</h3>
-                
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                        <div>
-                            <p class="font-medium text-gray-900">Notificaciones por Email</p>
-                            <p class="text-sm text-gray-600">Recibe actualizaciones en tu correo</p>
-                        </div>
-                        <button type="button" 
-                                class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-indigo-600 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
-                            <span class="translate-x-5 inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
-                        </button>
-                    </div>
-
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                        <div>
-                            <p class="font-medium text-gray-900">Recordatorios de Evaluaciones</p>
-                            <p class="text-sm text-gray-600">Te avisamos de evaluaciones pendientes</p>
-                        </div>
-                        <button type="button" 
-                                class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-indigo-600 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
-                            <span class="translate-x-5 inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
-                        </button>
-                    </div>
-
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                        <div>
-                            <p class="font-medium text-gray-900">Resumen Semanal</p>
-                            <p class="text-sm text-gray-600">Recibe un resumen de tu actividad</p>
-                        </div>
-                        <button type="button" 
-                                class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-300 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
-                            <span class="translate-x-0 inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>

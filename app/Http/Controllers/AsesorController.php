@@ -136,7 +136,6 @@ class AsesorController extends Controller
             ->join('users', 'advisor_requests.requested_by', '=', 'users.id')
             ->where('advisor_requests.advisor_id', $user->id)
             ->where('advisor_requests.status', 'pending')
-            ->where('advisor_requests.requested_by', '!=', $user->id) // Solo solicitudes de estudiantes
             ->select(
                 'advisor_requests.*',
                 'teams.name as team_name',
@@ -266,12 +265,16 @@ class AsesorController extends Controller
             ->pluck('user_id');
         
         foreach ($teamMembers as $memberId) {
-            Notification::create([
+            DB::table('notifications')->insert([
+                'id' => \Illuminate\Support\Str::uuid(),
                 'user_id' => $memberId,
                 'type' => 'advisor_accepted',
                 'title' => '¡Asesor asignado!',
                 'message' => $user->name . ' aceptó ser su asesor',
-                'data' => json_encode(['team_id' => $solicitud->team_id])
+                'data' => json_encode(['team_id' => $solicitud->team_id]),
+                'is_read' => false,
+                'created_at' => now(),
+                'updated_at' => now()
             ]);
         }
         

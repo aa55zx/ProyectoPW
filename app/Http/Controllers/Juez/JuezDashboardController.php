@@ -323,8 +323,11 @@ class JuezDashboardController extends Controller
 
         // Guardar las calificaciones por criterio y calcular total
         $totalScore = 0;
+        $maxPossibleScore = 0;
 
         foreach ($request->scores as $criterionId => $score) {
+            $criterion = $rubric->criteria->find($criterionId);
+            
             EvaluationScore::create([
                 'id' => (string) Str::uuid(),
                 'evaluation_id' => $evaluation->id,
@@ -333,10 +336,13 @@ class JuezDashboardController extends Controller
             ]);
 
             $totalScore += $score;
+            $maxPossibleScore += $criterion->max_points;
         }
 
-        // El total_score es la suma de todos los criterios (no el promedio)
-        $evaluation->update(['total_score' => $totalScore]);
+        // Normalizar el score a escala de 100
+        $normalizedScore = $maxPossibleScore > 0 ? ($totalScore / $maxPossibleScore) * 100 : 0;
+        
+        $evaluation->update(['total_score' => round($normalizedScore, 2)]);
 
         // Actualizar el proyecto
         $project->update([
