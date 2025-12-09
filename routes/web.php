@@ -82,8 +82,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/equipos', [AsesorController::class, 'equipos'])->name('equipos');
         Route::get('/proyectos', [AsesorController::class, 'proyectos'])->name('proyectos');
         Route::get('/proyecto/{id}', [AsesorController::class, 'proyectoDetalle'])->name('proyecto-detalle');
+        Route::post('/proyecto/{id}/comentario', [AsesorController::class, 'agregarComentario'])->name('proyecto.comentario');
         Route::get('/rankings', [AsesorController::class, 'rankings'])->name('rankings');
         Route::get('/mi-perfil', [AsesorController::class, 'miPerfil'])->name('mi-perfil');
+        Route::post('/mi-perfil', [AsesorController::class, 'actualizarPerfil'])->name('mi-perfil.actualizar');
+Route::post('/mi-perfil/password', [AsesorController::class, 'actualizarPassword'])->name('mi-perfil.actualizar-password');
         
         // Solicitudes de asesoría
         Route::post('/solicitudes/{id}/aceptar', [AsesorController::class, 'aceptarSolicitud'])->name('solicitudes.aceptar');

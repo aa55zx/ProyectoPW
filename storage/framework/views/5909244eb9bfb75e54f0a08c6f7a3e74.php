@@ -109,4 +109,4 @@
     </div>
 </body>
 </html>
-<?php /**PATH D:\Cheluis\Documentos\7Semestre\Programacion web\ProyectoPW\resources\views/auth/login.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\merin\Downloads\ProyectoPW\resources\views/auth/login.blade.php ENDPATH**/ ?>

@@ -62,7 +62,18 @@ class ProyectoController extends Controller
             abort(403, 'No tienes permiso para ver este proyecto');
         }
         
+
+        // Obtener comentarios del asesor
+        $comentarios = \App\Models\ProjectComment::where('project_id', $id)
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        // Obtener asesores disponibles...
+        // Obtener asesores disponibles (que no tengan proyecto en este evento)
+
         // Obtener asesores disponibles (asignados al evento y que no estén ocupados)
+
         $asesoresDisponibles = collect();
         
         if (Schema::hasColumn('projects', 'advisor_id')) {
@@ -106,7 +117,7 @@ class ProyectoController extends Controller
             ->orderBy('created_at', 'desc')
             ->first();
         
-        return view('estudiante.proyecto-detalle', compact('proyecto', 'asesoresDisponibles', 'esLider', 'solicitudAsesor'));
+        return view('estudiante.proyecto-detalle', compact('proyecto', 'asesoresDisponibles', 'esLider', 'solicitudAsesor', 'comentarios'));
     }
 
     public function store(Request $request)

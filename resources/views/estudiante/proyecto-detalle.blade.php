@@ -636,4 +636,39 @@ async function cancelarSolicitud() {
     }
 }
 </script>
+<!-- Sección de Comentarios del Asesor -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">💬 Comentarios del Asesor</h2>
+            
+            @if($comentarios && $comentarios->count() > 0)
+            <div class="space-y-4 border-t border-gray-200 pt-6">
+                @foreach($comentarios as $comentario)
+                <div class="flex gap-4">
+                    <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-white font-semibold text-sm">{{ substr($comentario->user->name, 0, 2) }}</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-gray-900">{{ $comentario->user->name }}</h4>
+                                <span class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($comentario->created_at)->diffForHumans() }}</span>
+                            </div>
+                            <p class="text-gray-700">{{ $comentario->comment }}</p>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @else
+            <div class="text-center py-8 border-t border-gray-200 mt-6">
+                <svg class="w-16 h-16 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <p class="text-gray-500 font-medium">Aún no hay comentarios del asesor</p>
+                <p class="text-sm text-gray-400 mt-1">Tu asesor dejará aquí sus observaciones sobre el proyecto</p>
+            </div>
+            @endif
+        </div>
+    </div>
 @endsection
