@@ -3,9 +3,17 @@
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header -->
-    <div class="mb-8">
-        <h1 class="text-4xl font-bold text-gray-900 mb-2">Proyectos</h1>
-        <p class="text-gray-600 text-lg">Gestiona tus proyectos y entregas</p>
+    <div class="mb-8 flex justify-between items-center">
+        <div>
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Proyectos</h1>
+            <p class="text-gray-600 text-lg">Gestiona tus proyectos y entregas</p>
+        </div>
+        <button onclick="abrirModalCrearProyecto()" class="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Nuevo Proyecto
+        </button>
     </div>
 
     <!-- Grid de proyectos -->
@@ -104,6 +112,140 @@
         </div>
     <?php endif; ?>
 </div>
+
+<!-- Modal Crear Proyecto -->
+<div id="modalCrearProyecto" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-2xl bg-white">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">Crear Nuevo Proyecto</h3>
+            <button onclick="cerrarModalCrearProyecto()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <form id="formCrearProyecto" onsubmit="crearProyecto(event)">
+            <?php echo csrf_field(); ?>
+
+            <!-- Nombre del Proyecto -->
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Nombre del Proyecto *</label>
+                <input type="text" name="title" required maxlength="255"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Ej: Sistema de Gestión Escolar">
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Descripción *</label>
+                <textarea name="description" required maxlength="2000" rows="4"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Describe tu proyecto..."></textarea>
+            </div>
+
+            <!-- Seleccionar Equipo -->
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Seleccionar Equipo *</label>
+                <select name="team_id" id="teamSelect" required onchange="verificarEquipo()"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Selecciona un equipo --</option>
+                    <?php $__currentLoopData = $equipos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $equipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($equipo->id); ?>"><?php echo e($equipo->name); ?> (<?php echo e($equipo->members_count); ?> miembros)</option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+            </div>
+
+            <!-- Seleccionar Evento -->
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Seleccionar Evento *</label>
+                <select name="event_id" id="eventSelect" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Selecciona un evento --</option>
+                    <?php $__currentLoopData = $eventos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $evento): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($evento->id); ?>"><?php echo e($evento->title); ?> - Inicia: <?php echo e(\Carbon\Carbon::parse($evento->event_start_date)->format('d/m/Y')); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+            </div>
+
+            <div id="alertaEquipo" class="hidden mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p class="text-sm text-yellow-800"></p>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex gap-3 justify-end">
+                <button type="button" onclick="cerrarModalCrearProyecto()"
+                    class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-semibold">
+                    Cancelar
+                </button>
+                <button type="submit" id="btnCrearProyecto"
+                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                    Crear Proyecto
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function abrirModalCrearProyecto() {
+    document.getElementById('modalCrearProyecto').classList.remove('hidden');
+}
+
+function cerrarModalCrearProyecto() {
+    document.getElementById('modalCrearProyecto').classList.add('hidden');
+    document.getElementById('formCrearProyecto').reset();
+    document.getElementById('alertaEquipo').classList.add('hidden');
+}
+
+function verificarEquipo() {
+    // Aquí podrías agregar lógica adicional si lo necesitas
+}
+
+function crearProyecto(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const btnCrear = document.getElementById('btnCrearProyecto');
+    
+    btnCrear.disabled = true;
+    btnCrear.textContent = 'Creando...';
+    
+    fetch('<?php echo e(route("estudiante.proyectos.store")); ?>', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
+            'Accept': 'application/json',
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            window.location.reload();
+        } else {
+            alert(data.message || 'Error al crear el proyecto');
+            btnCrear.disabled = false;
+            btnCrear.textContent = 'Crear Proyecto';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al crear el proyecto');
+        btnCrear.disabled = false;
+        btnCrear.textContent = 'Crear Proyecto';
+    });
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('modalCrearProyecto')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        cerrarModalCrearProyecto();
+    }
+});
+</script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.estudiante', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\merin\Downloads\ProyectoPW\resources\views/estudiante/proyectos.blade.php ENDPATH**/ ?>

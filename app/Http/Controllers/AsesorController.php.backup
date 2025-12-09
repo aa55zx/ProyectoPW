@@ -10,9 +10,6 @@ use App\Models\Notification;
 use App\Models\ProjectComment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\Asesor\UpdatePerfilRequest;
-use App\Http\Requests\Asesor\UpdatePasswordRequest;
-use Illuminate\Support\Facades\Hash;
 
 class AsesorController extends Controller
 {
@@ -152,7 +149,7 @@ class AsesorController extends Controller
     }
 
     /**
-     * Mostrar equipos disponibles (sin asesor)
+     * Mostrar equipos disponibles (sin asesor) - NUEVA FUNCIÓN
      */
     public function equiposDisponibles()
     {
@@ -166,7 +163,7 @@ class AsesorController extends Controller
         // Obtener solicitudes que el asesor ha enviado
         $misSolicitudesEnviadas = DB::table('advisor_requests')
             ->where('advisor_id', $user->id)
-            ->where('requested_by', $user->id)
+            ->where('requested_by', $user->id) // Solicitudes enviadas por el asesor
             ->whereIn('status', ['pending'])
             ->pluck('project_id')
             ->toArray();
@@ -175,7 +172,7 @@ class AsesorController extends Controller
     }
     
     /**
-     * Solicitar asesorar a un equipo
+     * Solicitar asesorar a un equipo - NUEVA FUNCIÓN
      */
     public function solicitarAsesorar(Request $request, $projectId)
     {
@@ -200,13 +197,13 @@ class AsesorController extends Controller
             return redirect()->back()->with('error', 'Ya enviaste una solicitud a este equipo');
         }
         
-        // Crear solicitud
+        // Crear solicitud (asesor solicita al equipo)
         DB::table('advisor_requests')->insert([
             'id' => \Illuminate\Support\Str::uuid(),
             'team_id' => $proyecto->team_id,
             'project_id' => $projectId,
             'advisor_id' => $user->id,
-            'requested_by' => $user->id,
+            'requested_by' => $user->id, // El asesor solicita
             'status' => 'pending',
             'message' => $request->input('mensaje', 'Me gustaría ser su asesor en este proyecto'),
             'created_at' => now(),
@@ -384,91 +381,4 @@ class AsesorController extends Controller
         
         return view('asesor.mi-perfil', compact('user', 'equiposCount', 'proyectosCount', 'eventosCount'));
     }
-
-    /**
-     * Mostrar detalle de un proyecto
-     */
-    public function proyectoDetalle($id)
-    {
-        $user = Auth::user();
-        
-        // Obtener proyecto con todas sus relaciones
-        $proyecto = Project::where('id', $id)
-            ->where('advisor_id', $user->id)
-            ->with(['team.members', 'event'])
-            ->firstOrFail();
-        
-        // Obtener comentarios del proyecto
-        $comentarios = ProjectComment::where('project_id', $id)
-            ->with('user')
-            ->orderBy('created_at', 'desc')
-            ->get();
-        
-        return view('asesor.proyecto-detalle', compact('proyecto', 'comentarios'));
-    }
-
-    /**
-     * Agregar comentario a un proyecto
-     */
-    public function agregarComentario(Request $request, $id)
-    {
-        $user = Auth::user();
-        
-        $request->validate([
-            'comment' => 'required|string|max:1000'
-        ]);
-        
-        // Verificar que el proyecto existe y es del asesor
-        $proyecto = Project::where('id', $id)
-            ->where('advisor_id', $user->id)
-            ->firstOrFail();
-        
-        // Crear comentario
-        $comentario = ProjectComment::create([
-            'project_id' => $id,
-            'user_id' => $user->id,
-            'comment' => $request->comment,
-            'created_at' => now()
-        ]);
-        
-        // Notificar a los miembros del equipo
-        $teamMembers = DB::table('team_members')
-            ->where('team_id', $proyecto->team_id)
-            ->pluck('user_id');
-        
-        foreach ($teamMembers as $memberId) {
-            DB::table('notifications')->insert([
-                'id' => \Illuminate\Support\Str::uuid(),
-                'user_id' => $memberId,
-                'type' => 'advisor_comment',
-                'title' => 'Nuevo comentario del asesor',
-                'message' => $user->name . ' comentó en ' . $proyecto->title,
-                'data' => json_encode(['project_id' => $id]),
-                'is_read' => 0,
-                'created_at' => now()->format('Y-m-d H:i:s')
-            ]);
-        }
-        
-        return redirect()->back()->with('success', 'Comentario agregado correctamente');
-    }
-    /**
- * Actualizar perfil del asesor
- */
-public function actualizarPerfil(UpdatePerfilRequest $request)
-{
-    $user = Auth::user();
-    $user->update($request->validated());
-    return redirect()->back()->with('success', 'Perfil actualizado correctamente');
-}
-
-/**
- * Actualizar contraseña del asesor
- */
-public function actualizarPassword(UpdatePasswordRequest $request)
-{
-    $user = Auth::user();
-    $user->password = Hash::make($request->password);
-    $user->save();
-    return redirect()->back()->with('success', 'Contraseña actualizada correctamente');
-}
 }

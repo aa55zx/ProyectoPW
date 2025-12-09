@@ -96,22 +96,25 @@
                     </div>
                     
                     <!-- Botones de acción -->
-                    <div class="flex gap-2">
-                        <?php if($proyecto->repository_url): ?>
-                        <a href="<?php echo e($proyecto->repository_url); ?>" target="_blank" class="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium text-center">
-                            Ver Repositorio
+                    <div class="flex flex-col gap-2">
+                        <!-- Botón Ver Detalle (SIEMPRE visible) -->
+                        <a href="<?php echo e(route('asesor.proyecto-detalle', $proyecto->id)); ?>" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium text-center">
+                            Ver Detalle
                         </a>
-                        <?php endif; ?>
-                        <?php if($proyecto->demo_url): ?>
-                        <a href="<?php echo e($proyecto->demo_url); ?>" target="_blank" class="flex-1 px-4 py-2 border border-gray-900 text-gray-900 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-center">
-                            Ver Demo
-                        </a>
-                        <?php endif; ?>
-                        <?php if(!$proyecto->repository_url && !$proyecto->demo_url): ?>
-                        <button disabled class="w-full px-4 py-2 bg-gray-200 text-gray-500 rounded-lg text-sm font-medium cursor-not-allowed">
-                            Sin recursos
-                        </button>
-                        <?php endif; ?>
+                        
+                        <!-- Botones de recursos (si existen) -->
+                        <div class="flex gap-2">
+                            <?php if($proyecto->repository_url): ?>
+                            <a href="<?php echo e($proyecto->repository_url); ?>" target="_blank" class="flex-1 px-3 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-xs font-medium text-center">
+                                Repositorio
+                            </a>
+                            <?php endif; ?>
+                            <?php if($proyecto->demo_url): ?>
+                            <a href="<?php echo e($proyecto->demo_url); ?>" target="_blank" class="flex-1 px-3 py-2 border border-gray-900 text-gray-900 rounded-lg hover:bg-gray-50 transition-colors text-xs font-medium text-center">
+                                Demo
+                            </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
