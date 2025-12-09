@@ -62,7 +62,7 @@ class ProyectoController extends Controller
             abort(403, 'No tienes permiso para ver este proyecto');
         }
         
-<<<<<<< HEAD
+
         // Obtener comentarios del asesor
         $comentarios = \App\Models\ProjectComment::where('project_id', $id)
             ->with('user')
@@ -71,9 +71,9 @@ class ProyectoController extends Controller
         
         // Obtener asesores disponibles...
         // Obtener asesores disponibles (que no tengan proyecto en este evento)
-=======
+
         // Obtener asesores disponibles (asignados al evento y que no estén ocupados)
->>>>>>> 920c65cbed2f67bb4f23b5a14ce33b6fc2a075c7
+
         $asesoresDisponibles = collect();
         
         if (Schema::hasColumn('projects', 'advisor_id')) {
