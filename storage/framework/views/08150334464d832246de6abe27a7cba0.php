@@ -32,7 +32,7 @@
 
     <!-- Estadísticas Rápidas -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-sm p-6 text-white">
+        <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-sm p-6 text-white">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-sm opacity-90">Total Usuarios</p>
                 <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,7 +41,7 @@
             </div>
             <p class="text-4xl font-bold"><?php echo e($usuarios->total()); ?></p>
         </div>
-        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-sm p-6 text-white">
+        <div class="bg-gradient-to-br from-gray-700 to-gray-800 rounded-2xl shadow-sm p-6 text-white">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-sm opacity-90">Estudiantes</p>
                 <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@
             </div>
             <p class="text-4xl font-bold"><?php echo e($totalEstudiantes); ?></p>
         </div>
-        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
+        <div class="bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl shadow-sm p-6 text-white">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-sm opacity-90">Jueces</p>
                 <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,7 +59,7 @@
             </div>
             <p class="text-4xl font-bold"><?php echo e($totalJueces); ?></p>
         </div>
-        <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-sm p-6 text-white">
+        <div class="bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl shadow-sm p-6 text-white">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-sm opacity-90">Asesores</p>
                 <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">

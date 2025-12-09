@@ -63,13 +63,8 @@ class AdminController extends Controller
             $query->where('title', 'like', '%' . $search . '%');
         }
 
-        if ($status && $status !== 'Todos') {
-            $statusMap = [
-                'Activo' => 'in_progress',
-                'Próximo' => 'open',
-                'Finalizado' => 'finished'
-            ];
-            $query->where('status', $statusMap[$status] ?? $status);
+        if ($status) {
+            $query->where('status', $status);
         }
 
         if ($category && $category !== 'Todas') {
@@ -380,8 +375,13 @@ class AdminController extends Controller
         }
 
         if ($role && $role !== 'all') {
-            $query->where(function($q) use ($role) {
-                $q->where('role', $role)->orWhere('user_type', $role);
+            // Mapear asesor a maestro para la búsqueda
+            $searchRole = $role === 'asesor' ? 'maestro' : $role;
+            $query->where(function($q) use ($role, $searchRole) {
+                $q->where('role', $role)
+                  ->orWhere('user_type', $searchRole)
+                  ->orWhere('role', $searchRole)
+                  ->orWhere('user_type', $role);
             });
         }
 

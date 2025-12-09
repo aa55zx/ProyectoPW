@@ -15,19 +15,19 @@
 
     <!-- Estadísticas Rápidas -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-sm p-6 text-white">
+        <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-sm p-6 text-white">
             <p class="text-sm opacity-90 mb-2">Total Equipos</p>
             <p class="text-4xl font-bold">{{ $equipos->total() }}</p>
         </div>
-        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-sm p-6 text-white">
+        <div class="bg-gradient-to-br from-gray-700 to-gray-800 rounded-2xl shadow-sm p-6 text-white">
             <p class="text-sm opacity-90 mb-2">Equipos Activos</p>
             <p class="text-4xl font-bold">{{ $equipos->where('status', 'active')->count() }}</p>
         </div>
-        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
+        <div class="bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl shadow-sm p-6 text-white">
             <p class="text-sm opacity-90 mb-2">Con Proyectos</p>
             <p class="text-4xl font-bold">{{ $equipos->whereNotNull('project')->count() }}</p>
         </div>
-        <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-sm p-6 text-white">
+        <div class="bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl shadow-sm p-6 text-white">
             <p class="text-sm opacity-90 mb-2">Promedio Miembros</p>
             <p class="text-4xl font-bold">{{ number_format($equipos->avg('members_count'), 1) }}</p>
         </div>

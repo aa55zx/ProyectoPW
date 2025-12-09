@@ -137,8 +137,8 @@ class User extends Authenticatable
         $role = $this->role ?? $this->user_type;
         
         return match($role) {
-            'admin' => 'Administrador',
-            'maestro', 'asesor' => 'Maestro (Asesor)',
+            'admin' => 'Admin',
+            'maestro', 'asesor' => 'Asesor',
             'juez' => 'Juez',
             'estudiante' => 'Estudiante',
             default => 'Usuario',
@@ -150,10 +150,10 @@ class User extends Authenticatable
         $role = $this->role ?? $this->user_type;
         
         return match($role) {
-            'admin' => 'bg-red-100 text-red-800',
-            'maestro', 'asesor' => 'bg-green-100 text-green-800',
-            'juez' => 'bg-purple-100 text-purple-800',
-            'estudiante' => 'bg-blue-100 text-blue-800',
+            'admin' => 'bg-gray-900 text-white',
+            'maestro', 'asesor' => 'bg-gray-700 text-white',
+            'juez' => 'bg-gray-600 text-white',
+            'estudiante' => 'bg-gray-500 text-white',
             default => 'bg-gray-100 text-gray-800',
         };
     }

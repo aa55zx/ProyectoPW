@@ -41,9 +41,9 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
                 <select name="status" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all text-sm">
                     <option value="">Todos</option>
-                    <option value="Activo" <?php echo e(request('status') == 'Activo' ? 'selected' : ''); ?>>Activo</option>
-                    <option value="Próximo" <?php echo e(request('status') == 'Próximo' ? 'selected' : ''); ?>>Próximo</option>
-                    <option value="Finalizado" <?php echo e(request('status') == 'Finalizado' ? 'selected' : ''); ?>>Finalizado</option>
+                    <option value="upcoming" <?php echo e(request('status') == 'upcoming' ? 'selected' : ''); ?>>Proximamente</option>
+                    <option value="in_progress" <?php echo e(request('status') == 'in_progress' ? 'selected' : ''); ?>>En Curso</option>
+                    <option value="finished" <?php echo e(request('status') == 'finished' ? 'selected' : ''); ?>>Finalizado</option>
                 </select>
             </div>
             <div>
@@ -71,15 +71,27 @@
             <div class="p-6">
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex items-start gap-4 flex-1">
-                        <div class="w-20 h-20 bg-gradient-to-br from-<?php echo e($evento->status === 'in_progress' ? 'green' : ($evento->status === 'open' ? 'blue' : 'gray')); ?>-500 to-<?php echo e($evento->status === 'in_progress' ? 'green' : ($evento->status === 'open' ? 'blue' : 'gray')); ?>-600 rounded-xl flex items-center justify-center text-3xl shadow-md flex-shrink-0">
+                        <div class="w-20 h-20 rounded-xl flex items-center justify-center text-3xl shadow-md flex-shrink-0
+                            <?php if($evento->status === 'in_progress'): ?>
+                                bg-gradient-to-br from-green-500 to-green-600
+                            <?php elseif($evento->status === 'upcoming'): ?>
+                                bg-gradient-to-br from-blue-500 to-blue-600
+                            <?php elseif($evento->status === 'finished'): ?>
+                                bg-gradient-to-br from-gray-500 to-gray-600
+                            <?php else: ?>
+                                bg-gradient-to-br from-purple-500 to-purple-600
+                            <?php endif; ?>
+                        ">
                             <?php if($evento->category === 'Tecnología'): ?>
                                 🏆
                             <?php elseif($evento->category === 'Ciencias'): ?>
                                 🔬
                             <?php elseif($evento->category === 'Negocios'): ?>
                                 💼
+                            <?php elseif($evento->category === 'Arte'): ?>
+                                🎨
                             <?php else: ?>
-                                🤖
+                                📅
                             <?php endif; ?>
                         </div>
                         <div class="flex-1">
@@ -120,7 +132,8 @@
                                 </div>
                             </div>
 
-                            <!-- Jueces y Asesores Asignados -->
+                            <!-- Solo Jueces - Solo para eventos Proximamente -->
+                            <?php if($evento->status === 'upcoming'): ?>
                             <div class="mt-4 flex items-center gap-4">
                                 <div class="flex items-center gap-2">
                                     <span class="text-sm font-medium text-gray-700">Jueces:</span>
@@ -135,21 +148,8 @@
                                     </button>
                                     <?php endif; ?>
                                 </div>
-                                
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm font-medium text-gray-700">Asesores:</span>
-                                    <?php if($evento->advisors_count > 0): ?>
-                                    <span class="text-sm text-gray-600"><?php echo e($evento->advisors_count); ?> asignados</span>
-                                    <button onclick="openAdvisorsModal('<?php echo e($evento->id); ?>', <?php echo e(json_encode($evento->advisors->pluck('id'))); ?>)" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                                        Gestionar
-                                    </button>
-                                    <?php else: ?>
-                                    <button onclick="openAdvisorsModal('<?php echo e($evento->id); ?>', [])" class="text-sm text-orange-600 hover:text-orange-700 font-medium">
-                                        Asignar Asesores
-                                    </button>
-                                    <?php endif; ?>
-                                </div>
                             </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -191,12 +191,20 @@
 </div>
 
 <!-- Modal Crear Evento -->
-<div id="createModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6 border-b border-gray-200">
+<div id="createModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <!-- Header -->
+        <div class="sticky top-0 bg-gradient-to-r from-gray-900 to-gray-800 p-6 rounded-t-2xl z-10">
             <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-bold text-gray-900">Crear Nuevo Evento</h2>
-                <button onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white">Crear Nuevo Evento</h2>
+                </div>
+                <button onclick="closeCreateModal()" class="text-white/70 hover:text-white transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -204,83 +212,237 @@
             </div>
         </div>
         
-        <form action="<?php echo e(route('admin.eventos.crear')); ?>" method="POST" class="p-6">
+        <form action="<?php echo e(route('admin.eventos.crear')); ?>" method="POST" id="createEventForm" class="p-8">
             <?php echo csrf_field(); ?>
-            <div class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Título del Evento *</label>
-                        <input type="text" name="title" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900">
+            
+            <!-- Sección: Información Básica -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">1</span>
                     </div>
-                    
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Descripción *</label>
-                        <textarea name="description" required rows="4" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"></textarea>
+                    Información Básica
+                </h3>
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-900 mb-2">
+                            Título del Evento <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            name="title" 
+                            required 
+                            minlength="5"
+                            maxlength="200"
+                            placeholder="Ej: Hackathon de Innovación Tecnológica 2025"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 transition-colors"
+                        >
+                        <p class="text-xs text-gray-500 mt-1">Mínimo 5 caracteres, máximo 200</p>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Categoría *</label>
-                        <select name="category" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900">
-                            <option value="">Seleccionar</option>
-                            <option value="Tecnología">Tecnología</option>
-                            <option value="Ciencias">Ciencias</option>
-                            <option value="Negocios">Negocios</option>
-                            <option value="Arte">Arte</option>
-                        </select>
+                        <label class="block text-sm font-semibold text-gray-900 mb-2">
+                            Descripción <span class="text-red-500">*</span>
+                        </label>
+                        <textarea 
+                            name="description" 
+                            required 
+                            minlength="20"
+                            maxlength="1000"
+                            rows="4" 
+                            placeholder="Describe el evento, objetivos y qué pueden esperar los participantes..."
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 transition-colors resize-none"
+                        ></textarea>
+                        <p class="text-xs text-gray-500 mt-1">Mínimo 20 caracteres, máximo 1000</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">
+                                Categoría <span class="text-red-500">*</span>
+                            </label>
+                            <select 
+                                name="category" 
+                                required 
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 transition-colors"
+                            >
+                                <option value="">Seleccionar categoría</option>
+                                <option value="Tecnología">🖥️ Tecnología</option>
+                                <option value="Ciencias">🔬 Ciencias</option>
+                                <option value="Negocios">💼 Negocios</option>
+                                <option value="Arte">🎨 Arte</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">
+                                Ubicación
+                            </label>
+                            <input 
+                                type="text" 
+                                name="location" 
+                                maxlength="200"
+                                placeholder="Ej: Centro de Convenciones, Sala 3"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 transition-colors"
+                            >
+                            <p class="text-xs text-gray-500 mt-1">Opcional</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección: Fechas -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">2</span>
+                    </div>
+                    Fechas Importantes
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+                        <p class="text-xs font-bold text-blue-900 mb-3 uppercase">Periodo de Registro</p>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-900 mb-2">
+                                    Inicio <span class="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="date" 
+                                    name="registration_start_date" 
+                                    id="registration_start_date"
+                                    required 
+                                    min="<?php echo e(date('Y-m-d')); ?>"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 transition-colors"
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-900 mb-2">
+                                    Fin <span class="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="date" 
+                                    name="registration_end_date" 
+                                    id="registration_end_date"
+                                    required 
+                                    min="<?php echo e(date('Y-m-d')); ?>"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 transition-colors"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-xl border-2 border-green-100">
+                        <p class="text-xs font-bold text-green-900 mb-3 uppercase">Periodo del Evento</p>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-900 mb-2">
+                                    Inicio <span class="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="date" 
+                                    name="event_start_date" 
+                                    id="event_start_date"
+                                    required 
+                                    min="<?php echo e(date('Y-m-d')); ?>"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 transition-colors"
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-900 mb-2">
+                                    Fin <span class="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="date" 
+                                    name="event_end_date" 
+                                    id="event_end_date"
+                                    required 
+                                    min="<?php echo e(date('Y-m-d')); ?>"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 transition-colors"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">⚠️ El registro debe finalizar antes del inicio del evento</p>
+            </div>
+
+            <!-- Sección: Configuración de Equipos -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">3</span>
+                    </div>
+                    Configuración de Equipos
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-900 mb-2">
+                            Tamaño Mínimo <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            name="min_team_size" 
+                            id="min_team_size"
+                            required 
+                            min="1" 
+                            max="10"
+                            value="3" 
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 transition-colors"
+                        >
+                        <p class="text-xs text-gray-500 mt-1">Integrantes mínimos</p>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Ubicación</label>
-                        <input type="text" name="location" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900">
+                        <label class="block text-sm font-semibold text-gray-900 mb-2">
+                            Tamaño Máximo <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            name="max_team_size" 
+                            id="max_team_size"
+                            required 
+                            min="1" 
+                            max="20"
+                            value="5" 
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 transition-colors"
+                        >
+                        <p class="text-xs text-gray-500 mt-1">Integrantes máximos</p>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio Registro *</label>
-                        <input type="date" name="registration_start_date" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Fin Registro *</label>
-                        <input type="date" name="registration_end_date" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio Evento *</label>
-                        <input type="date" name="event_start_date" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Fin Evento *</label>
-                        <input type="date" name="event_end_date" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Tamaño Mínimo Equipo *</label>
-                        <input type="number" name="min_team_size" required min="1" value="3" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Tamaño Máximo Equipo *</label>
-                        <input type="number" name="max_team_size" required min="1" value="5" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Máximo de Equipos</label>
-                        <input type="number" name="max_teams" min="1" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900">
-                    </div>
-                    
-                    <div class="flex items-center">
-                        <input type="checkbox" name="is_online" id="is_online" class="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900">
-                        <label for="is_online" class="ml-2 text-sm font-medium text-gray-700">Evento en línea</label>
+                        <label class="block text-sm font-semibold text-gray-900 mb-2">
+                            Máximo de Equipos
+                        </label>
+                        <input 
+                            type="number" 
+                            name="max_teams" 
+                            min="1"
+                            max="1000"
+                            placeholder="Ilimitado"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 transition-colors"
+                        >
+                        <p class="text-xs text-gray-500 mt-1">Dejar vacío = ilimitado</p>
                     </div>
                 </div>
             </div>
             
-            <div class="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
-                <button type="button" onclick="closeCreateModal()" class="px-6 py-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors font-medium">
+            <!-- Botones -->
+            <div class="flex items-center justify-end gap-4 pt-6 border-t-2 border-gray-100">
+                <button 
+                    type="button" 
+                    onclick="closeCreateModal()" 
+                    class="px-6 py-3 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors font-semibold"
+                >
                     Cancelar
                 </button>
-                <button type="submit" class="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl transition-colors font-medium">
+                <button 
+                    type="submit" 
+                    class="px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-xl transition-all font-semibold shadow-lg hover:shadow-xl flex items-center gap-2"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
                     Crear Evento
                 </button>
             </div>
@@ -430,49 +592,6 @@
     </div>
 </div>
 
-<!-- Modal Asignar Asesores -->
-<div id="advisorsModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full">
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-bold text-gray-900">Gestionar Asesores del Evento</h2>
-                <button onclick="closeAdvisorsModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        
-        <form id="advisorsForm" method="POST" class="p-6">
-            <?php echo csrf_field(); ?>
-            <div class="mb-4">
-                <p class="text-sm text-gray-600">Selecciona uno o más asesores para asignar a este evento:</p>
-            </div>
-            <div class="space-y-4 max-h-96 overflow-y-auto">
-                <?php $__currentLoopData = $asesores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asesor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <label class="flex items-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 cursor-pointer transition-colors">
-                    <input type="checkbox" name="advisors[]" value="<?php echo e($asesor->id); ?>" class="advisor-checkbox w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900">
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-900"><?php echo e($asesor->name); ?></p>
-                        <p class="text-xs text-gray-600"><?php echo e($asesor->email); ?></p>
-                    </div>
-                </label>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            </div>
-            
-            <div class="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
-                <button type="button" onclick="closeAdvisorsModal()" class="px-6 py-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors font-medium">
-                    Cancelar
-                </button>
-                <button type="submit" class="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl transition-colors font-medium">
-                    Guardar Asignación
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <script>
 function openCreateModal() {
     document.getElementById('createModal').classList.remove('hidden');
@@ -525,23 +644,6 @@ function closeJudgesModal() {
     document.getElementById('judgesModal').classList.add('hidden');
 }
 
-function openAdvisorsModal(eventId, selectedAdvisors) {
-    const modal = document.getElementById('advisorsModal');
-    const form = document.getElementById('advisorsForm');
-    form.action = `/admin/eventos/${eventId}/asignar-asesores`;
-    
-    // Marcar asesores previamente asignados
-    document.querySelectorAll('.advisor-checkbox').forEach(checkbox => {
-        checkbox.checked = selectedAdvisors.includes(checkbox.value);
-    });
-    
-    modal.classList.remove('hidden');
-}
-
-function closeAdvisorsModal() {
-    document.getElementById('advisorsModal').classList.add('hidden');
-}
-
 function confirmDelete(eventId, eventName) {
     if (confirm(`¿Estás seguro de que deseas eliminar el evento "${eventName}"? Esta acción no se puede deshacer.`)) {
         const form = document.createElement('form');
@@ -570,7 +672,6 @@ document.addEventListener('click', function(event) {
     const createModal = document.getElementById('createModal');
     const editModal = document.getElementById('editModal');
     const judgesModal = document.getElementById('judgesModal');
-    const advisorsModal = document.getElementById('advisorsModal');
     
     if (event.target === createModal) {
         closeCreateModal();
@@ -581,8 +682,70 @@ document.addEventListener('click', function(event) {
     if (event.target === judgesModal) {
         closeJudgesModal();
     }
-    if (event.target === advisorsModal) {
-        closeAdvisorsModal();
+});
+
+// Validaciones del formulario de crear evento
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('createEventForm');
+    
+    if (form) {
+        // Validación de fechas
+        const regStart = document.getElementById('registration_start_date');
+        const regEnd = document.getElementById('registration_end_date');
+        const eventStart = document.getElementById('event_start_date');
+        const eventEnd = document.getElementById('event_end_date');
+        
+        // Validar que fecha fin registro sea posterior a inicio
+        regEnd?.addEventListener('change', function() {
+            if (regStart.value && regEnd.value < regStart.value) {
+                regEnd.setCustomValidity('La fecha fin de registro debe ser posterior a la fecha de inicio');
+                regEnd.reportValidity();
+            } else {
+                regEnd.setCustomValidity('');
+            }
+        });
+        
+        // Validar que fecha de evento sea posterior a registro
+        eventStart?.addEventListener('change', function() {
+            if (regEnd.value && eventStart.value < regEnd.value) {
+                eventStart.setCustomValidity('El evento debe iniciar después del cierre de registro');
+                eventStart.reportValidity();
+            } else {
+                eventStart.setCustomValidity('');
+            }
+        });
+        
+        // Validar que fecha fin evento sea posterior a inicio
+        eventEnd?.addEventListener('change', function() {
+            if (eventStart.value && eventEnd.value < eventStart.value) {
+                eventEnd.setCustomValidity('La fecha fin del evento debe ser posterior a la fecha de inicio');
+                eventEnd.reportValidity();
+            } else {
+                eventEnd.setCustomValidity('');
+            }
+        });
+        
+        // Validación de tamaños de equipo
+        const minSize = document.getElementById('min_team_size');
+        const maxSize = document.getElementById('max_team_size');
+        
+        maxSize?.addEventListener('change', function() {
+            if (minSize.value && parseInt(maxSize.value) < parseInt(minSize.value)) {
+                maxSize.setCustomValidity('El tamaño máximo debe ser mayor o igual al mínimo');
+                maxSize.reportValidity();
+            } else {
+                maxSize.setCustomValidity('');
+            }
+        });
+        
+        minSize?.addEventListener('change', function() {
+            if (maxSize.value && parseInt(minSize.value) > parseInt(maxSize.value)) {
+                minSize.setCustomValidity('El tamaño mínimo debe ser menor o igual al máximo');
+                minSize.reportValidity();
+            } else {
+                minSize.setCustomValidity('');
+            }
+        });
     }
 });
 </script>
