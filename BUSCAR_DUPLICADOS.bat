@@ -1,0 +1,6 @@
+@echo off
+echo Buscando metodos duplicados...
+findstr /n /c:"public function descargarConstancia" "app\Http\Controllers\Estudiante\ProyectoController.php"
+echo.
+echo Presiona cualquier tecla para continuar...
+pause

@@ -47,16 +47,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/equipos/aceptar-solicitud', [EquipoController::class, 'aceptarSolicitud'])->name('equipos.aceptar-solicitud');
         Route::post('/equipos/rechazar-solicitud', [EquipoController::class, 'rechazarSolicitud'])->name('equipos.rechazar-solicitud');
 
-        // PROYECTOS - MODIFICADO PARA SOLICITUDES
+        // PROYECTOS
         Route::get('/proyectos', [ProyectoController::class, 'index'])->name('proyectos');
         Route::post('/proyectos', [ProyectoController::class, 'store'])->name('proyectos.store');
-        Route::get('/proyectos/{id}', [ProyectoController::class, 'show'])->name('proyectos.show');
-        Route::put('/proyectos/{id}', [ProyectoController::class, 'update'])->name('proyectos.update');
+        
+        // Rutas específicas ANTES de la ruta genérica {id}
         Route::post('/proyectos/{id}/solicitar-asesor', [ProyectoController::class, 'solicitarAsesor'])->name('proyectos.solicitar-asesor');
         Route::post('/proyectos/{id}/cancelar-solicitud-asesor', [ProyectoController::class, 'cancelarSolicitudAsesor'])->name('proyectos.cancelar-solicitud-asesor');
         Route::post('/proyectos/{id}/submit-file', [ProyectoController::class, 'submitFile'])->name('proyectos.submit-file');
         Route::get('/proyectos/{id}/download-submission', [ProyectoController::class, 'downloadSubmission'])->name('proyectos.download-submission');
         Route::delete('/proyectos/{id}/delete-submission', [ProyectoController::class, 'deleteSubmission'])->name('proyectos.delete-submission');
+        Route::get('/proyectos/{id}/descargar-constancia', [ProyectoController::class, 'descargarConstancia'])->name('proyectos.descargar-constancia');
+        Route::get('/proyectos/{id}/descargar-reconocimiento', [ProyectoController::class, 'descargarReconocimiento'])->name('proyectos.descargar-reconocimiento');
+        
+        // Rutas genéricas al final
+        Route::get('/proyectos/{id}', [ProyectoController::class, 'show'])->name('proyectos.show');
+        Route::put('/proyectos/{id}', [ProyectoController::class, 'update'])->name('proyectos.update');
         Route::delete('/proyectos/{id}', [ProyectoController::class, 'destroy'])->name('proyectos.destroy');
 
         // RANKINGS

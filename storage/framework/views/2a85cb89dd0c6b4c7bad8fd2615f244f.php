@@ -1,14 +1,12 @@
-@extends('layouts.estudiante')
+<?php $__env->startSection('title', $proyecto->title . ' - EventTec'); ?>
 
-@section('title', $proyecto->title . ' - EventTec')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Breadcrumb -->
     <nav class="flex mb-8" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{{ route('estudiante.dashboard') }}" class="text-gray-700 hover:text-blue-600">
+                <a href="<?php echo e(route('estudiante.dashboard')); ?>" class="text-gray-700 hover:text-blue-600">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                     </svg>
@@ -19,7 +17,7 @@
                     <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                     </svg>
-                    <a href="{{ route('estudiante.proyectos') }}" class="ml-1 text-gray-700 hover:text-blue-600 md:ml-2">Proyectos</a>
+                    <a href="<?php echo e(route('estudiante.proyectos')); ?>" class="ml-1 text-gray-700 hover:text-blue-600 md:ml-2">Proyectos</a>
                 </div>
             </li>
             <li aria-current="page">
@@ -27,7 +25,7 @@
                     <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                     </svg>
-                    <span class="ml-1 text-gray-500 md:ml-2">{{ $proyecto->title }}</span>
+                    <span class="ml-1 text-gray-500 md:ml-2"><?php echo e($proyecto->title); ?></span>
                 </div>
             </li>
         </ol>
@@ -40,19 +38,19 @@
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                 <div class="flex items-start justify-between mb-6">
                     <div class="flex-1">
-                        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ $proyecto->title }}</h1>
-                        <p class="text-gray-600">{{ $proyecto->event->title }}</p>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2"><?php echo e($proyecto->title); ?></h1>
+                        <p class="text-gray-600"><?php echo e($proyecto->event->title); ?></p>
                     </div>
-                    @if($esLider)
+                    <?php if($esLider): ?>
                     <button onclick="mostrarModalEditar()" 
                             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
                         Editar Proyecto
                     </button>
-                    @endif
+                    <?php endif; ?>
                 </div>
 
                 <div class="prose max-w-none">
-                    <p class="text-gray-700 leading-relaxed">{{ $proyecto->description }}</p>
+                    <p class="text-gray-700 leading-relaxed"><?php echo e($proyecto->description); ?></p>
                 </div>
             </div>
 
@@ -62,7 +60,7 @@
                 
                 <div class="flex items-center gap-4 mb-6">
                     <div class="flex-1">
-                        @php
+                        <?php
                         $statusInfo = [
                             'draft' => ['text' => 'Borrador', 'color' => 'gray', 'icon' => '📝'],
                             'in_progress' => ['text' => 'En Progreso', 'color' => 'blue', 'icon' => '⚙️'],
@@ -70,35 +68,35 @@
                             'evaluated' => ['text' => 'Evaluado', 'color' => 'purple', 'icon' => '⭐'],
                         ];
                         $status = $statusInfo[$proyecto->status] ?? $statusInfo['draft'];
-                        @endphp
+                        ?>
                         
-                        <span class="inline-flex items-center gap-2 px-4 py-2 bg-{{ $status['color'] }}-100 text-{{ $status['color'] }}-800 rounded-lg font-semibold">
-                            <span>{{ $status['icon'] }}</span>
-                            <span>{{ $status['text'] }}</span>
+                        <span class="inline-flex items-center gap-2 px-4 py-2 bg-<?php echo e($status['color']); ?>-100 text-<?php echo e($status['color']); ?>-800 rounded-lg font-semibold">
+                            <span><?php echo e($status['icon']); ?></span>
+                            <span><?php echo e($status['text']); ?></span>
                         </span>
                     </div>
                 </div>
 
-                @if($proyecto->status === 'evaluated' && $proyecto->final_score)
+                <?php if($proyecto->status === 'evaluated' && $proyecto->final_score): ?>
                     <!-- Proyecto Evaluado - Mostrar Calificación -->
                     <div class="bg-purple-50 border border-purple-200 rounded-xl p-6 mb-6">
                         <div class="text-center mb-4">
                             <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mb-4">
-                                <span class="text-4xl font-bold text-white">{{ number_format($proyecto->final_score, 1) }}</span>
+                                <span class="text-4xl font-bold text-white"><?php echo e(number_format($proyecto->final_score, 1)); ?></span>
                             </div>
                             <p class="text-lg font-bold text-purple-900">Calificación Final</p>
-                            @if($proyecto->evaluated_at)
-                                <p class="text-sm text-purple-700">Evaluado el {{ $proyecto->evaluated_at->format('d/m/Y') }}</p>
-                            @endif
+                            <?php if($proyecto->evaluated_at): ?>
+                                <p class="text-sm text-purple-700">Evaluado el <?php echo e($proyecto->evaluated_at->format('d/m/Y')); ?></p>
+                            <?php endif; ?>
                         </div>
                         
                         <!-- Botón Descargar Constancia -->
-                        <a href="{{ route('estudiante.proyectos.descargar-constancia', $proyecto->id) }}" 
+                        <a href="<?php echo e(route('estudiante.proyectos.descargar-constancia', $proyecto->id)); ?>" 
                            class="block w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-center rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 mb-3">
                             🎓 Descargar Constancia de Participación
                         </a>
                         
-                        @php
+                        <?php
                         // Obtener la posición del proyecto en el ranking del evento
                         $posicion = DB::table('projects')
                             ->where('event_id', $proyecto->event_id)
@@ -106,28 +104,28 @@
                             ->whereNotNull('final_score')
                             ->where('final_score', '>', $proyecto->final_score)
                             ->count() + 1;
-                        @endphp
+                        ?>
                         
-                        @if($posicion <= 3)
+                        <?php if($posicion <= 3): ?>
                             <!-- Botón Reconocimiento para Ganadores -->
-                            @php
+                            <?php
                             $reconocimientoInfo = [
                                 1 => ['color' => 'yellow-500', 'text' => '🥇 1er Lugar', 'gradient' => 'from-yellow-400 to-yellow-600'],
                                 2 => ['color' => 'gray-400', 'text' => '🥈 2do Lugar', 'gradient' => 'from-gray-300 to-gray-500'],
                                 3 => ['color' => 'orange-600', 'text' => '🥉 3er Lugar', 'gradient' => 'from-orange-400 to-orange-600'],
                             ];
                             $reconocimiento = $reconocimientoInfo[$posicion];
-                            @endphp
+                            ?>
                             
-                            <a href="{{ route('estudiante.proyectos.descargar-reconocimiento', $proyecto->id) }}" 
-                               class="block w-full py-3 px-4 bg-gradient-to-r {{ $reconocimiento['gradient'] }} text-white text-center rounded-lg hover:opacity-90 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                                {{ $reconocimiento['text'] }} - Descargar Reconocimiento
+                            <a href="<?php echo e(route('estudiante.proyectos.descargar-reconocimiento', $proyecto->id)); ?>" 
+                               class="block w-full py-3 px-4 bg-gradient-to-r <?php echo e($reconocimiento['gradient']); ?> text-white text-center rounded-lg hover:opacity-90 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                <?php echo e($reconocimiento['text']); ?> - Descargar Reconocimiento
                             </a>
-                        @endif
+                        <?php endif; ?>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if($proyecto->submission_file_path)
+                <?php if($proyecto->submission_file_path): ?>
                     <!-- Archivo entregado -->
                     <div class="bg-green-50 border border-green-200 rounded-xl p-6">
                         <div class="flex items-start justify-between">
@@ -138,41 +136,41 @@
                                     </svg>
                                 </div>
                                 <div class="flex-1">
-                                    <p class="font-semibold text-green-900">{{ $proyecto->submission_file_name }}</p>
-                                    <p class="text-sm text-green-700">Entregado el {{ $proyecto->submitted_at->format('d/m/Y H:i') }}</p>
+                                    <p class="font-semibold text-green-900"><?php echo e($proyecto->submission_file_name); ?></p>
+                                    <p class="text-sm text-green-700">Entregado el <?php echo e($proyecto->submitted_at->format('d/m/Y H:i')); ?></p>
                                 </div>
                             </div>
                             <div class="flex gap-2">
-                                <a href="{{ route('estudiante.proyectos.download-submission', $proyecto->id) }}" 
+                                <a href="<?php echo e(route('estudiante.proyectos.download-submission', $proyecto->id)); ?>" 
                                    class="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold">
                                     Descargar
                                 </a>
-                                @if($esLider && $proyecto->status !== 'evaluated')
+                                <?php if($esLider && $proyecto->status !== 'evaluated'): ?>
                                 <button onclick="eliminarEntrega()" 
                                         class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-semibold">
                                     Eliminar
                                 </button>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
-                @else
+                <?php else: ?>
                     <!-- Sin archivo -->
                     <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
                         <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
                         <p class="text-gray-600 mb-4">Sin archivo de entrega</p>
-                        @if($esLider)
+                        <?php if($esLider): ?>
                             <button onclick="mostrarModalEntrega()" 
                                     class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
                                 Entregar archivo
                             </button>
-                        @else
+                        <?php else: ?>
                             <p class="text-sm text-gray-500">Solo el líder puede entregar el archivo</p>
-                        @endif
+                        <?php endif; ?>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
 
@@ -182,17 +180,18 @@
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">👨‍🏫 Asesor del Proyecto</h2>
 
-                @if($proyecto->advisor)
+                <?php if($proyecto->advisor): ?>
                     <!-- Asesor asignado -->
                     <div class="bg-green-50 border border-green-200 rounded-xl p-6">
                         <div class="flex items-start justify-between">
                             <div class="flex items-center gap-4">
                                 <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                    {{ strtoupper(substr($proyecto->advisor->name, 0, 2)) }}
+                                    <?php echo e(strtoupper(substr($proyecto->advisor->name, 0, 2))); ?>
+
                                 </div>
                                 <div>
-                                    <p class="font-bold text-green-900 text-lg">{{ $proyecto->advisor->name }}</p>
-                                    <p class="text-sm text-green-700">{{ $proyecto->advisor->email }}</p>
+                                    <p class="font-bold text-green-900 text-lg"><?php echo e($proyecto->advisor->name); ?></p>
+                                    <p class="text-sm text-green-700"><?php echo e($proyecto->advisor->email); ?></p>
                                     <span class="inline-block mt-2 px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-full">
                                         Asesor asignado
                                     </span>
@@ -200,9 +199,9 @@
                             </div>
                         </div>
                     </div>
-                @elseif(isset($solicitudAsesor))
+                <?php elseif(isset($solicitudAsesor)): ?>
                     <!-- Estado de solicitud -->
-                    @if($solicitudAsesor->status === 'pending')
+                    <?php if($solicitudAsesor->status === 'pending'): ?>
                         <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                             <div class="flex items-center gap-3 mb-2">
                                 <svg class="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
@@ -213,14 +212,14 @@
                             <p class="text-sm text-yellow-700 mb-3">
                                 Esperando respuesta del asesor...
                             </p>
-                            @if($esLider)
+                            <?php if($esLider): ?>
                                 <button onclick="cancelarSolicitud()" 
                                         class="text-sm text-yellow-700 hover:text-yellow-900 font-medium underline">
                                     Cancelar solicitud
                                 </button>
-                            @endif
+                            <?php endif; ?>
                         </div>
-                    @elseif($solicitudAsesor->status === 'rejected')
+                    <?php elseif($solicitudAsesor->status === 'rejected'): ?>
                         <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
                             <div class="flex items-center gap-3 mb-2">
                                 <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
@@ -229,55 +228,57 @@
                                 <span class="font-semibold text-red-900">Solicitud Rechazada</span>
                             </div>
                             <p class="text-sm text-red-700 mb-3">
-                                {{ $solicitudAsesor->response_message ?? 'El asesor rechazó tu solicitud' }}
+                                <?php echo e($solicitudAsesor->response_message ?? 'El asesor rechazó tu solicitud'); ?>
+
                             </p>
-                            @if($esLider)
+                            <?php if($esLider): ?>
                                 <button onclick="mostrarModalAsesor()" 
                                         class="text-sm text-red-700 hover:text-red-900 font-medium underline">
                                     Solicitar otro asesor
                                 </button>
-                            @endif
+                            <?php endif; ?>
                         </div>
-                    @endif
-                @else
+                    <?php endif; ?>
+                <?php else: ?>
                     <!-- Sin asesor -->
                     <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
                         <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                         <p class="text-gray-600 mb-4">No hay asesor asignado</p>
-                        @if($esLider)
+                        <?php if($esLider): ?>
                             <button onclick="mostrarModalAsesor()" 
                                     class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
                                 Solicitar asesor
                             </button>
-                        @else
+                        <?php else: ?>
                             <p class="text-sm text-gray-500">Solo el líder puede solicitar un asesor</p>
-                        @endif
+                        <?php endif; ?>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
 
             <!-- Equipo del Proyecto -->
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">👥 Equipo del Proyecto</h2>
                 <div class="space-y-3">
-                    @foreach($proyecto->team->members as $miembro)
-                        <div class="flex items-center gap-4 p-4 rounded-xl {{ $miembro->id === $proyecto->team->leader_id ? 'bg-yellow-50 border border-yellow-200' : 'bg-gray-50' }}">
+                    <?php $__currentLoopData = $proyecto->team->members; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $miembro): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="flex items-center gap-4 p-4 rounded-xl <?php echo e($miembro->id === $proyecto->team->leader_id ? 'bg-yellow-50 border border-yellow-200' : 'bg-gray-50'); ?>">
                             <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                                {{ strtoupper(substr($miembro->name, 0, 2)) }}
+                                <?php echo e(strtoupper(substr($miembro->name, 0, 2))); ?>
+
                             </div>
                             <div class="flex-1">
-                                <p class="font-semibold text-gray-900">{{ $miembro->name }}</p>
-                                <p class="text-sm text-gray-600">{{ $miembro->email }}</p>
+                                <p class="font-semibold text-gray-900"><?php echo e($miembro->name); ?></p>
+                                <p class="text-sm text-gray-600"><?php echo e($miembro->email); ?></p>
                             </div>
-                            @if($miembro->id === $proyecto->team->leader_id)
+                            <?php if($miembro->id === $proyecto->team->leader_id): ?>
                                 <span class="px-2 py-1 bg-yellow-600 text-white text-xs font-semibold rounded-full">
                                     Líder
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
         </div>
@@ -297,7 +298,7 @@
         <p class="text-gray-600 mb-6">Sube el archivo final de tu proyecto</p>
 
         <form id="form-entregar-archivo" class="space-y-4">
-            @csrf
+            <?php echo csrf_field(); ?>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Archivo *
@@ -332,17 +333,17 @@
         <h3 class="text-2xl font-bold text-gray-900 mb-6">Editar Proyecto</h3>
 
         <form id="form-editar-proyecto" class="space-y-4">
-            @csrf
+            <?php echo csrf_field(); ?>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Título *</label>
-                <input type="text" name="title" value="{{ $proyecto->title }}" required
+                <input type="text" name="title" value="<?php echo e($proyecto->title); ?>" required
                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Descripción *</label>
                 <textarea name="description" rows="5" required
-                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ $proyecto->description }}</textarea>
+                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"><?php echo e($proyecto->description); ?></textarea>
             </div>
 
             <div class="flex gap-3 pt-4">
@@ -372,31 +373,32 @@
             <p class="text-gray-600 mb-6">Elige un asesor y envía tu solicitud</p>
 
             <form id="form-solicitar-asesor" class="space-y-6">
-                @csrf
-                <input type="hidden" name="project_id" value="{{ $proyecto->id }}">
+                <?php echo csrf_field(); ?>
+                <input type="hidden" name="project_id" value="<?php echo e($proyecto->id); ?>">
                 
                 <!-- Lista de asesores -->
                 <div class="space-y-3">
-                    @forelse($asesoresDisponibles as $asesor)
+                    <?php $__empty_1 = true; $__currentLoopData = $asesoresDisponibles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asesor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <label class="flex items-center gap-4 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all asesor-option">
-                            <input type="radio" name="advisor_id" value="{{ $asesor->id }}" 
+                            <input type="radio" name="advisor_id" value="<?php echo e($asesor->id); ?>" 
                                    class="w-5 h-5 text-blue-600" required>
                             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold text-lg flex-shrink-0">
-                                {{ strtoupper(substr($asesor->name, 0, 2)) }}
+                                <?php echo e(strtoupper(substr($asesor->name, 0, 2))); ?>
+
                             </div>
                             <div class="flex-1">
-                                <div class="font-semibold text-gray-900">{{ $asesor->name }}</div>
-                                <div class="text-sm text-gray-600">{{ $asesor->email }}</div>
+                                <div class="font-semibold text-gray-900"><?php echo e($asesor->name); ?></div>
+                                <div class="text-sm text-gray-600"><?php echo e($asesor->email); ?></div>
                             </div>
                             <svg class="w-5 h-5 text-blue-600 hidden check-icon" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                             </svg>
                         </label>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <div class="text-center py-8 text-gray-500">
                             No hay asesores disponibles en este momento
                         </div>
-                    @endforelse
+                    <?php endif; ?>
                 </div>
 
                 <!-- Mensaje opcional -->
@@ -447,10 +449,10 @@ document.getElementById('form-entregar-archivo').addEventListener('submit', asyn
     btn.innerHTML = 'Subiendo...';
     
     try {
-        const response = await fetch('{{ route("estudiante.proyectos.submit-file", $proyecto->id) }}', {
+        const response = await fetch('<?php echo e(route("estudiante.proyectos.submit-file", $proyecto->id)); ?>', {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                 'Accept': 'application/json',
             },
             body: formData
@@ -480,10 +482,10 @@ async function eliminarEntrega() {
     }
     
     try {
-        const response = await fetch('{{ route("estudiante.proyectos.delete-submission", $proyecto->id) }}', {
+        const response = await fetch('<?php echo e(route("estudiante.proyectos.delete-submission", $proyecto->id)); ?>', {
             method: 'DELETE',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                 'Accept': 'application/json',
             }
         });
@@ -521,10 +523,10 @@ document.getElementById('form-editar-proyecto').addEventListener('submit', async
     btn.innerHTML = 'Guardando...';
     
     try {
-        const response = await fetch('{{ route("estudiante.proyectos.update", $proyecto->id) }}', {
+        const response = await fetch('<?php echo e(route("estudiante.proyectos.update", $proyecto->id)); ?>', {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                 'Accept': 'application/json',
                 'X-HTTP-Method-Override': 'PUT'
             },
@@ -584,10 +586,10 @@ document.getElementById('form-solicitar-asesor').addEventListener('submit', asyn
     btn.textContent = 'Enviando...';
     
     try {
-        const response = await fetch('{{ route("estudiante.proyectos.solicitar-asesor", $proyecto->id) }}', {
+        const response = await fetch('<?php echo e(route("estudiante.proyectos.solicitar-asesor", $proyecto->id)); ?>', {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                 'Accept': 'application/json'
             },
             body: formData
@@ -615,10 +617,10 @@ async function cancelarSolicitud() {
     if (!confirm('¿Cancelar la solicitud de asesoría?')) return;
     
     try {
-        const response = await fetch('{{ route("estudiante.proyectos.cancelar-solicitud-asesor", $proyecto->id) }}', {
+        const response = await fetch('<?php echo e(route("estudiante.proyectos.cancelar-solicitud-asesor", $proyecto->id)); ?>', {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                 'Accept': 'application/json'
             }
         });
@@ -636,39 +638,6 @@ async function cancelarSolicitud() {
     }
 }
 </script>
-<!-- Sección de Comentarios del Asesor -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">💬 Comentarios del Asesor</h2>
-            
-            @if($comentarios && $comentarios->count() > 0)
-            <div class="space-y-4 border-t border-gray-200 pt-6">
-                @foreach($comentarios as $comentario)
-                <div class="flex gap-4">
-                    <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span class="text-white font-semibold text-sm">{{ substr($comentario->user->name, 0, 2) }}</span>
-                    </div>
-                    <div class="flex-1">
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-gray-900">{{ $comentario->user->name }}</h4>
-                                <span class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($comentario->created_at)->diffForHumans() }}</span>
-                            </div>
-                            <p class="text-gray-700">{{ $comentario->comment }}</p>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-            @else
-            <div class="text-center py-8 border-t border-gray-200 mt-6">
-                <svg class="w-16 h-16 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                </svg>
-                <p class="text-gray-500 font-medium">Aún no hay comentarios del asesor</p>
-                <p class="text-sm text-gray-400 mt-1">Tu asesor dejará aquí sus observaciones sobre el proyecto</p>
-            </div>
-            @endif
-        </div>
-    </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.estudiante', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Cheluis\Documentos\7Semestre\Programacion web\ProyectoPW\resources\views/estudiante/proyecto-detalle.blade.php ENDPATH**/ ?>
