@@ -99,7 +99,7 @@
                     <!-- Botones de acción -->
                     <div class="flex flex-col gap-2">
                         <!-- Botón Ver Detalle (SIEMPRE visible) -->
-                        <a href="{{ route('asesor.proyecto-detalle', $proyecto->id) }}" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium text-center">
+                        <a href="{{ route('asesor.proyecto-detalle', $proyecto->id) }}" class="w-full px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium text-center">
                             Ver Detalle
                         </a>
                         
