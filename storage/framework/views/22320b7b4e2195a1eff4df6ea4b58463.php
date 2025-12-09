@@ -1,22 +1,20 @@
-@extends('layouts.admin')
+<?php $__env->startSection('title', 'Administración'); ?>
+<?php $__env->startSection('breadcrumb', 'Administración'); ?>
 
-@section('title', 'Administración')
-@section('breadcrumb', 'Administración')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Mensajes -->
-    @if(session('success'))
+    <?php if(session('success')): ?>
     <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
-        <p class="text-green-700">{{ session('success') }}</p>
+        <p class="text-green-700"><?php echo e(session('success')); ?></p>
     </div>
-    @endif
+    <?php endif; ?>
 
-    @if(session('error'))
+    <?php if(session('error')): ?>
     <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-        <p class="text-red-700">{{ session('error') }}</p>
+        <p class="text-red-700"><?php echo e(session('error')); ?></p>
     </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Encabezado -->
     <div class="flex items-center justify-between mb-8">
@@ -41,7 +39,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
             </div>
-            <p class="text-4xl font-bold">{{ $usuarios->total() }}</p>
+            <p class="text-4xl font-bold"><?php echo e($usuarios->total()); ?></p>
         </div>
         <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-sm p-6 text-white">
             <div class="flex items-center justify-between mb-2">
@@ -50,7 +48,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>
             </div>
-            <p class="text-4xl font-bold">{{ $totalEstudiantes }}</p>
+            <p class="text-4xl font-bold"><?php echo e($totalEstudiantes); ?></p>
         </div>
         <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
             <div class="flex items-center justify-between mb-2">
@@ -59,7 +57,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                 </svg>
             </div>
-            <p class="text-4xl font-bold">{{ $totalJueces }}</p>
+            <p class="text-4xl font-bold"><?php echo e($totalJueces); ?></p>
         </div>
         <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-sm p-6 text-white">
             <div class="flex items-center justify-between mb-2">
@@ -68,7 +66,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                 </svg>
             </div>
-            <p class="text-4xl font-bold">{{ $totalAsesores }}</p>
+            <p class="text-4xl font-bold"><?php echo e($totalAsesores); ?></p>
         </div>
     </div>
 
@@ -76,18 +74,18 @@
         <!-- Gestión de Usuarios -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Filtros y Búsqueda -->
-            <form method="GET" action="{{ route('admin.administracion') }}" class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <form method="GET" action="<?php echo e(route('admin.administracion')); ?>" class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="md:col-span-2">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar usuarios..." class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all text-sm">
+                        <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Buscar usuarios..." class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all text-sm">
                     </div>
                     <div>
                         <select name="role" onchange="this.form.submit()" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all text-sm">
                             <option value="all">Todos los roles</option>
-                            <option value="estudiante" {{ request('role') == 'estudiante' ? 'selected' : '' }}>Estudiante</option>
-                            <option value="juez" {{ request('role') == 'juez' ? 'selected' : '' }}>Juez</option>
-                            <option value="asesor" {{ request('role') == 'asesor' ? 'selected' : '' }}>Asesor</option>
-                            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Administrador</option>
+                            <option value="estudiante" <?php echo e(request('role') == 'estudiante' ? 'selected' : ''); ?>>Estudiante</option>
+                            <option value="juez" <?php echo e(request('role') == 'juez' ? 'selected' : ''); ?>>Juez</option>
+                            <option value="asesor" <?php echo e(request('role') == 'asesor' ? 'selected' : ''); ?>>Asesor</option>
+                            <option value="admin" <?php echo e(request('role') == 'admin' ? 'selected' : ''); ?>>Administrador</option>
                         </select>
                     </div>
                 </div>
@@ -110,67 +108,70 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
-                            @forelse($usuarios as $usuario)
+                            <?php $__empty_1 = true; $__currentLoopData = $usuarios; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $usuario): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                                            {{ substr($usuario->name, 0, 2) }}
+                                            <?php echo e(substr($usuario->name, 0, 2)); ?>
+
                                         </div>
                                         <div>
-                                            <p class="font-medium text-gray-900">{{ $usuario->name }}</p>
-                                            <p class="text-sm text-gray-600">{{ $usuario->email }}</p>
+                                            <p class="font-medium text-gray-900"><?php echo e($usuario->name); ?></p>
+                                            <p class="text-sm text-gray-600"><?php echo e($usuario->email); ?></p>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="px-3 py-1 {{ $usuario->getRoleBadgeClass() }} text-xs font-medium rounded-full">
-                                        {{ $usuario->getRoleName() }}
+                                    <span class="px-3 py-1 <?php echo e($usuario->getRoleBadgeClass()); ?> text-xs font-medium rounded-full">
+                                        <?php echo e($usuario->getRoleName()); ?>
+
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-sm text-gray-600">
-                                        @if($usuario->user_type == 'estudiante' || $usuario->role == 'estudiante')
-                                            <p>{{ $usuario->teams_count }} equipos</p>
-                                        @elseif($usuario->user_type == 'juez' || $usuario->role == 'juez')
+                                        <?php if($usuario->user_type == 'estudiante' || $usuario->role == 'estudiante'): ?>
+                                            <p><?php echo e($usuario->teams_count); ?> equipos</p>
+                                        <?php elseif($usuario->user_type == 'juez' || $usuario->role == 'juez'): ?>
                                             <p>Juez del sistema</p>
-                                        @elseif($usuario->user_type == 'maestro' || $usuario->role == 'asesor')
+                                        <?php elseif($usuario->user_type == 'maestro' || $usuario->role == 'asesor'): ?>
                                             <p>Asesor del sistema</p>
-                                        @else
+                                        <?php else: ?>
                                             <p>Administrador</p>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
-                                        <button onclick="openEditUserModal('{{ $usuario->id }}')" class="px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-50 rounded-lg transition-colors">
+                                        <button onclick="openEditUserModal('<?php echo e($usuario->id); ?>')" class="px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-50 rounded-lg transition-colors">
                                             Editar
                                         </button>
-                                        @if($usuario->id !== auth()->id())
-                                        <button onclick="confirmDeleteUser('{{ $usuario->id }}', '{{ $usuario->name }}')" class="px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 rounded-lg transition-colors">
+                                        <?php if($usuario->id !== auth()->id()): ?>
+                                        <button onclick="confirmDeleteUser('<?php echo e($usuario->id); ?>', '<?php echo e($usuario->name); ?>')" class="px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 rounded-lg transition-colors">
                                             Eliminar
                                         </button>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr>
                                 <td colspan="4" class="px-6 py-12 text-center text-gray-500">
                                     No se encontraron usuarios
                                 </td>
                             </tr>
-                            @endforelse
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Paginación -->
-                @if($usuarios->hasPages())
+                <?php if($usuarios->hasPages()): ?>
                 <div class="px-6 py-4 border-t border-gray-100">
-                    {{ $usuarios->links() }}
+                    <?php echo e($usuarios->links()); ?>
+
                 </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
 
@@ -180,19 +181,19 @@
                 <h2 class="text-xl font-bold text-gray-900 mb-6">Actividad Reciente</h2>
                 
                 <div class="space-y-4">
-                    @forelse($actividadReciente as $actividad)
+                    <?php $__empty_1 = true; $__currentLoopData = $actividadReciente; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $actividad): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <div class="flex gap-3 items-start">
                         <div class="flex-shrink-0 mt-1">
-                            <div class="w-2 h-2 bg-{{ $actividad['color'] }}-500 rounded-full"></div>
+                            <div class="w-2 h-2 bg-<?php echo e($actividad['color']); ?>-500 rounded-full"></div>
                         </div>
                         <div class="flex-1">
-                            <p class="text-sm text-gray-900 font-medium">{{ $actividad['mensaje'] }}</p>
-                            <p class="text-xs text-gray-500 mt-0.5">{{ $actividad['tiempo'] }}</p>
+                            <p class="text-sm text-gray-900 font-medium"><?php echo e($actividad['mensaje']); ?></p>
+                            <p class="text-xs text-gray-500 mt-0.5"><?php echo e($actividad['tiempo']); ?></p>
                         </div>
                     </div>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <p class="text-gray-500 text-sm text-center py-4">No hay actividad reciente</p>
-                    @endforelse
+                    <?php endif; ?>
                 </div>
 
                 <!-- Configuración Rápida -->
@@ -241,8 +242,8 @@
             </div>
         </div>
         
-        <form action="{{ route('admin.administracion.crear-usuario') }}" method="POST" class="p-6">
-            @csrf
+        <form action="<?php echo e(route('admin.administracion.crear-usuario')); ?>" method="POST" class="p-6">
+            <?php echo csrf_field(); ?>
             <div class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Nombre Completo *</label>
@@ -309,8 +310,8 @@
         </div>
         
         <form id="editUserForm" method="POST" class="p-6">
-            @csrf
-            @method('PUT')
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('PUT'); ?>
             <div class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Nombre *</label>
@@ -346,7 +347,7 @@
 </div>
 
 <script>
-const usuarios = @json($usuarios->items());
+const usuarios = <?php echo json_encode($usuarios->items(), 15, 512) ?>;
 
 function openCreateUserModal() {
     document.getElementById('createUserModal').classList.remove('hidden');
@@ -380,7 +381,7 @@ function confirmDeleteUser(userId, userName) {
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
         csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
+        csrfToken.value = '<?php echo e(csrf_token()); ?>';
         
         const methodField = document.createElement('input');
         methodField.type = 'hidden';
@@ -408,4 +409,6 @@ document.addEventListener('click', function(event) {
 });
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\em556\Desktop\ProyectoPW\resources\views/admin/administracion.blade.php ENDPATH**/ ?>

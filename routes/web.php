@@ -122,6 +122,7 @@ Route::middleware('auth')->group(function () {
 
         // ADMINISTRACIÓN
         Route::get('/administracion', [AdminController::class, 'administracion'])->name('administracion');
+        Route::post('/administracion/usuarios', [AdminController::class, 'crearUsuario'])->name('administracion.crear-usuario');
         Route::put('/administracion/usuarios/{id}', [AdminController::class, 'actualizarUsuario'])->name('administracion.actualizar-usuario');
         Route::delete('/administracion/usuarios/{id}', [AdminController::class, 'eliminarUsuario'])->name('administracion.eliminar-usuario');
 

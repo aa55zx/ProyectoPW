@@ -397,6 +397,32 @@ class AdminController extends Controller
     }
 
     /**
+     * Crear un nuevo usuario
+     */
+    public function crearUsuario(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'numero_control' => 'nullable|string|max:50',
+            'password' => 'required|min:8|confirmed',
+            'user_type' => 'required|in:estudiante,juez,maestro,admin',
+        ]);
+
+        $usuario = User::create([
+            'id' => (string) Str::uuid(),
+            'name' => $request->name,
+            'email' => $request->email,
+            'numero_control' => $request->numero_control,
+            'password' => Hash::make($request->password),
+            'user_type' => $request->user_type,
+            'is_active' => true,
+        ]);
+
+        return redirect()->back()->with('success', 'Usuario creado exitosamente.');
+    }
+
+    /**
      * Actualizar un usuario
      */
     public function actualizarUsuario(Request $request, $id)
@@ -406,10 +432,17 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
-            'role' => 'required|in:estudiante,asesor,juez,admin',
+            'role' => 'required|in:estudiante,asesor,juez,admin,maestro',
         ]);
 
-        $usuario->update($request->only(['name', 'email', 'role']));
+        $updateData = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role,
+            'user_type' => $request->role === 'asesor' ? 'maestro' : $request->role,
+        ];
+
+        $usuario->update($updateData);
 
         return redirect()->back()->with('success', 'Usuario actualizado exitosamente.');
     }
