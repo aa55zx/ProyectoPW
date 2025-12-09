@@ -333,9 +333,16 @@ class ProyectoController extends Controller
 
     public function submitFile(Request $request, $id)
     {
-        $request->validate([
-            'submission_file' => 'required|file|mimes:pdf,zip,rar,docx,pptx|max:51200', // 50MB máximo
-        ]);
+        try {
+            $request->validate([
+                'submission_file' => 'required|file|mimes:pdf,zip,rar,docx,pptx|max:51200',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Error de validación: ' . implode(', ', $e->validator->errors()->all())
+            ], 422);
+        }
 
         $user = Auth::user();
         $proyecto = Project::with('team')->findOrFail($id);
@@ -350,11 +357,43 @@ class ProyectoController extends Controller
             return response()->json(['success' => false, 'message' => 'El proyecto ya ha sido entregado. Elimina la entrega anterior para subir una nueva.'], 422);
         }
 
+        // Verificar que el archivo existe
+        if (!$request->hasFile('submission_file')) {
+            return response()->json(['success' => false, 'message' => 'No se recibió ningún archivo'], 422);
+        }
+
+        $file = $request->file('submission_file');
+
+        // Verificar que el archivo es válido
+        if (!$file->isValid()) {
+            return response()->json(['success' => false, 'message' => 'El archivo no es válido o está corrupto'], 422);
+        }
+
         try {
             // Guardar archivo
             $file = $request->file('submission_file');
+            
+            // Log de información del archivo
+            \Log::info('Subiendo archivo', [
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize(),
+                'proyecto_id' => $proyecto->id
+            ]);
+            
             $fileName = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+            
+            // Asegurarse de que el directorio existe
+            $storageDirectory = storage_path('app/public/submissions');
+            if (!file_exists($storageDirectory)) {
+                mkdir($storageDirectory, 0755, true);
+            }
+            
             $filePath = $file->storeAs('submissions', $fileName, 'public');
+            
+            if (!$filePath) {
+                throw new \Exception('No se pudo guardar el archivo en el almacenamiento');
+            }
 
             // Actualizar proyecto
             $proyecto->update([

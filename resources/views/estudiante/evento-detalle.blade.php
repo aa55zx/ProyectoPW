@@ -220,6 +220,51 @@
                             <p class="text-2xl font-bold text-gray-900">{{ $evento->min_team_size }}-{{ $evento->max_team_size }}</p>
                         </div>
                     </div>
+                    
+                    <!-- Jueces -->
+                    @if($evento->judges && $evento->judges->count() > 0)
+                    <div class="border-t border-gray-200 pt-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                            </svg>
+                            <p class="text-sm font-semibold text-gray-700">Jueces</p>
+                        </div>
+                        <div class="space-y-2">
+                            @foreach($evento->judges as $juez)
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs">
+                                    {{ strtoupper(substr($juez->name, 0, 2)) }}
+                                </div>
+                                <span class="text-sm text-gray-700">{{ $juez->name }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                    
+                    <!-- Asesores Disponibles -->
+                    @if(isset($asesoresDisponibles) && $asesoresDisponibles->count() > 0)
+                    <div class="border-t border-gray-200 pt-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                            <p class="text-sm font-semibold text-gray-700">Asesores Disponibles</p>
+                        </div>
+                        <div class="space-y-2">
+                            @foreach($asesoresDisponibles as $asesor)
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs">
+                                    {{ strtoupper(substr($asesor->name, 0, 2)) }}
+                                </div>
+                                <span class="text-sm text-gray-700">{{ $asesor->name }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Estos asesores aún no tienen equipo asignado</p>
+                    </div>
+                    @endif
 
                     <div class="flex items-center gap-3">
                         <div class="p-3 bg-purple-50 rounded-xl">
