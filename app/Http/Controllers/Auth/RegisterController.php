@@ -62,36 +62,23 @@ class RegisterController extends Controller
                 'is_active' => true,
             ]);
 
-            // Enviar correo de bienvenida
+            // NOTA: Correo de bienvenida deshabilitado temporalmente para evitar timeouts
+            // Se puede habilitar cuando se configure un servicio de correo real (SendGrid, Mailgun, etc.)
+            /*
             try {
                 Mail::to($user->email)->send(new WelcomeMail($user));
             } catch (\Exception $e) {
                 \Log::error('Error al enviar correo de bienvenida: ' . $e->getMessage());
-                // Continuar con el registro aunque falle el correo
             }
+            */
 
-            // Login automático con remember me
+            // Login automático
             Auth::login($user, true);
             
-            // IMPORTANTE: Regenerar la sesión después del login
+            // Regenerar sesión para seguridad
             $request->session()->regenerate();
-            
-            // FORZAR guardado de sesión antes de redirigir
-            $request->session()->save();
-            
-            // Actualizar último login
-            $user->updateLastLogin();
 
-            // Log para debugging
-            \Log::info('Usuario registrado exitosamente', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'user_type' => $user->user_type,
-                'session_id' => $request->session()->getId(),
-                'authenticated' => Auth::check()
-            ]);
-
-            // Redirigir con URL absoluta y mensaje de éxito
+            // Redirigir inmediatamente al dashboard
             return redirect('/estudiante/dashboard')
                 ->with('success', '¡Bienvenido a EventTec! Tu cuenta ha sido creada exitosamente.');
 
