@@ -82,16 +82,14 @@ class AdminController extends Controller
         $eventos = $query->orderBy('created_at', 'desc')->paginate(10);
 
         // Obtener jueces y asesores para asignación
-        $jueces = User::where(function($q) {
-            $q->where('user_type', 'juez')
-              ->orWhere('role', 'juez');
-        })->get();
+        $jueces = User::where('user_type', 'juez')
+            ->orWhere('role', 'juez')
+            ->get();
         
-        $asesores = User::where(function($q) {
-            $q->where('user_type', 'maestro')
-              ->orWhere('role', 'asesor')
-              ->orWhere('role', 'maestro');
-        })->get();
+        $asesores = User::where('user_type', 'maestro')
+            ->orWhere('role', 'asesor')
+            ->orWhere('role', 'maestro')
+            ->get();
 
         return view('admin.eventos', compact('eventos', 'jueces', 'asesores'));
     }
