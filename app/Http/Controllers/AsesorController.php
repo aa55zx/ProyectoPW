@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Asesor\UpdatePerfilRequest;
 use App\Http\Requests\Asesor\UpdatePasswordRequest;
+use App\Http\Requests\Asesor\StoreComentarioRequest;
 use Illuminate\Support\Facades\Hash;
 
 class AsesorController extends Controller
@@ -410,13 +411,9 @@ class AsesorController extends Controller
     /**
      * Agregar comentario a un proyecto
      */
-    public function agregarComentario(Request $request, $id)
+    public function agregarComentario(StoreComentarioRequest $request, $id)
     {
         $user = Auth::user();
-        
-        $request->validate([
-            'comment' => 'required|string|max:1000'
-        ]);
         
         // Verificar que el proyecto existe y es del asesor
         $proyecto = Project::where('id', $id)

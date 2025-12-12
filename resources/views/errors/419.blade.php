@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Página No Encontrada</title>
+    <title>419 - Sesión Expirada</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -19,12 +19,12 @@
         .fade-in {
             animation: fadeIn 0.6s ease-out forwards;
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(-2deg); }
-            50% { transform: translateY(-10px) rotate(2deg); }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-        .float {
-            animation: float 3s ease-in-out infinite;
+        .rotate-slow {
+            animation: rotate 4s linear infinite;
         }
     </style>
 </head>
@@ -44,16 +44,16 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             <!-- Icono y código de error -->
             <div class="p-12 text-center border-b border-gray-200">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-2xl mb-6 float">
-                    <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-2xl mb-6">
+                    <svg class="w-10 h-10 text-blue-600 rotate-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
                 
-                <h2 class="text-7xl font-black text-gray-900 mb-4">404</h2>
-                <h3 class="text-2xl font-bold text-gray-900 mb-2">Página No Encontrada</h3>
+                <h2 class="text-7xl font-black text-gray-900 mb-4">419</h2>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Sesión Expirada</h3>
                 <p class="text-gray-600 max-w-md mx-auto">
-                    Lo sentimos, la página que buscas no existe o ha sido movida.
+                    Tu sesión ha expirado por seguridad. Por favor, recarga la página.
                 </p>
             </div>
 
@@ -62,52 +62,51 @@
                 <div class="bg-gray-50 rounded-xl p-6 mb-6">
                     <h4 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                         <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
-                        ¿Qué puedes hacer?
+                        ¿Por qué pasó esto?
                     </h4>
                     <ul class="space-y-2 text-sm text-gray-600">
                         <li class="flex items-start gap-2">
                             <span class="text-gray-400 mt-1">•</span>
-                            <span>Verifica que la URL esté escrita correctamente</span>
+                            <span>Tu sesión expiró por inactividad</span>
                         </li>
                         <li class="flex items-start gap-2">
                             <span class="text-gray-400 mt-1">•</span>
-                            <span>Regresa a la página anterior y vuelve a intentarlo</span>
+                            <span>El token de seguridad (CSRF) ya no es válido</span>
                         </li>
                         <li class="flex items-start gap-2">
                             <span class="text-gray-400 mt-1">•</span>
-                            <span>Visita nuestra página de inicio</span>
+                            <span>Esto es una medida de seguridad normal</span>
                         </li>
                     </ul>
+                </div>
+
+                <!-- Solución -->
+                <div class="bg-blue-50 rounded-xl p-6 mb-6 border border-blue-100">
+                    <h4 class="font-semibold text-gray-900 mb-2">Solución rápida</h4>
+                    <p class="text-sm text-gray-700">
+                        Simplemente recarga la página para obtener una nueva sesión y continuar donde lo dejaste.
+                    </p>
                 </div>
 
                 <!-- Botones -->
                 <div class="flex flex-col sm:flex-row gap-3">
                     <button 
-                        onclick="window.history.back()" 
-                        class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-200 font-medium">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                        </svg>
-                        Volver atrás
-                    </button>
-                    
-                    <a 
-                        href="{{ url('/') }}" 
+                        onclick="window.location.reload()" 
                         class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-200 font-medium">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>
-                        Ir al inicio
-                    </a>
+                        Recargar Página
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Pie de página -->
         <p class="text-center text-sm text-gray-500 mt-6">
-            Si el problema persiste, contacta con nuestro equipo de soporte
+            Esta es una medida de seguridad para proteger tu información
         </p>
     </div>
 </body>

@@ -105,6 +105,70 @@
                 </div>
             </div>
 
+            <!-- Carrera -->
+            <div>
+                <label for="career" class="block text-sm font-medium text-gray-700 mb-2">
+                    Carrera
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </span>
+                    <select 
+                        id="career" 
+                        name="career" 
+                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition appearance-none bg-white"
+                        required
+                    >
+                        <option value="" disabled {{ old('career') ? '' : 'selected' }}>Selecciona tu carrera</option>
+                        <option value="Ing. en Sistemas Computacionales" {{ old('career') == 'Ing. en Sistemas Computacionales' ? 'selected' : '' }}>Ing. en Sistemas Computacionales</option>
+                        <option value="Ing. Industrial" {{ old('career') == 'Ing. Industrial' ? 'selected' : '' }}>Ing. Industrial</option>
+                        <option value="Ing. en Electrónica" {{ old('career') == 'Ing. en Electrónica' ? 'selected' : '' }}>Ing. en Electrónica</option>
+                        <option value="Ing. en Gestión Empresarial" {{ old('career') == 'Ing. en Gestión Empresarial' ? 'selected' : '' }}>Ing. en Gestión Empresarial</option>
+                        <option value="Ing. Mecatrónica" {{ old('career') == 'Ing. Mecatrónica' ? 'selected' : '' }}>Ing. Mecatrónica</option>
+                        <option value="Ing. Mecánica" {{ old('career') == 'Ing. Mecánica' ? 'selected' : '' }}>Ing. Mecánica</option>
+                        <option value="Ing. en Administración" {{ old('career') == 'Ing. en Administración' ? 'selected' : '' }}>Ing. en Administración</option>
+                        <option value="Lic. en Administración" {{ old('career') == 'Lic. en Administración' ? 'selected' : '' }}>Lic. en Administración</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Semestre -->
+            <div>
+                <label for="semester" class="block text-sm font-medium text-gray-700 mb-2">
+                    Semestre
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                        </svg>
+                    </span>
+                    <select 
+                        id="semester" 
+                        name="semester" 
+                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition appearance-none bg-white"
+                        required
+                    >
+                        <option value="" disabled {{ old('semester') ? '' : 'selected' }}>Selecciona tu semestre</option>
+                        <option value="1" {{ old('semester') == '1' ? 'selected' : '' }}>1° Semestre</option>
+                        <option value="2" {{ old('semester') == '2' ? 'selected' : '' }}>2° Semestre</option>
+                        <option value="3" {{ old('semester') == '3' ? 'selected' : '' }}>3° Semestre</option>
+                        <option value="4" {{ old('semester') == '4' ? 'selected' : '' }}>4° Semestre</option>
+                        <option value="5" {{ old('semester') == '5' ? 'selected' : '' }}>5° Semestre</option>
+                        <option value="6" {{ old('semester') == '6' ? 'selected' : '' }}>6° Semestre</option>
+                        <option value="7" {{ old('semester') == '7' ? 'selected' : '' }}>7° Semestre</option>
+                        <option value="8" {{ old('semester') == '8' ? 'selected' : '' }}>8° Semestre</option>
+                        <option value="9" {{ old('semester') == '9' ? 'selected' : '' }}>9° Semestre</option>
+                        <option value="10" {{ old('semester') == '10' ? 'selected' : '' }}>10° Semestre</option>
+                        <option value="11" {{ old('semester') == '11' ? 'selected' : '' }}>11° Semestre</option>
+                        <option value="12" {{ old('semester') == '12' ? 'selected' : '' }}>12° Semestre</option>
+                    </select>
+                </div>
+            </div>
+
             <!-- Contraseña -->
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-2">

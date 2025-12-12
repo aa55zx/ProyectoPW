@@ -12,6 +12,14 @@ use App\Models\EventJudge;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Admin\StoreEventoRequest;
+use App\Http\Requests\Admin\UpdateEventoRequest;
+use App\Http\Requests\Admin\AsignarJuecesRequest;
+use App\Http\Requests\Admin\AsignarAsesoresRequest;
+use App\Http\Requests\Admin\StoreUsuarioRequest;
+use App\Http\Requests\Admin\UpdateUsuarioRequest;
+use App\Http\Requests\Admin\UpdatePerfilRequest;
+use App\Http\Requests\Admin\UpdatePasswordRequest;
 
 class AdminController extends Controller
 {
@@ -91,23 +99,8 @@ class AdminController extends Controller
     /**
      * Crear un nuevo evento
      */
-    public function crearEvento(Request $request)
+    public function crearEvento(StoreEventoRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'category' => 'required|string',
-            'event_start_date' => 'required|date',
-            'event_end_date' => 'required|date|after_or_equal:event_start_date',
-            'registration_start_date' => 'required|date',
-            'registration_end_date' => 'required|date|after_or_equal:registration_start_date',
-            'min_team_size' => 'required|integer|min:1',
-            'max_team_size' => 'required|integer|min:1',
-            'max_teams' => 'nullable|integer|min:1',
-            'location' => 'nullable|string',
-            'cover_image_url' => 'nullable|url',
-            'is_online' => 'boolean',
-        ]);
 
         // Determinar el status basado en las fechas
         $now = now()->startOfDay();
@@ -162,24 +155,9 @@ class AdminController extends Controller
     /**
      * Actualizar un evento
      */
-    public function actualizarEvento(Request $request, $id)
+    public function actualizarEvento(UpdateEventoRequest $request, $id)
     {
         $evento = Event::findOrFail($id);
-
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'category' => 'required|string',
-            'event_start_date' => 'required|date',
-            'event_end_date' => 'required|date|after_or_equal:event_start_date',
-            'registration_start_date' => 'required|date',
-            'registration_end_date' => 'required|date|after_or_equal:registration_start_date',
-            'min_team_size' => 'required|integer|min:1',
-            'max_team_size' => 'required|integer|min:1',
-            'max_teams' => 'nullable|integer|min:1',
-            'location' => 'nullable|string',
-            'is_online' => 'boolean',
-        ]);
 
         // Recalcular el status basado en las nuevas fechas
         $now = now()->startOfDay();
@@ -235,12 +213,8 @@ class AdminController extends Controller
     /**
      * Asignar jueces a un evento
      */
-    public function asignarJueces(Request $request, $id)
+    public function asignarJueces(AsignarJuecesRequest $request, $id)
     {
-        $request->validate([
-            'judges' => 'array',
-            'judges.*' => 'exists:users,id',
-        ]);
 
         $evento = Event::findOrFail($id);
 
@@ -267,12 +241,8 @@ class AdminController extends Controller
     /**
      * Asignar asesores a un evento
      */
-    public function asignarAsesores(Request $request, $id)
+    public function asignarAsesores(AsignarAsesoresRequest $request, $id)
     {
-        $request->validate([
-            'advisors' => 'array',
-            'advisors.*' => 'exists:users,id',
-        ]);
 
         $evento = Event::findOrFail($id);
 
@@ -411,15 +381,8 @@ class AdminController extends Controller
     /**
      * Crear un nuevo usuario
      */
-    public function crearUsuario(Request $request)
+    public function crearUsuario(StoreUsuarioRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'numero_control' => 'nullable|string|max:50',
-            'password' => 'required|min:8|confirmed',
-            'user_type' => 'required|in:estudiante,juez,maestro,admin',
-        ]);
 
         $usuario = User::create([
             'id' => (string) Str::uuid(),
@@ -437,15 +400,9 @@ class AdminController extends Controller
     /**
      * Actualizar un usuario
      */
-    public function actualizarUsuario(Request $request, $id)
+    public function actualizarUsuario(UpdateUsuarioRequest $request, $id)
     {
         $usuario = User::findOrFail($id);
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'role' => 'required|in:estudiante,asesor,juez,admin,maestro',
-        ]);
 
         $updateData = [
             'name' => $request->name,
@@ -501,15 +458,9 @@ class AdminController extends Controller
     /**
      * Actualizar perfil del administrador
      */
-    public function actualizarPerfil(Request $request)
+    public function actualizarPerfil(UpdatePerfilRequest $request)
     {
         $usuario = auth()->user();
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $usuario->id,
-            'bio' => 'nullable|string|max:500',
-        ]);
 
         $usuario->update($request->only(['name', 'email', 'bio']));
 
@@ -519,18 +470,9 @@ class AdminController extends Controller
     /**
      * Actualizar contraseña del administrador
      */
-    public function actualizarPassword(Request $request)
+    public function actualizarPassword(UpdatePasswordRequest $request)
     {
-        $request->validate([
-            'current_password' => 'required',
-            'password' => 'required|min:8|confirmed',
-        ]);
-
         $usuario = auth()->user();
-
-        if (!Hash::check($request->current_password, $usuario->password)) {
-            return redirect()->back()->with('error', 'La contraseña actual no es correcta.');
-        }
 
         $usuario->update([
             'password' => Hash::make($request->password),

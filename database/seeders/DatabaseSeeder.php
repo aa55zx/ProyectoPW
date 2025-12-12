@@ -32,12 +32,18 @@ class DatabaseSeeder extends Seeder
         $eventos = $this->createEventos();
         echo "✅ Eventos: " . count($eventos) . "\n\n";
 
+        $this->assignJudgesToEvents($eventos, $jueces);
+        echo "✅ Jueces asignados a eventos\n\n";
+
+        $this->assignAdvisorsToEvents($eventos, $maestros);
+        echo "✅ Asesores asignados a eventos\n\n";
+
         foreach($eventos as $evento) {
             $this->createEventSchedule($evento);
         }
         echo "✅ Cronogramas creados\n\n";
 
-        $equipos = $this->createTeams($eventos, $estudiantes);
+        $equipos = $this->createTeams($eventos, $estudiantes, $maestros);
         echo "✅ Equipos: " . count($equipos) . "\n\n";
 
         $proyectos = $this->createProjects($equipos, $eventos);
@@ -49,7 +55,7 @@ class DatabaseSeeder extends Seeder
         }
         echo "✅ Rúbricas: " . count($rubricas) . "\n\n";
 
-        $this->createEvaluations($proyectos, $jueces, $rubricas[0]);
+        $this->createEvaluations($proyectos, $jueces, $rubricas);
         echo "✅ Evaluaciones creadas\n\n";
 
         $logros = $this->createAchievements();
@@ -134,40 +140,54 @@ class DatabaseSeeder extends Seeder
         EventSchedule::create(['id' => Str::uuid(), 'event_id' => $event->id, 'day' => 1, 'title' => 'Registro', 'description' => 'Llegada de participantes', 'start_time' => '09:00', 'end_time' => '10:00', 'order_index' => 1]);
     }
 
-    private function createTeams($eventos, $estudiantes)
+    private function createTeams($eventos, $estudiantes, $maestros)
     {
         $nombres = ['Tech Innovators', 'Code Warriors', 'Digital Pioneers', 'Smart Solutions', 'Cyber Ninjas', 'Data Wizards', 'Cloud Masters', 'AI Builders', 'Future Coders', 'Quantum Leap', 'Byte Force', 'Logic Lords', 'Dev Dragons', 'Script Sages', 'Pixel Perfect', 'Algorithm Aces', 'Binary Beasts'];
         
         $equipos = [];
         $idx = 0;
 
-        // 12 equipos para Hackathon
+        // 12 equipos para Hackathon (evento finalizado)
         for ($i = 0; $i < 12 && $idx < 24; $i++) {
             $teamId = Str::uuid();
-            $team = Team::create(['id' => $teamId, 'name' => $nombres[$i], 'description' => 'Equipo innovador', 'event_id' => $eventos[0]->id, 'leader_id' => $estudiantes[$idx]->id, 'status' => 'active', 'invitation_code' => strtoupper(substr(md5($teamId), 0, 6)), 'members_count' => 2]);
+            $membersCount = rand(2, 4);
+            $team = Team::create(['id' => $teamId, 'name' => $nombres[$i], 'description' => 'Equipo innovador', 'event_id' => $eventos[0]->id, 'leader_id' => $estudiantes[$idx]->id, 'status' => 'active', 'invitation_code' => strtoupper(substr(md5($teamId), 0, 6)), 'members_count' => $membersCount]);
             
-            DB::table('team_members')->insert([
+            $members = [
                 ['id' => Str::uuid(), 'team_id' => $teamId, 'user_id' => $estudiantes[$idx]->id, 'role' => 'leader', 'joined_at' => now()],
-                ['id' => Str::uuid(), 'team_id' => $teamId, 'user_id' => $estudiantes[$idx + 1]->id, 'role' => 'member', 'joined_at' => now()],
-            ]);
+            ];
+            
+            for ($m = 1; $m < $membersCount && ($idx + $m) < count($estudiantes); $m++) {
+                $members[] = ['id' => Str::uuid(), 'team_id' => $teamId, 'user_id' => $estudiantes[$idx + $m]->id, 'role' => 'member', 'joined_at' => now()];
+            }
+            
+            DB::table('team_members')->insert($members);
             
             $eventos[0]->increment('registered_teams_count');
             $equipos[] = $team;
-            $idx += 2;
+            $idx += $membersCount;
         }
 
-        // 5 equipos para Feria
+        // 5 equipos para Feria de Ciencias (evento abierto)
+        $idx = 0;
         for ($i = 12; $i < 17 && $i < count($nombres); $i++) {
             $teamId = Str::uuid();
-            $team = Team::create(['id' => $teamId, 'name' => $nombres[$i], 'description' => 'Equipo científico', 'event_id' => $eventos[1]->id, 'leader_id' => $estudiantes[$i - 12]->id, 'status' => 'active', 'invitation_code' => strtoupper(substr(md5($teamId), 0, 6)), 'members_count' => 2]);
+            $membersCount = rand(2, 3);
+            $team = Team::create(['id' => $teamId, 'name' => $nombres[$i], 'description' => 'Equipo científico', 'event_id' => $eventos[1]->id, 'leader_id' => $estudiantes[$idx]->id, 'status' => 'active', 'invitation_code' => strtoupper(substr(md5($teamId), 0, 6)), 'members_count' => $membersCount]);
             
-            DB::table('team_members')->insert([
-                ['id' => Str::uuid(), 'team_id' => $teamId, 'user_id' => $estudiantes[$i - 12]->id, 'role' => 'leader', 'joined_at' => now()],
-                ['id' => Str::uuid(), 'team_id' => $teamId, 'user_id' => $estudiantes[$i - 11]->id, 'role' => 'member', 'joined_at' => now()],
-            ]);
+            $members = [
+                ['id' => Str::uuid(), 'team_id' => $teamId, 'user_id' => $estudiantes[$idx]->id, 'role' => 'leader', 'joined_at' => now()],
+            ];
+            
+            for ($m = 1; $m < $membersCount && ($idx + $m) < count($estudiantes); $m++) {
+                $members[] = ['id' => Str::uuid(), 'team_id' => $teamId, 'user_id' => $estudiantes[$idx + $m]->id, 'role' => 'member', 'joined_at' => now()];
+            }
+            
+            DB::table('team_members')->insert($members);
             
             $eventos[1]->increment('registered_teams_count');
             $equipos[] = $team;
+            $idx += $membersCount;
         }
 
         return $equipos;
@@ -175,20 +195,58 @@ class DatabaseSeeder extends Seeder
 
     private function createProjects($equipos, $eventos)
     {
-        $nombres = [['EcoTrack', 'Sistema de monitoreo ambiental'], ['SmartHealth', 'Telemedicina con IA'], ['EduConnect', 'Red social educativa'], ['AgriBot', 'Robot para agricultura'], ['CleanEnergy', 'Gestión energética solar'], ['SafeCity', 'Seguridad ciudadana'], ['FoodRescue', 'Contra desperdicio'], ['WaterSense', 'Calidad del agua'], ['MobiPark', 'Estacionamientos inteligentes'], ['RecycleAI', 'Clasificador reciclaje'], ['HealthMonitor', 'Monitoreo médico'], ['SmartFarm', 'Riego inteligente']];
+        $nombresHackathon = [['EcoTrack', 'Sistema de monitoreo ambiental'], ['SmartHealth', 'Telemedicina con IA'], ['EduConnect', 'Red social educativa'], ['AgriBot', 'Robot para agricultura'], ['CleanEnergy', 'Gestión energética solar'], ['SafeCity', 'Seguridad ciudadana'], ['FoodRescue', 'Contra desperdicio'], ['WaterSense', 'Calidad del agua'], ['MobiPark', 'Estacionamientos inteligentes'], ['RecycleAI', 'Clasificador reciclaje'], ['HealthMonitor', 'Monitoreo médico'], ['SmartFarm', 'Riego inteligente']];
+        
+        $nombresCiencia = [['Energía Solar', 'Panel solar eficiente'], ['Purificador', 'Purificador de agua'], ['Bio Plástico', 'Plástico biodegradable'], ['Robot Limpieza', 'Robot autónomo'], ['Sistema Riego', 'Riego inteligente']];
         
         $proyectos = [];
-        $idx = 0;
+        $idxHack = 0;
+        $idxCiencia = 0;
         
         foreach ($equipos as $equipo) {
-            if ($equipo->event_id !== $eventos[0]->id || $idx >= count($nombres)) continue;
+            // Proyectos del Hackathon (evento finalizado - TODOS evaluados)
+            if ($equipo->event_id === $eventos[0]->id && $idxHack < count($nombresHackathon)) {
+                $score = round(rand(700, 980) / 10, 1);
+                $proyectos[] = Project::create([
+                    'id' => Str::uuid(), 
+                    'team_id' => $equipo->id, 
+                    'event_id' => $equipo->event_id, 
+                    'title' => $nombresHackathon[$idxHack][0], 
+                    'description' => $nombresHackathon[$idxHack][1], 
+                    'repository_url' => 'https://github.com/' . strtolower(str_replace(' ', '', $nombresHackathon[$idxHack][0])), 
+                    'demo_url' => 'https://' . strtolower(str_replace(' ', '', $nombresHackathon[$idxHack][0])) . '.demo.com', 
+                    'status' => 'evaluated', 
+                    'final_score' => $score, 
+                    'rank' => null
+                ]);
+                $idxHack++;
+            }
             
-            $score = round(rand(700, 980) / 10, 1);
-            $proyectos[] = Project::create(['id' => Str::uuid(), 'team_id' => $equipo->id, 'event_id' => $equipo->event_id, 'title' => $nombres[$idx][0], 'description' => $nombres[$idx][1], 'repository_url' => 'https://github.com/' . strtolower($nombres[$idx][0]), 'demo_url' => 'https://' . strtolower($nombres[$idx][0]) . '.demo.com', 'status' => 'evaluated', 'final_score' => $score, 'rank' => null]);
-            $idx++;
+            // Proyectos de Feria de Ciencias (evento abierto - ALGUNOS sin evaluar)
+            if ($equipo->event_id === $eventos[1]->id && $idxCiencia < count($nombresCiencia)) {
+                $hasScore = rand(0, 10) > 3; // 70% evaluados, 30% sin evaluar
+                $score = $hasScore ? round(rand(650, 950) / 10, 1) : null;
+                $status = $hasScore ? 'evaluated' : 'submitted';
+                
+                $proyectos[] = Project::create([
+                    'id' => Str::uuid(), 
+                    'team_id' => $equipo->id, 
+                    'event_id' => $equipo->event_id, 
+                    'title' => $nombresCiencia[$idxCiencia][0], 
+                    'description' => $nombresCiencia[$idxCiencia][1], 
+                    'repository_url' => null, 
+                    'demo_url' => null, 
+                    'status' => $status, 
+                    'final_score' => $score, 
+                    'rank' => null
+                ]);
+                $idxCiencia++;
+            }
         }
 
-        foreach (collect($proyectos)->sortByDesc('final_score')->values() as $i => $p) {
+        // Asignar rankings solo a proyectos evaluados del Hackathon
+        $proyectosHackathon = collect($proyectos)->filter(fn($p) => $p->event_id === $eventos[0]->id);
+        foreach ($proyectosHackathon->sortByDesc('final_score')->values() as $i => $p) {
             $p->update(['rank' => $i + 1]);
         }
 
@@ -198,15 +256,58 @@ class DatabaseSeeder extends Seeder
     private function createRubrics($event)
     {
         $rubric = Rubric::create(['id' => Str::uuid(), 'event_id' => $event->id, 'name' => 'Rúbrica ' . $event->title, 'total_points' => 100, 'is_active' => true]);
-        RubricCriterion::create(['id' => Str::uuid(), 'rubric_id' => $rubric->id, 'name' => 'Innovación', 'max_points' => 25, 'order_index' => 1]);
+        
+        $criterios = [
+            ['name' => 'Innovación', 'description' => 'Originalidad y creatividad', 'max_points' => 25],
+            ['name' => 'Viabilidad', 'description' => 'Factibilidad de implementación', 'max_points' => 25],
+            ['name' => 'Impacto', 'description' => 'Beneficio social o económico', 'max_points' => 25],
+            ['name' => 'Presentación', 'description' => 'Calidad de la exposición', 'max_points' => 25],
+        ];
+        
+        foreach ($criterios as $i => $criterio) {
+            RubricCriterion::create([
+                'id' => Str::uuid(), 
+                'rubric_id' => $rubric->id, 
+                'name' => $criterio['name'], 
+                'description' => $criterio['description'],
+                'max_points' => $criterio['max_points'], 
+                'order_index' => $i + 1
+            ]);
+        }
+        
         return $rubric;
     }
 
-    private function createEvaluations($proyectos, $jueces, $rubric)
+    private function createEvaluations($proyectos, $jueces, $rubricas)
     {
         foreach ($proyectos as $p) {
             if ($p->status === 'evaluated') {
-                Evaluation::create(['id' => Str::uuid(), 'project_id' => $p->id, 'judge_id' => $jueces[0]->id, 'rubric_id' => $rubric->id, 'total_score' => $p->final_score, 'status' => 'completed', 'completed_at' => now()]);
+                $event = Event::find($p->event_id);
+                $rubric = collect($rubricas)->firstWhere('event_id', $event->id);
+                
+                if ($rubric) {
+                    // Crear 2-3 evaluaciones por proyecto evaluado
+                    $numEvals = rand(2, 3);
+                    $scores = [];
+                    
+                    for ($i = 0; $i < $numEvals && $i < count($jueces); $i++) {
+                        $score = round(rand(700, 980) / 10, 1);
+                        $scores[] = $score;
+                        
+                        Evaluation::create([
+                            'id' => Str::uuid(), 
+                            'project_id' => $p->id, 
+                            'judge_id' => $jueces[$i]->id, 
+                            'rubric_id' => $rubric->id, 
+                            'total_score' => $score, 
+                            'status' => 'completed', 
+                            'completed_at' => now()->subDays(rand(1, 10))
+                        ]);
+                    }
+                    
+                    // Actualizar score final como promedio
+                    $p->update(['final_score' => round(array_sum($scores) / count($scores), 1)]);
+                }
             }
         }
     }
@@ -227,5 +328,45 @@ class DatabaseSeeder extends Seeder
     private function createNotifications($estudiantes)
     {
         Notification::create(['id' => Str::uuid(), 'user_id' => $estudiantes[0]->id, 'type' => 'test', 'title' => 'Bienvenido', 'message' => 'Bienvenido al sistema', 'is_read' => false]);
+    }
+
+    private function assignJudgesToEvents($eventos, $jueces)
+    {
+        // Asignar jueces a eventos finalizados y abiertos
+        foreach ($eventos as $i => $evento) {
+            if (in_array($evento->status, ['finished', 'open'])) {
+                foreach ($jueces as $juez) {
+                    DB::table('event_judges')->insert([
+                        'id' => Str::uuid(),
+                        'event_id' => $evento->id,
+                        'judge_id' => $juez->id,
+                        'status' => 'active',
+                        'assigned_at' => now()->subDays(rand(10, 30)),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+        }
+    }
+
+    private function assignAdvisorsToEvents($eventos, $maestros)
+    {
+        // Asignar asesores a eventos
+        foreach ($eventos as $i => $evento) {
+            if (in_array($evento->status, ['finished', 'open'])) {
+                foreach ($maestros as $maestro) {
+                    DB::table('event_advisors')->insert([
+                        'id' => Str::uuid(),
+                        'event_id' => $evento->id,
+                        'advisor_id' => $maestro->id,
+                        'status' => 'active',
+                        'assigned_at' => now()->subDays(rand(10, 30)),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+        }
     }
 }

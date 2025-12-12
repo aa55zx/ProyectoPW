@@ -12,6 +12,7 @@ use App\Http\Controllers\Estudiante\PerfilController;
 use App\Http\Controllers\AsesorController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Juez\JuezDashboardController;
+use App\Http\Controllers\ErrorTestController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -142,3 +143,16 @@ Route::post('/mi-perfil/password', [AsesorController::class, 'actualizarPassword
         Route::put('/perfil/password', [AdminController::class, 'actualizarPassword'])->name('perfil.actualizar-password');
     });
 });
+
+// RUTAS DE PRUEBA DE ERRORES (Solo en desarrollo)
+if (app()->environment('local')) {
+    Route::prefix('test-errors')->group(function () {
+        Route::get('/', [ErrorTestController::class, 'index'])->name('test-errors.index');
+        Route::get('/401', [ErrorTestController::class, 'show401'])->name('test-errors.401');
+        Route::get('/403', [ErrorTestController::class, 'show403'])->name('test-errors.403');
+        Route::get('/404', [ErrorTestController::class, 'show404'])->name('test-errors.404');
+        Route::get('/419', [ErrorTestController::class, 'show419'])->name('test-errors.419');
+        Route::get('/500', [ErrorTestController::class, 'show500'])->name('test-errors.500');
+        Route::get('/503', [ErrorTestController::class, 'show503'])->name('test-errors.503');
+    });
+}

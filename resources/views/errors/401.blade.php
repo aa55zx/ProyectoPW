@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Página No Encontrada</title>
+    <title>401 - No Autorizado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -20,8 +20,8 @@
             animation: fadeIn 0.6s ease-out forwards;
         }
         @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(-2deg); }
-            50% { transform: translateY(-10px) rotate(2deg); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
         .float {
             animation: float 3s ease-in-out infinite;
@@ -44,16 +44,16 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             <!-- Icono y código de error -->
             <div class="p-12 text-center border-b border-gray-200">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-2xl mb-6 float">
-                    <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-yellow-100 rounded-2xl mb-6 float">
+                    <svg class="w-10 h-10 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                 </div>
                 
-                <h2 class="text-7xl font-black text-gray-900 mb-4">404</h2>
-                <h3 class="text-2xl font-bold text-gray-900 mb-2">Página No Encontrada</h3>
+                <h2 class="text-7xl font-black text-gray-900 mb-4">401</h2>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">No Autorizado</h3>
                 <p class="text-gray-600 max-w-md mx-auto">
-                    Lo sentimos, la página que buscas no existe o ha sido movida.
+                    Necesitas iniciar sesión para acceder a este recurso.
                 </p>
             </div>
 
@@ -62,40 +62,39 @@
                 <div class="bg-gray-50 rounded-xl p-6 mb-6">
                     <h4 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                         <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        ¿Qué puedes hacer?
+                        Necesitas autenticarte
                     </h4>
+                    <p class="text-sm text-gray-600 mb-3">
+                        Este contenido está protegido y requiere que inicies sesión con tu cuenta.
+                    </p>
                     <ul class="space-y-2 text-sm text-gray-600">
                         <li class="flex items-start gap-2">
                             <span class="text-gray-400 mt-1">•</span>
-                            <span>Verifica que la URL esté escrita correctamente</span>
+                            <span>Inicia sesión con tu cuenta existente</span>
                         </li>
                         <li class="flex items-start gap-2">
                             <span class="text-gray-400 mt-1">•</span>
-                            <span>Regresa a la página anterior y vuelve a intentarlo</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-gray-400 mt-1">•</span>
-                            <span>Visita nuestra página de inicio</span>
+                            <span>Si no tienes cuenta, puedes registrarte</span>
                         </li>
                     </ul>
                 </div>
 
                 <!-- Botones -->
                 <div class="flex flex-col sm:flex-row gap-3">
-                    <button 
-                        onclick="window.history.back()" 
-                        class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-200 font-medium">
+                    <a 
+                        href="{{ route('login') }}" 
+                        class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-200 font-medium">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                         </svg>
-                        Volver atrás
-                    </button>
+                        Iniciar Sesión
+                    </a>
                     
                     <a 
                         href="{{ url('/') }}" 
-                        class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-200 font-medium">
+                        class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-200 font-medium">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                         </svg>
@@ -107,7 +106,7 @@
 
         <!-- Pie de página -->
         <p class="text-center text-sm text-gray-500 mt-6">
-            Si el problema persiste, contacta con nuestro equipo de soporte
+            ¿No tienes cuenta? Regístrate para acceder a todos los recursos
         </p>
     </div>
 </body>
