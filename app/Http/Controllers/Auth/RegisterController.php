@@ -49,15 +49,14 @@ class RegisterController extends Controller
         ]);
 
         try {
-            // Crear el usuario en Supabase
+            // Crear el usuario
             $user = User::create([
-                'id' => Str::uuid(),
+                'id' => (string) Str::uuid(),
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'numero_control' => $validated['numero_control'],
                 'password' => Hash::make($validated['password']),
-                'password_hash' => Hash::make($validated['password']), // Para Supabase
-                'user_type' => 'estudiante', // Por defecto estudiante
+                'user_type' => 'estudiante',
                 'career' => $validated['career'],
                 'semester' => $validated['semester'],
                 'is_active' => true,
@@ -77,15 +76,37 @@ class RegisterController extends Controller
             // Actualizar último login
             $user->updateLastLogin();
 
-            return redirect()->route('estudiante.dashboard')
-                           ->with('success', '¡Bienvenido a EventTec! Tu cuenta ha sido creada exitosamente. Revisa tu correo para más información.');
+            // Redirigir según el tipo de usuario
+            return $this->redirectToDashboard($user);
 
         } catch (\Exception $e) {
             \Log::error('Error en registro: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
             
             return back()->withErrors([
-                'email' => 'Ocurrió un error al crear tu cuenta. Por favor, intenta de nuevo.',
+                'error' => 'Ocurrió un error al crear tu cuenta. Por favor, intenta de nuevo.',
             ])->withInput($request->except('password', 'password_confirmation'));
         }
+    }
+
+    /**
+     * Redirigir al dashboard según el tipo de usuario
+     */
+    protected function redirectToDashboard(User $user)
+    {
+        $message = '¡Bienvenido a EventTec! Tu cuenta ha sido creada exitosamente.';
+        
+        if ($user->isEstudiante()) {
+            return redirect()->route('estudiante.dashboard')->with('success', $message);
+        } elseif ($user->isMaestro()) {
+            return redirect()->route('asesor.dashboard')->with('success', $message);
+        } elseif ($user->isJuez()) {
+            return redirect()->route('juez.dashboard')->with('success', $message);
+        } elseif ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard')->with('success', $message);
+        }
+
+        // Por defecto, enviar al dashboard de estudiante
+        return redirect()->route('estudiante.dashboard')->with('success', $message);
     }
 }

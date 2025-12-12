@@ -20,7 +20,6 @@ class User extends Authenticatable
         'email',
         'numero_control',
         'password',
-        'role',
         'user_type',
         'avatar_url',
         'phone',
@@ -114,31 +113,29 @@ class User extends Authenticatable
     // Verificadores de rol
     public function isAdmin()
     {
-        return $this->user_type === 'admin' || $this->role === 'admin';
+        return $this->user_type === 'admin';
     }
 
     public function isMaestro()
     {
-        return $this->user_type === 'maestro' || $this->role === 'asesor';
+        return $this->user_type === 'maestro';
     }
 
     public function isJuez()
     {
-        return $this->user_type === 'juez' || $this->role === 'juez';
+        return $this->user_type === 'juez';
     }
 
     public function isEstudiante()
     {
-        return $this->user_type === 'estudiante' || $this->role === 'estudiante';
+        return $this->user_type === 'estudiante';
     }
 
     public function getRoleName()
     {
-        $role = $this->role ?? $this->user_type;
-        
-        return match($role) {
+        return match($this->user_type) {
             'admin' => 'Admin',
-            'maestro', 'asesor' => 'Asesor',
+            'maestro' => 'Asesor',
             'juez' => 'Juez',
             'estudiante' => 'Estudiante',
             default => 'Usuario',
@@ -147,11 +144,9 @@ class User extends Authenticatable
 
     public function getRoleBadgeClass()
     {
-        $role = $this->role ?? $this->user_type;
-        
-        return match($role) {
+        return match($this->user_type) {
             'admin' => 'bg-gray-900 text-white',
-            'maestro', 'asesor' => 'bg-gray-700 text-white',
+            'maestro' => 'bg-gray-700 text-white',
             'juez' => 'bg-gray-600 text-white',
             'estudiante' => 'bg-gray-500 text-white',
             default => 'bg-gray-100 text-gray-800',
@@ -166,7 +161,7 @@ class User extends Authenticatable
 
     public function scopeByType($query, $type)
     {
-        return $query->where('user_type', $type)->orWhere('role', $type);
+        return $query->where('user_type', $type);
     }
 
     public function updateLastLogin()
