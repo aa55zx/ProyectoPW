@@ -70,14 +70,26 @@ class RegisterController extends Controller
                 // Continuar con el registro aunque falle el correo
             }
 
-            // Login automático
-            Auth::login($user);
-
+            // Login automático con remember me
+            Auth::login($user, true);
+            
+            // IMPORTANTE: Regenerar la sesión después del login
+            $request->session()->regenerate();
+            
             // Actualizar último login
             $user->updateLastLogin();
 
-            // Redirigir según el tipo de usuario
-            return $this->redirectToDashboard($user);
+            // Log para debugging
+            \Log::info('Usuario registrado exitosamente', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'user_type' => $user->user_type
+            ]);
+
+            // Redirigir directamente al dashboard de estudiante con mensaje de éxito
+            return redirect()
+                ->route('estudiante.dashboard')
+                ->with('success', '¡Bienvenido a EventTec! Tu cuenta ha sido creada exitosamente.');
 
         } catch (\Exception $e) {
             \Log::error('Error en registro: ' . $e->getMessage());

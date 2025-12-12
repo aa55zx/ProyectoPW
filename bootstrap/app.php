@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'estudiante' => \App\Http\Middleware\CheckEstudiante::class,
             'juez' => \App\Http\Middleware\CheckJuez::class,
             'asesor' => \App\Http\Middleware\CheckAsesor::class,
+            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
