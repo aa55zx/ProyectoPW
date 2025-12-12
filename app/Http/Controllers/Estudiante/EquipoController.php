@@ -106,6 +106,8 @@ class EquipoController extends Controller
                 'user_id' => $user->id,
                 'role' => 'leader',
                 'joined_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             DB::commit();
@@ -258,6 +260,8 @@ class EquipoController extends Controller
                 'user_id' => $solicitud->user_id,
                 'role' => 'member',
                 'joined_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             $equipo->increment('members_count');

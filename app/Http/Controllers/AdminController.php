@@ -254,18 +254,17 @@ class AdminController extends Controller
                 ]);
 
                 // Enviar email al juez notificándole de su asignación
-                try {
-                    $judge = User::find($judgeId);
-                    if ($judge && $judge->email && filter_var($judge->email, FILTER_VALIDATE_EMAIL)) {
-                        Mail::to($judge->email)->send(new JudgeAssignedMail($judge, $evento));
-                    }
-                } catch (\Exception $e) {
-                    \Log::error("Error al enviar email a juez {$judge->email}: " . $e->getMessage());
-                }
+            //     $judge = User::find($judgeId);
+            // if ($judge && $judge->email && filter_var($judge->email, FILTER_VALIDATE_EMAIL)) {
+            //     SendJudgeAssignmentEmail::dispatch($judge, $evento)
+            //         ->onQueue('emails'); // Cola específica para emails
+            //     $juecesAsignados++;
+
+
             }
         }
 
-        return redirect()->back()->with('success', 'Jueces asignados exitosamente. Se han enviado notificaciones por email.');
+        return redirect()->back()->with('success', 'Jueces asignados exitosamente.');
     }
 
     /**
@@ -426,7 +425,7 @@ class AdminController extends Controller
             \Log::error('Error al enviar email de bienvenida: ' . $e->getMessage());
         }
 
-        return redirect()->back()->with('success', 'Usuario creado exitosamente. Se ha enviado un correo de bienvenida.');
+        return redirect()->back()->with('success', 'Usuario creado exitosamente.');
     }
 
     /**
@@ -440,11 +439,24 @@ class AdminController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'user_type' => $request->user_type,
+            
         ];
 
-        $usuario->update($updateData);
+        try {
+            $user->user_type = $request->input('user_type');
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->save();
 
         return redirect()->back()->with('success', 'Usuario actualizado exitosamente.');
+            
+        } catch (\Exception $e) {
+             \Log::error("Error actualizando usuario: " . $e->getMessage());
+        return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+            
+        }
+
+       
     }
 
     /**

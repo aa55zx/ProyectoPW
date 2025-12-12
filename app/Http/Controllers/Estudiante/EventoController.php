@@ -371,16 +371,20 @@ class EventoController extends Controller
                 'members_count' => 1,
             ]);
 
-            // Agregar al usuario como líder
+            // Agregar al usuario como líder (con timestamps para compatibilidad con Railway)
             DB::table('team_members')->insert([
                 'id' => Str::uuid(),
                 'team_id' => $teamId,
                 'user_id' => $user->id,
                 'role' => 'leader',
                 'joined_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             DB::commit();
+
+            \Log::info("Equipo creado exitosamente: {$team->name} por usuario {$user->name}");
 
             return response()->json([
                 'success' => true,
@@ -391,9 +395,13 @@ class EventoController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Error al crear equipo: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error al crear el equipo: ' . $e->getMessage()
+                'message' => 'Error al crear el equipo. Por favor, intenta de nuevo.',
+                'error_detail' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
