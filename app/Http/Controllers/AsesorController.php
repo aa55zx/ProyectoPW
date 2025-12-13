@@ -427,20 +427,28 @@ class AsesorController extends Controller
             ->with(['team.members', 'event'])
             ->firstOrFail();
         
+        // NOTA: Comentarios deshabilitados temporalmente (tabla no existe)
         // Obtener comentarios del proyecto
-        $comentarios = ProjectComment::where('project_id', $id)
-            ->with('user')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // $comentarios = ProjectComment::where('project_id', $id)
+        //     ->with('user')
+        //     ->orderBy('created_at', 'desc')
+        //     ->get();
+        
+        $comentarios = collect(); // Colección vacía por ahora
         
         return view('asesor.proyecto-detalle', compact('proyecto', 'comentarios'));
     }
 
     /**
      * Agregar comentario a un proyecto
+     * NOTA: Funcionalidad deshabilitada temporalmente (tabla project_comments no existe)
      */
     public function agregarComentario(StoreComentarioRequest $request, $id)
     {
+        // Funcionalidad deshabilitada hasta crear la tabla project_comments
+        return redirect()->back()->with('info', 'La funcionalidad de comentarios estará disponible próximamente.');
+        
+        /* Código original comentado
         $user = Auth::user();
         
         // Verificar que el proyecto existe y es del asesor
@@ -475,6 +483,7 @@ class AsesorController extends Controller
         }
         
         return redirect()->back()->with('success', 'Comentario agregado correctamente');
+        */
     }
     /**
  * Actualizar perfil del asesor
