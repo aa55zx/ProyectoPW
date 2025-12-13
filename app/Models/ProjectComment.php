@@ -12,13 +12,12 @@ class ProjectComment extends Model
 
     protected $table = 'project_comments';
     
-    public $timestamps = false;
+    public $timestamps = true; // Habilitar timestamps
 
     protected $fillable = [
         'project_id',
         'user_id',
         'comment',
-        'created_at'
     ];
 
     protected $casts = [
